@@ -66,15 +66,18 @@
 ; https://en.wikipedia.org/wiki/Logical_equivalence
 ; with two values same as xnor but with more values
 ; result differs: [1 1 1] = True = [0 0 0]
-; TODO; should be recursive: [1 1 1] -> [[1 1] 1]
 (defconnective eqv? ≡ [&rest truth-list]
-  (setv boolean (if (pos? (len truth-list)) True False))
-  (for [truth-value truth-list]
-    (if (not (= truth-value (first truth-list)))
-      (do (setv boolean False) (break))))
-  boolean)
+  (do
+    (setv boolean (if (pos? (len truth-list)) (first truth-list) False)
+          length (len truth-list)
+          index 1)
+    (while (< index length)
+      (do
+        (setv boolean (= boolean (get truth-list index))
+              index (inc index))))
+    boolean))
 
-; unquivalence
+; unequivalence
 (defconnective neqv? ≢ [&rest truth-list]
   (not (apply eqv? truth-list)))
 
