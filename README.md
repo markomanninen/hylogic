@@ -1,6 +1,14 @@
-# hylogic
+# Hylogic
 
-Propositional logic evaluator for Hy
+Propositional logic evaluator for [Hy](https://github.com/hylang/hy)
+
+```
+; require macros and import functions and variables
+(require (hylogic.macros(*)))
+(import [hylogic.macros[*]])
+; NL for newlines
+(setv NL "\r\n")
+```
 
 ## Atoms and Axioms
 
@@ -13,7 +21,7 @@ Propositional logic evaluator for Hy
 ```
 (defproposition P True "It is raining")
 (defproposition Q True "It is cold outside")
-(defproposition R False "I'm indoors")
+(defproposition R True "I'm indoors")
 ```
 
 ## Arguments
@@ -28,11 +36,17 @@ Propositional logic evaluator for Hy
 Show argumentation inference rules:
 
 ```
-(print (str a))
+(print a)
 ```
 
 Is argument valid?
 
 ```
 (print a.valid)
+```
+
+## Truth tables
+
+```
+(truth-tables-html 2 cimp?)
 ```
