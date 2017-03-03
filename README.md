@@ -2,8 +2,37 @@
 
 Propositional logic evaluator for Hy
 
+## Atoms and Axioms
+
+### Symbols
+
+### Connectives
+
+## Propositions
+
 ```
-(defaxiom P True "It is raining")
-(defaxiom Q True "It is cold outside")
-(defaxiom R False "I'm indoor")
+(defproposition P True "It is raining")
+(defproposition Q True "It is cold outside")
+(defproposition R False "I'm indoors")
+```
+
+## Arguments
+
+```
+(setv a (defargument 
+  (defpremise (P ∧ Q) → R)
+  (defpremise (P ∧ Q))
+  (defconclusion R)))
+```
+
+Show argumentation inference rules:
+
+```
+(print (str a))
+```
+
+Is argument valid?
+
+```
+(print a.valid)
 ```

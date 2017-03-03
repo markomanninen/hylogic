@@ -1,6 +1,6 @@
 #!/usr/bin/python3
-(require [hylogic.hyffix.macros [*]])
-(import (hylogic.hyffix.macros (*)))
+(require [hyffix.macros [*]])
+(import (hyffix.macros (*)))
 
 ; define connective functions and math aliases (op-symbol)
 ; plus set them to operators global list
