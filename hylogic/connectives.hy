@@ -17,7 +17,8 @@
 
 ; define true comparison function
 ; note that textual version of "1", "True" or "⊤" are not supported 
-; so they will be regarded as False
+; natively so they will be regarded as False
+; one can however (defoperand True True) if really needed
 (defn true? [value] 
   (or (= value 1) (= value True)))
 
@@ -45,6 +46,7 @@
 
 ; xor operation (parity check) : zero or more arguments, zero will return false, 
 ; otherwise odd number of true's is true
+; https://en.wikipedia.org/wiki/Exclusive_or
 (defconnective xor? ⊕ [&rest truth-list]
   (setv boolean False)
   (for [truth-value truth-list]
@@ -68,7 +70,7 @@
 (defconnective eqv? ≡ [&rest truth-list]
   (setv boolean (if (pos? (len truth-list)) True False))
   (for [truth-value truth-list]
-    (if (not? truth-value (first truth-list))
+    (if (not (= truth-value (first truth-list)))
       (do (setv boolean False) (break))))
   boolean)
 
@@ -128,8 +130,48 @@
 
 ; Converse nonimplication (¬P ∨ Q)
 ; https://en.wikipedia.org/wiki/Converse_nonimplication
-(defimplication cnimp? ↚ (any [(not (↚ prev)) (↚ next)]))
+(defimplication cnimp? ↚ (all [(not (↚ prev)) (↚ next)]))
 
 ; Material implication (¬P ∧ Q)
 ; https://en.wikipedia.org/wiki/Material_conditional
-(defimplication mimp? → (all [(not (→ prev)) (→ next)]))
+(defimplication mimp? → (any [(not (→ prev)) (→ next)]))
+
+(setv connectives (,
+  (, nope? (, 'not "Negation"))
+  (, and? (, 'and "Conjunction"))
+  (, nand? (, 'nand "Nonconjunction"))
+  (, or? (, 'or "Disjunction"))
+  (, nor? (, 'nor "Nondisjunction"))
+  (, xor? (, 'xor "Exclusive or"))
+  (, xnor? (, 'xnor "Nonexclusive or"))
+  (, eqv? (, 'eqv "Equivalence"))
+  (, neqv? (, 'neqv "Nonequivalence"))
+  (, cimp? (, 'cimp "Converse implication"))
+  (, cnimp? (, 'cnimp "Converse nonimplication"))
+  (, mimp? (, 'mimp "Material implication"))
+  (, mnimp? (, 'mnimp "Material nonimplication"))))
+
+(import (IPython.display (HTML)))
+(import itertools)
+
+(defn truth-tables-html [n &rest args]
+  (do 
+    (setv head (+ "<table><thead style='background-color:#dcdccc'><tr><th colspan=" 
+                  (str (inc n)) 
+                  ">%s (%s?)</th></tr></thead><tbody>")
+          rows "<tr>%s<td style='background-color:%s'>%s</td></tr>"
+          foot "</tbody></table>"
+          html ""
+          bytes (, 0 1))
+    (for [[conj data] connectives]
+      (if (or (empty? args) (in conj args))
+        (do
+          (setv html (+ html 
+            (% head (, (second data) (first data)))))
+          (for [l (itertools.product bytes :repeat n)]
+            (do
+              (setv b (apply conj l))
+              (setv html (+ html 
+                (% rows (, (% (* "<td style='text-align:center'>%s</td>" n) l) (if (true? b) "#7f9f7f" "#cc9393") (str b)))))))
+          (setv html (+ html foot)))))
+     (HTML html)))
