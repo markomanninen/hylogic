@@ -19,13 +19,16 @@
   (setv args (list args))
   ; only even number of arguments are accepted
   (if (even? (len args))
-      (while (pos? (len args))
+      (do
+        (setv rtrn (second args))
+        (while (pos? (len args))
              (do
                ; update dictionary key with a value
                (assoc operands (first args) (second args))
                ; remove first two arguments (key-value pair)
                (.remove args (get args 0))
                (.remove args (get args 0))))
+        rtrn)
       (raise (Exception "defoperand needs an even number of arguments"))))
 
 ; function to change precedence order of the operations.
