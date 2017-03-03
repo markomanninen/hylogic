@@ -21,42 +21,57 @@
     (str (% "%s%s%s"
        (, self.symbol
           (if-not (empty? self.sentence) (% "<%s>" self.sentence) "")
-          (if-not (null? self.truth-value) (% "=%s" (str (= 1 self.truth-value))))))))
+          (if-not (none? self.truth-value) (% "=%s" (str (= 1 self.truth-value))))))))
   ; __repr__ and __bool__ are needed for all, any, and, or, not and similar
   ; boolean type functions checks
   (defn --repr-- [self]
-    (str (self.__bool__)))
-  (defn --bool-- [self]
+    (self.__bool__))
+  ; map, = checks
+  (defn --eq-- [self x]
+    (= x self.truth-value))
+  ; != checks
+  (defn --ne-- [self x]
+    (!= x self.truth-value))
+  ; all, any, not checks
+  (defn --bool-- [self] (print 'bool)
     (= True self.truth-value)))
 
 (defclass Premise [object]
-  (defn --init-- [self rule]
-    (setv self.rule rule)))
+  (defn --init-- [self rules truth-value]
+    (setv self.rules rules)
+    (setv self.truth-value truth-value))
+  (defn --str-- [self]
+     (+ "\r\n  " (.replace (.join " " (map str self.rules)) "'" ""))))
 
-(defclass Conclusion [object]
-  (defn --init-- [self rule]
-    (setv self.rule rule)))
+(defclass Conclusion [Premise]
+  (defn --init-- [self proposition]
+    (setv self.proposition proposition)
+    (setv self.truth-value proposition.truth-value))
+  (defn --str-- [self] 
+     (+ "\r\n--------------\r\n∴ " self.proposition.symbol "\r\n")))
 
 (defclass Argument [object]
   (defn --init-- [self &rest premises]
     (setv self.premises premises)
-    (setv self.valid Null))
+    (setv self.valid None))
   (defn --str-- [self]
-    (str (self.premises)))
+    (str (.join "" (map str self.premises))))
   (defn valid [self]
     self.valid))
 
 ; define proposition macro. init proposition and set variable as a local instance
 (defmacro defproposition [symbol &optional truth-value sentence]
-  `(setv ~symbol (Proposition ~(str symbol) ~truth-value ~sentence)))
+  `(setv 
+    ~symbol 
+    (defoperand ~symbol (Proposition ~(str symbol) ~truth-value ~sentence))))
 
 ; define premise macro
 (defmacro defpremise [&rest rules]
-  `(Premise ~rules))
+  `(Premise '~rules (deffix ~@rules)))
 
 ; define conclusion macro
-(defmacro defconclusion [&rest rules]
-  `(Conclusion ~rules))
+(defmacro defconclusion [rule]
+  `(Conclusion ~rule))
 
 ; define argument macro
 (defmacro defargument [&rest premises-and-conclusion]
