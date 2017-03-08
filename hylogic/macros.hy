@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 (require [hylogic.connectives [*]])
 (import (hylogic.connectives (*)))
+; for negation symbol creation
+(import hy)
 
 ; define proposition class
 (defclass Proposition [object]
@@ -11,7 +13,7 @@
   ; readable natural language statement phrase, is optional
   ; sentence is usually a statement that claims that something
   ; is either true or false
-  (defn --init-- [self symbol &optional truth-value sentence]
+  (defn --init-- [self symbol &optional [truth-value True] [sentence ""]]
     (setv self.symbol symbol)
     (setv self.truth-value truth-value)
     (setv self.sentence sentence))
@@ -33,7 +35,7 @@
   (defn --ne-- [self x]
     (!= x self.truth-value))
   ; all, any, not checks
-  (defn --bool-- [self] (print 'bool)
+  (defn --bool-- [self]
     (= True self.truth-value)))
 
 (defclass Premise [object]
@@ -59,11 +61,18 @@
   (defn valid [self]
     self.valid))
 
+(defn create-symbol [&rest args]
+  (hy.HySymbol (.join "" (map str args))))
+
 ; define proposition macro. init proposition and set variable as a local instance
-(defmacro defproposition [symbol &optional truth-value sentence]
-  `(setv 
-    ~symbol 
-    (defoperand ~symbol (Proposition ~(str symbol) ~truth-value ~sentence))))
+(defmacro defproposition [symbol &optional [truth-value True] [sentence ""]]
+  `(setv ~symbol (defoperand ~symbol (Proposition ~(str symbol) ~truth-value ~sentence))))
+
+; slightly different proposition macro definer that creates also negation variable
+(defmacro defproposition* [symbol &optional [truth-value True] [sentence ""]]
+  `(do
+    (defproposition ~symbol ~truth-value ~sentence)
+    (defproposition ~(create-symbol '¬ symbol) (not ~truth-value) ~sentence)))
 
 ; define premise macro
 (defmacro defpremise [&rest rules]
