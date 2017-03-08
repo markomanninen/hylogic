@@ -103,7 +103,7 @@
     (and (symbol? code)
          (do
            (setv eval-type (type (eval code)))
-           ; + - / * = !=
+           ; + - / * = != < > <= >=
            (or (= eval-type func-type)
                ; TODO: these might need some additional check which is good to pass and which is not
                ; (if (in code ['abs 'cmp 'divmod 'max 'min 'pow 'range])) ...
