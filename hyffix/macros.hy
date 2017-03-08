@@ -93,7 +93,8 @@
          (not (in code operands))
          (or ; could be a custom operator added with #>
              (in code operators)
-             ; or one of the native math operators: + - * / = !=
+             ; or one of the native math and boolean operators: 
+             ; + - * / = != < > <= >=
              (and (symbol? code) (func? code)))))
 
   (defn one? [code] (= (len code) 1))
@@ -107,7 +108,7 @@
     (and (one? code)
          (not (operator? (first code)))))
 
-  ; infix
+  ; infix. note: 1 + will be postfix and + 1 will be prefix
   (defn second-operator? [code]
     (and (pos? (len code)) 
          (operator? (second code))
