@@ -140,19 +140,19 @@
 (defimplication mimp? → (any [(not (→ prev)) (→ next)]))
 
 (setv connectives (,
-  (, nope? (, 'not "Negation"))
-  (, and? (, 'and "Conjunction"))
-  (, nand? (, 'nand "Nonconjunction"))
-  (, or? (, 'or "Disjunction"))
-  (, nor? (, 'nor "Nondisjunction"))
-  (, xor? (, 'xor "Exclusive or"))
-  (, xnor? (, 'xnor "Nonexclusive or"))
-  (, eqv? (, 'eqv "Equivalence"))
-  (, neqv? (, 'neqv "Nonequivalence"))
-  (, cimp? (, 'cimp "Converse implication"))
-  (, cnimp? (, 'cnimp "Converse nonimplication"))
-  (, mimp? (, 'mimp "Material implication"))
-  (, mnimp? (, 'mnimp "Material nonimplication"))))
+  (, nope? (, 'not "Negation" '¬))
+  (, and? (, 'and "Conjunction" '∧))
+  (, nand? (, 'nand "Nonconjunction" '↑))
+  (, or? (, 'or "Disjunction" '∨))
+  (, nor? (, 'nor "Nondisjunction" '↓))
+  (, xor? (, 'xor "Exclusive or" '↮))
+  (, xnor? (, 'xnor "Nonexclusive or" '↔))
+  (, eqv? (, 'eqv "Equivalence" '≡))
+  (, neqv? (, 'neqv "Nonequivalence" '≢))
+  (, cimp? (, 'cimp "Converse implication" '←))
+  (, cnimp? (, 'cnimp "Converse nonimplication" '↛))
+  (, mimp? (, 'mimp "Material implication" '↚))
+  (, mnimp? (, 'mnimp "Material nonimplication" '→))))
 
 (import (IPython.display (HTML)))
 (import itertools)
@@ -165,16 +165,16 @@
           rows "<tr>%s<td style='background-color:%s'>%s</td></tr>"
           foot "</tbody></table>"
           html ""
-          bytes (, 0 1))
+          bytes (itertools.product (, 0 1) :repeat n))
     (for [[conj data] connectives]
       (if (or (empty? args) (in conj args))
         (do
           (setv html (+ html 
             (% head (, (second data) (first data)))))
-          (for [l (itertools.product bytes :repeat n)]
+          (for [byte bytes]
             (do
-              (setv b (apply conj l))
+              (setv bit (apply conj byte))
               (setv html (+ html 
-                (% rows (, (% (* "<td style='text-align:center'>%s</td>" n) l) (if (true? b) "#7f9f7f" "#cc9393") (str b)))))))
+                (% rows (, (% (* "<td style='text-align:center'>%s</td>" n) byte) (if (true? bit) "#7f9f7f" "#cc9393") (str bit)))))))
           (setv html (+ html foot)))))
      (HTML html)))
