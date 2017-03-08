@@ -78,16 +78,16 @@
   ; left and right side of the index will be picked to a new list where
   ; centermost item is moved to left and left to center
   ; [1 a 2 b 3 c 4] idx=3 -> [1 a [b 2 3] c 4]
-  (defn list-nest [lst idx]
+  (defn list-nest [lst indx]
     (setv tmp
       (doto 
-        (list (take 1 (drop idx lst))) 
-        (.append (get lst (dec idx))) 
-        (.append (get lst (inc idx)))))
+        (list (take 1 (drop indx lst))) 
+        (.append (get lst (dec indx))) 
+        (.append (get lst (inc indx)))))
     (doto 
-      (list (take (dec idx) lst))
+      (list (take (dec indx) lst))
       (.append tmp)
-      (.extend (list (drop (+ 2 idx) lst)))))
+      (.extend (list (drop (+ 2 indx) lst)))))
 
   (setv func-type (type (fn [])))
 
