@@ -85,3 +85,22 @@
 ; define argument macro
 (defmacro defargument [&rest premises-and-conclusion]
   `(Argument ~@premises-and-conclusion))
+
+; quantifier x
+(defmacro quantifier-x [quantifier var func set] 
+  `(~quantifier (map
+    ; map anonymous function for the set
+    (fn [x]
+      (do
+        ; define variable(s) for deffix
+        (defoperand ~var x)
+        ; possibly infix notated predicate function: use deffix
+        (deffix ~func))) ~set)))
+
+; universal quantifier
+(defmacro ∀ [var func set] 
+  `(quantifier-x all ~var ~func ~set))
+
+; existential quantifier
+(defmacro ∃ [var func set]
+  `(quantifier-x any ~var ~func ~set))
