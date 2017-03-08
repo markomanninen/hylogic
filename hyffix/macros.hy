@@ -7,6 +7,13 @@
 ; didn't work. this will also import operators-precedence list
 (import (hyffix.globals (operands operators operators-precedence)))
 
+; print multiple statements on new lines
+(defmacro println [&rest args]
+  `(do
+    (setv args (list ~args))
+    (for [line args]
+      (print line))))
+
 ; define operator function and set it to operators global list
 (defmacro defoperator [op-name params &rest body]
   `(do 
@@ -61,6 +68,9 @@
 (defmacro deffix-n [&rest items]
   (list-comp `#$~item [item items]))
 
+; for hy.HyExpression
+(import hy)
+
 ; helper functions for #$ reader macro
 (eval-and-compile
   ; this takes a list of items at least 3
@@ -79,11 +89,29 @@
       (.append tmp)
       (.extend (list (drop (+ 2 idx) lst)))))
 
-  (setv func-type (type (fn []))) 
+  (setv func-type (type (fn [])))
+
+  ; https://docs.python.org/2/library/functions.html
+  ; https://docs.python.org/3.5/library/functions.html
+  ; most suitable from these are: abs (cmp) divmod max min pow
+  (setv built-in-func-type (type pow))
+
+  ; support: list tuple range
+  (setv type-type (type range))
   
   (defn func? [code] 
     (and (symbol? code)
-         (= (type (eval code)) func-type)))
+         (do
+           (setv eval-type (type (eval code)))
+           ; + - / * = !=
+           (or (= eval-type func-type)
+               ; TODO: these might need some additional check which is good to pass and which is not
+               ; (if (in code ['abs 'cmp 'divmod 'max 'min 'pow 'range])) ...
+               ; abs (cmp) divmod max min pow and all other built in function, 
+               ; that might or might not be suitable for unary / binary / multiary operation
+               (= eval-type built-in-func-type)
+               ; list tuple range
+               (= eval-type type-type)))))
 
   (defn operator? [code]
     (and ; should not be a collection
@@ -93,11 +121,15 @@
          (not (in code operands))
          (or ; could be a custom operator added with #>
              (in code operators)
-             ; or one of the native math and boolean operators: 
-             ; + - * / = != < > <= >=
-             (and (symbol? code) (func? code)))))
+             ; or one of the native math operators: + - * / = !=
+             ; or built in function and methods, where the most suitable are:
+             ; abs (cmp) divmod max min pow
+             ; or just a range, list or tuple
+             (func? code))))
 
   (defn one? [code] (= (len code) 1))
+
+  (defn not-expression? [code] (not (isinstance code hy.HyExpression)))
 
   (defn one-operand? [code]
     (and (one? code)
@@ -108,7 +140,7 @@
     (and (one? code)
          (not (operator? (first code)))))
 
-  ; infix. note: 1 + will be postfix and + 1 will be prefix
+  ; infix
   (defn second-operator? [code]
     (and (pos? (len code)) 
          (operator? (second code))
@@ -127,13 +159,13 @@
   
   (defn third [lst] (get lst 2)))
 
-; main parser loop for propositional logic clauses
+; main parser loop for infix prefix and postfix clauses
 (defreader $ [code]
   (if
-    ; scalar value
+    ; scalar or some other value
     (not (coll? code))
       ; if code is one of the custom variables, return the value of it
-      (if (in code operands) 
+      (if (in code operands)
           (get operands code)
           ; else return just the value
           code)
@@ -159,6 +191,8 @@
       ; take the first item i.e. operator and use
       ; rest of the items as arguments once evaluated by #$
       `(~(first code) ~@(list-comp `#$~part [part (drop 1 code)]))
+    ; list or tuple should be accepted also
+    (not-expression? code) code
     ; possibly syntax error on clause
     ; might be caused by arbitrary usage of operators and operands
     ; something like: (1 1 + 0 -)
