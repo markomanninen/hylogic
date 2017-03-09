@@ -87,20 +87,23 @@
   `(Argument ~@premises-and-conclusion))
 
 ; quantifier x
-(defmacro quantifier-x [quantifier var func set] 
+(defmacro quantifier-x [quantifier vars func &rest domains]
+  ; cast possible variables tuple to list so that items can be removed from it
+  (setv vars (list vars))
   `(~quantifier (map
-    ; map anonymous function for the set
-    (fn [x]
+    ; map anonymous function for the domain set
+    ; vars is for example [x] or [x y] ...
+    (fn ~vars
       (do
-        ; define variable(s) for deffix
-        (defoperand ~var x)
-        ; possibly infix notated predicate function: use deffix
-        (deffix ~func))) ~set)))
+        ; init variable(s) for deffix
+        (defoperand ~@(flatten (zip vars vars)))
+        ; possibly infix notated predicate function so using deffix macro
+        (deffix ~func))) ~@domains)))
 
 ; universal quantifier
-(defmacro ∀ [var func set] 
-  `(quantifier-x all ~var ~func ~set))
+(defmacro ∀ [vars func &rest domains] 
+  `(quantifier-x all ~vars ~func ~@domains))
 
 ; existential quantifier
-(defmacro ∃ [var func set]
-  `(quantifier-x any ~var ~func ~set))
+(defmacro ∃ [vars func &rest domains]
+  `(quantifier-x any ~vars ~func ~@domains))
