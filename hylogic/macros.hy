@@ -86,24 +86,30 @@
 (defmacro defargument [&rest premises-and-conclusion]
   `(Argument ~@premises-and-conclusion))
 
-; quantifier x
-(defmacro quantifier-x [quantifier vars func &rest domains]
-  ; cast possible variables tuple to list so that items can be removed from it
-  (setv vars (list vars))
+; quantifier y factor
+(defmacro quantifier-y [quantifier variables func &rest domains]
   `(~quantifier (map
-    ; map anonymous function for the domain set
-    ; vars is for example [x] or [x y] ...
-    (fn ~vars
-      (do
-        ; init variable(s) for deffix
-        (defoperand ~@(flatten (zip vars vars)))
-        ; possibly infix notated predicate function so using deffix macro
-        (deffix ~func))) ~@domains)))
+      ; map anonymous function for the domain set
+      ; vars is for example (x) or (x y) ...
+      (fn ~variables
+        (do
+          ; init variable(s) for possible deffix
+          (defoperand ~@(flatten (zip variables variables)))
+          ~func)) ~@domains)))
 
-; universal quantifier
-(defmacro ∀ [vars func &rest domains] 
-  `(quantifier-x all ~vars ~func ~@domains))
+; quantifier x factor
+(defmacro quantifier-x [quantifier variables func &rest domains]
+  ; if there are quantifiers on the function ...
+  (if (or (= (first func) '∀) (= (first func) '∃))
+    ; recursive calls for nested quantifiers
+    `(quantifier-y ~quantifier ~variables (~(first func) ~@(drop 1 func)) ~@domains)
+    ; lowest level function needs to be passed to deffix resolver
+    `(quantifier-y ~quantifier ~variables (deffix ~func) ~@domains)))
 
-; existential quantifier
-(defmacro ∃ [vars func &rest domains]
-  `(quantifier-x any ~vars ~func ~@domains))
+; universal quantifier, forall
+(defmacro ∀ [variables func &rest domains] 
+  `(quantifier-x all ~variables ~func ~@domains))
+
+; existential quantifier, some
+(defmacro ∃ [variables func &rest domains]
+  `(quantifier-x any ~variables ~func ~@domains))
