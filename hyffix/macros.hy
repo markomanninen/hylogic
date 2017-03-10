@@ -101,8 +101,12 @@
   
   (defn func? [code] 
     (and (symbol? code)
-         (do
-           (setv eval-type (type (eval code)))
+         (do 
+           (try
+             ; catch "name is not defined" errors
+             (setv eval-type (type (eval code)))
+             (except (e Exception) 
+               (setv eval-type None)))
            ; + - / * = != < > <= >=
            (or (= eval-type func-type)
                ; TODO: these might need some additional check which is good to pass and which is not
@@ -129,7 +133,8 @@
 
   (defn one? [code] (= (len code) 1))
 
-  (defn not-expression? [code] (not (isinstance code hy.HyExpression)))
+  (defn not-expression? [code]
+    (not (isinstance code hy.HyExpression)))
 
   (defn one-operand? [code]
     (and (one? code)
@@ -191,9 +196,5 @@
       ; take the first item i.e. operator and use
       ; rest of the items as arguments once evaluated by #$
       `(~(first code) ~@(list-comp `#$~part [part (drop 1 code)]))
-    ; list or tuple should be accepted also
-    (not-expression? code) code
-    ; possibly syntax error on clause
-    ; might be caused by arbitrary usage of operators and operands
-    ; something like: (1 1 + 0 -)
-    `(raise (Exception "Expression error. Formula is not recognized as a well-formed expression!"))))
+    ; try just plain code
+    code))
