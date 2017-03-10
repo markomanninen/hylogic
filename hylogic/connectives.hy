@@ -10,7 +10,7 @@
     (setv ~op-symbol ~op-name)
     #>~op-symbol))
 
-; define math operands
+; define propositional constants ie. operands
 ; so that in addition to 1 and True also symbol ⊤ can be used
 (setv ⊤ 1)
 (setv ⊥ 0)
@@ -113,11 +113,10 @@
             ; so we can get the next and remove it too
             (setv next (first args))
             (.remove args next)
-            ; recurisvely get the result. previous could be a list as
+            ; recursively get the result. previous could be a list as
             ; well as next could be a list, thus prev needs to be evaluated
             ; at least once more.
             (setv result ~func)
-            ;(print 'prev prev 'next next 'result result)
             ; and set result for the previous one
             (setv prev result)))
         ; return resulting boolean value

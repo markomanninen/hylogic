@@ -93,7 +93,7 @@
       ; vars is for example (x) or (x y) ...
       (fn ~variables
         (do
-          ; init variable(s) for possible deffix
+          ; init variable(s) for possible deffix routines
           (defoperand ~@(flatten (zip variables variables)))
           ~func)) ~@domains)))
 
