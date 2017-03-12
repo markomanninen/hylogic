@@ -8,6 +8,7 @@
 (import (hyffix.globals (operands operators operators-precedence)))
 
 ; print multiple statements on new lines
+; TODO other place more suitable? helpers.hy
 (defmacro println [&rest args]
   `(do
     (setv args (list ~args))
@@ -21,6 +22,7 @@
     #>~op-name))
 
 ; for example: (defoperand x 1 y 2 z 3)
+; TODO: how necessary this is if setv works?
 (defmacro defoperand [&rest args]
   ; cast tuple to list to make removal of list items work
   (setv args (list args))
@@ -61,12 +63,12 @@
 ; $ reader macro directly but might be more convenient way
 ; inside lips code to use than reader macro syntax
 ; there is no need to use parentheses with this macro
-(defmacro deffix [&rest items] `#$~items)
+(defmacro deffix [&rest items] `(first #$~items))
 
 ; pass multiple (n) evaluation clauses. each of the must be
 ; wrapped by () parentheses
 (defmacro deffix-n [&rest items]
-  (list-comp `#$~item [item items]))
+  (list-comp `(deffix ~item) [item items]))
 
 ; for hy.HyExpression
 (import hy)
@@ -78,16 +80,20 @@
   ; left and right side of the index will be picked to a new list where
   ; centermost item is moved to left and left to center
   ; [1 a 2 b 3 c 4] idx=3 -> [1 a [b 2 3] c 4]
-  (defn list-nest [lst indx]
+  (defn list-nest [code indx]
     (setv tmp
       (doto 
-        (list (take 1 (drop indx lst))) 
-        (.append (get lst (dec indx))) 
-        (.append (get lst (inc indx)))))
-    (doto 
-      (list (take (dec indx) lst))
-      (.append tmp)
-      (.extend (list (drop (+ 2 indx) lst)))))
+        (list (take 1 (drop indx code))) 
+        (.append (get code (dec indx))) 
+        (.append (get code (inc indx)))))
+    (setv fin
+      (doto
+        (list (take (dec indx) code))
+        (.append (hy.HyExpression tmp))
+        (.extend (list (drop (+ 2 indx) code)))))
+    (if (isinstance code hy.HyExpression)
+        (hy.HyExpression fin)
+        fin))
 
   (setv func-type (type (fn [])))
 
@@ -98,7 +104,11 @@
 
   ; support: list tuple range
   (setv type-type (type range))
-  
+  (setv list-type (type '[]))
+  (defn list-type? [code] (and (= list-type (type code)) (not-expression? code)))
+
+  ; is function
+  ; TODO: could perhaps be smarter...
   (defn func? [code] 
     (and (symbol? code)
          (do 
@@ -117,6 +127,7 @@
                ; list tuple range
                (= eval-type type-type)))))
 
+  ; is operator
   (defn operator? [code]
     (and ; should not be a collection
          (not (coll? code))
@@ -131,19 +142,11 @@
              ; or just a range, list or tuple
              (func? code))))
 
-  (defn one? [code] (= (len code) 1))
-
   (defn not-expression? [code]
     (not (isinstance code hy.HyExpression)))
 
-  (defn one-operand? [code]
-    (and (one? code)
-         (not (coll? (first code))) 
-         (in (first code) operands)))
-
-  (defn one-not-operator? [code]
-    (and (one? code)
-         (not (operator? (first code)))))
+  ; collection length one
+  (defn one? [code] (and (= (len code) 1)))
 
   ; infix
   (defn second-operator? [code]
@@ -160,27 +163,32 @@
   ; prefix
   (defn first-operator? [code]
     (and (> (len code) 1) 
-         (operator? (first code))))
-  
-  (defn third [lst] (get lst 2)))
+         (operator? (first code)))))
 
-; main parser loop for infix prefix and postfix clauses
+; main macro parser loop for infix, prefix, and postfix clauses
 (defreader $ [code]
   (if
-    ; scalar or some other value
+    ;;; 1
+    ; not collection / expression -> scalar or some other value
     (not (coll? code))
       ; if code is one of the custom variables, return the value of it
-      (if (in code operands)
-          (get operands code)
-          ; else return just the value
+      (if (in code operands) (get operands code)
+          ; else return the code as a value
           code)
-    ; list with lenght of 1 and the single item is the operand
-    (one-operand? code) (get operands (first code))
-    ; list with lenght of 1 and the single item not being the operator
-    (one-not-operator? code) `#$~@code
+    ;;; 2
+    ; collection with lenght of 1
+    ; this must be checked before last and first checks
+    ; because they could also match. second operator of course couldnt
+    (one? code)
+        ; wrap list by a list, but evaluate content
+        (if (list-type? code) [`#$~@code]
+            ; else just evaluate content
+            `#$~@code)
+    ;;; 3
     ; two or more items, last item is an operator: postfix
     (last-operator? code) `#$(~(last code) ~@(take (dec (len code)) code))
-    ; list with three or more items, second is the operator: prefix
+    ;;; 4
+    ; list with three or more items, second is the operator: infix
     (second-operator? code)
       (do
         ; the second operator on the list is the default index
@@ -191,10 +199,13 @@
           (if (in op code) (do (setv idx (.index code op)) (break))))
         ; make list nested based on the found index and evaluate again
         `#$~(list-nest code idx))
+    ;;; 5
     ; list with more than 1 items and the first item is the operator: prefix
     (first-operator? code)
       ; take the first item i.e. operator and use
       ; rest of the items as arguments once evaluated by #$
       `(~(first code) ~@(list-comp `#$~part [part (drop 1 code)]))
     ; try just plain code
+    ; this makes possible to evaluate all the other types of expressions
+    ; that doesn't match previous 5 cases. that makes it almost anything
     code))
