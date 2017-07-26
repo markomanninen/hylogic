@@ -68,11 +68,26 @@
 (defmacro defproposition [symbol &optional [truth-value True] [sentence ""]]
   `(setv ~symbol (defoperand ~symbol (Proposition ~(str symbol) ~truth-value ~sentence))))
 
+; define multiple simple propositions macro
+(defmacro defpropositions+ [name &rest args]
+  (if (len args)
+      `(do
+         (~name ~(get args 0))
+         (defpropositions+ ~name ~@(cut args 1)))))
+
+; define multiple simple propositions macro
+(defmacro defpropositions [&rest args]
+  `(defpropositions+ defproposition ~@args))
+
 ; slightly different proposition macro definer that creates also negation variable
 (defmacro defproposition* [symbol &optional [truth-value True] [sentence ""]]
   `(do
     (defproposition ~symbol ~truth-value ~sentence)
     (defproposition ~(create-symbol '¬ symbol) (not ~truth-value) ~sentence)))
+
+; define multiple simple propositions with negatives macro
+(defmacro defpropositions* [&rest args]
+  `(defpropositions+ defproposition* ~@args))
 
 ; define premise macro
 (defmacro defpremise [&rest rules]
