@@ -27,7 +27,7 @@
   ; __repr__ and __bool__ are needed for all, any, and, or, not and similar
   ; boolean type functions checks
   (defn --repr-- [self]
-    (self.__bool__))
+    (str (self.__bool__)))
   ; map, = checks
   (defn --eq-- [self x]
     (= x self.truth-value))
