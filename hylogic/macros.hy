@@ -110,6 +110,12 @@
         (do
           ; init variable(s) for possible deffix routines
           (defoperand ~@(flatten (zip variables variables)))
+          ; if multiple domain sets are provided, then values are
+          ; passed to the anonymous functions in tuples taking one item from each
+          ; domain to match each argument on anonymous function
+          ; (, (, 1 2 3) (, 1 2 3 4)) for example sends arguments in groups of:
+          ; (, 1 1) (, 2 2) (, 3 3) and leaves the last iteration because there is no
+          ; pair for y: (, undefined 4)
           ~func)) ~@domains)))
 
 ; quantifier x factor
