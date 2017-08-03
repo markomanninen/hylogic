@@ -10,7 +10,7 @@
 ; doesn't need to be added to the operators list
 ; for singular usage: #>operator
 ; for multiple: #>[operator1 operator 2 ...]
-(defreader > [items] 
+(defsharp > [items] 
   (do
     ; transforming singular value to a list for the next for loop
     (if-not (coll? items) (setv items [items]))
@@ -23,7 +23,7 @@
 ; for singular usage: #<operator
 ; for multiple: #<[operator1 operator 2 ...]
 ; note that calling this macro will empty the previous list of precedence!
-(defreader < [items]
+(defsharp < [items]
   (do
     ; (setv operators-precedence []) is not working here
     ; for some macro evaluation - complilation order reason
