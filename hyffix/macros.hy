@@ -166,7 +166,7 @@
          (operator? (first code)))))
 
 ; main macro parser loop for infix, prefix, and postfix clauses
-(defreader $ [code]
+(defsharp $ [code]
   (if
     ;;; 1
     ; not collection / expression -> scalar or some other value
