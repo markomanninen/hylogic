@@ -1,121 +1,229 @@
 # Hylogic
 
-Propositional logic evaluator for [Hy](https://github.com/hylang/hy)
+Propositional and first-order logic in [Hy](https://hylang.org), a Lisp that
+compiles to Python. Write formulas as Lisp code with the usual logical
+symbols, then check them with truth tables, evaluate them in a finite model,
+test whether an argument is valid, or prove them with a small resolution
+prover that prints its proofs.
 
-## Requirements and installation
+```hy
+(import hylogic [truth-table prove])
 
-### Jupyter and Hy
-
-A little bit work is required to get everything running on your local computer. First you need Jupyter Notebook and Calysto Hy kernel to interact with this document. Easy way to get Jupyter Notebook running is to use Anaconda package from Continuum: https://www.continuum.io/downloads. It will install Python language interpreter to your computer, which is also required.
-
-[Hy](http://docs.hylang.org/en/latest/index.html) language, which by the way is a cool Lisp syntax and feature set upon Python, you can get from: https://github.com/hylang/hy. Then follow Calysto Hy kernel installation instructions from their GitHub project page: https://github.com/Calysto/calysto_hy.
-
-After installation you should be ready to print environment information running this Hy code:
-
-```
-(import hy sys)
-(print "Hy version: " hy.__version__)
-(print "Python" sys.version)
+(print (truth-table '(→ (∧ P (→ P Q)) Q)))
 ```
 
-Hy version should be 0.12.1 and above. Python 3.5 or above. Code is not tested versions below those.
-
-Of course you can just set up Python and Hy without Jupyter notebook and Calysto Hy Kernel, but then you need to interact from console. I just recommend to use Jupyter because it makes prototyping, testing, and documentation so much easier, even fun to do!
-
 ```
-; require macros and import functions and variables
-(require (hylogic.macros(*)))
-(import [hylogic.macros[*]])
-```
-
-## Atoms and Axioms
-
-### Symbols
-
-Propositional constants:
-
-- ⊤ (True / 1)
-- ⊥ (False / 0)
-
-### Connectives
-
-¬ 	 not     	 Negation
-∧ 	 and     	 Conjunction
-↑ 	 nand     	 Nonconjunction
-∨ 	 or     	 Disjunction
-↓ 	 nor     	 Nondisjunction
-↮ 	 xor     	 Exclusive or
-↔ 	 xnor     	 Nonexclusive or
-≡ 	 eqv     	 Equivalence
-≢ 	 neqv     	 Nonequivalence
-← 	 cimp     	 Converse implication
-↛ 	 cnimp     	 Converse nonimplication
-↚ 	 mimp     	 Material implication
-→ 	 mnimp     	 Material nonimplication
-
-## Propositions
-
-Propositional variables are created with `defproposition` and `defproposition*` macros. Latter macro also creates a negation variable to reduce some repetitive work.
-
-```
-(defproposition* P False "Today is Tuesday")
-(defproposition* Q True "John will go to work")
-(println P ¬P)
+P │ Q │ (P ∧ (P → Q)) → Q
+──┼───┼──────────────────
+⊤ │ ⊤ │         ⊤
+⊤ │ ⊥ │         ⊤
+⊥ │ ⊤ │         ⊤
+⊥ │ ⊥ │         ⊤
 ```
 
-P<Today is Tuesday>=False
-¬P<Today is Tuesday>=True
+Hylogic is meant for learning and experimenting: the code is short enough to
+read, and every step of a proof can be printed. For serious proofs, use
+[Lean](https://lean-lang.org/) or an automated prover such as Vampire or E.
 
-## Argumentation
+## Install
 
-Introducting `defargument`, `defpremise`, and `defconclusion` macros.
-
-```
-(setv a 
-  (defargument 
-    ; If today is Tuesday, then John will go to work.
-    (defpremise P → Q)
-    ; Today is Tuesday.
-    (defpremise P)
-    ; Therefore, John will go to work.
-    (defconclusion Q)))
-(print a)
+```bash
+pip install hylogic
 ```
 
-  P → Q
-  P
---------------
-∴ Q
+Hylogic needs Python 3.9 or newer and Hy 1.0 or newer. To run the tests and
+the tour from a clone:
 
-## First order logic
-
-### Quantifiers, predicates, variables, sets
-
-#### Universal quantifier (∀)
-
-```
-(∀ (x) (x > 0) (range 1 10)) ; all items [1 ... 9] are greater than 0?
+```bash
+pip install -e ".[test]"
+pytest
+hy examples/tour.hy
 ```
 
-#### Existential  quantifier (∃)
+## Formulas
 
-```
-(∃ (x) (x < 1) (range 0 10)) ; is at least one item of [0 ... 9] smaller than 1?
-```
+A formula is quoted Hy code. Atoms are propositions (`P`) or predicates
+applied to terms (`(Loves x (mother x))`). Every connective has a symbol and
+an ASCII name, and both can be mixed freely:
 
-#### Nested quantifiers
+| Symbol | ASCII | Name | Arguments |
+|---|---|---|---|
+| `¬` | `not` | Negation | 1 |
+| `∧` | `and` | Conjunction | any number |
+| `∨` | `or` | Disjunction | any number |
+| `↑` | `nand` | Nonconjunction | any number |
+| `↓` | `nor` | Nondisjunction | any number |
+| `⊕` `↮` | `xor` | Exclusive or, true for an odd number of true arguments | any number |
+| `≡` | `eqv` | Equivalence, true when all arguments agree | any number |
+| `≢` | `neqv` | Nonequivalence | any number |
+| `↔` | `<=>` | Biconditional | 2 |
+| `→` | `=>` | Material implication | 2 |
+| `←` | `<=` | Converse implication | 2 |
+| `↛` | `nimp` | Material nonimplication | 2 |
+| `↚` | `cnimp` | Converse nonimplication | 2 |
+| `∀` | `forall` | Universal quantifier, `(∀ [x y] body)` | |
+| `∃` | `exists` | Existential quantifier | |
+| `⊤` `⊥` | `true` `false` | The constants | |
 
-```
-(setv DX [1 1]
-      DY [-1 -2])
-; all[any[1-1=0 1-2=-1] any[1-1=0 1-2=-1]]
-(∀ (x) (∃ (y) (x + y = 0) DY) DX)
-```
+`pretty` prints a formula in the usual notation:
 
-=> True
+```hy
+(import hylogic [pretty])
+(pretty '(forall [x] (=> (Man x) (Mortal x))))   ; "∀x ((Man x) → (Mortal x))"
+```
 
 ## Truth tables
 
+```hy
+(import hylogic.truth [truth-table tautology? satisfiable? equivalent? entails? counterexample])
+
+(tautology? '(=> (=> (=> p q) p) p))              ; Peirce's law: True
+(equivalent? '(¬ (∧ P Q)) '(∨ (¬ P) (¬ Q)))       ; De Morgan: True
+(entails? ['(→ P Q) '(¬ Q)] '(¬ P))               ; modus tollens: True
+(counterexample ['(→ P Q) 'Q] 'P)                 ; {"P" False "Q" True}
 ```
-(truth-tables-html 2 cimp?)
+
+`truth-table` takes several formulas and shows them side by side. In a
+Jupyter notebook it renders as an HTML table. `(print (connective-tables))`
+prints the tables of all thirteen connectives.
+
+## Arguments
+
+`defargument` takes premises and a conclusion as written, without quoting,
+and decides validity: by truth table when the argument is propositional, and
+with the prover when it has quantifiers or predicates.
+
+```hy
+(require hylogic.argument [defargument])
+
+(defargument modus-tollens
+  :premises [(→ P Q) (¬ Q)]
+  :conclusion (¬ P)
+  :meanings {P "It rains" Q "The street is wet"})
+
+(print (.explain modus-tollens))
 ```
+
+```
+  P → Q
+  ¬Q
+  ───────
+∴ ¬P
+
+  P: It rains
+  Q: The street is wet
+
+Valid, by truth table.
+```
+
+An invalid argument comes with a counterexample, and `Argument` builds the
+same object from quoted formulas:
+
+```hy
+(import hylogic [Argument])
+(.explain (Argument ['(→ P Q) 'Q] 'P))
+; Invalid, by truth table.
+; Counterexample: P = ⊥, Q = ⊤
+```
+
+## Models
+
+`evaluate` finds the truth value of a formula in a model. Predicates are
+Python functions or collections of the tuples they hold for, and quantifiers
+range over a finite domain:
+
+```hy
+(import hylogic [evaluate])
+
+(setv model {"Man" #{"socrates" "plato"}
+             "Mortal" #{"socrates" "plato" "fido"}})
+(evaluate '(∀ [x] (→ (Man x) (Mortal x))) model ["socrates" "plato" "fido"])   ; True
+(evaluate '(∀ [x] (→ (Mortal x) (Man x))) model ["socrates" "plato" "fido"])   ; False
+```
+
+For quantifiers over ordinary Python data, there are macros:
+
+```hy
+(require hylogic.quantifiers [∀ ∃])
+(∀ [x (range 1 10)] (> x 0))                 ; True
+(∃ [x [1 2] y [-1 -2]] (= (+ x y) 0))        ; True, with x = 1, y = -1
+```
+
+## Proofs
+
+`prove` refutes the negated goal together with the axioms by resolution, and
+returns a result whose `proof` lists every step:
+
+```hy
+(import hylogic [prove])
+
+(setv result (prove '(Kills curiosity tuna)
+                    ['(∃ [x] (∧ (Dog x) (Owns jack x)))
+                     '(∀ [x] (→ (∃ [y] (∧ (Dog y) (Owns x y))) (AnimalLover x)))
+                     '(∀ [x] (→ (AnimalLover x) (∀ [y] (→ (Animal y) (¬ (Kills x y))))))
+                     '(∨ (Kills jack tuna) (Kills curiosity tuna))
+                     '(Cat tuna)
+                     '(∀ [x] (→ (Cat x) (Animal x)))]))
+(for [line (.proof result)] (print line))
+```
+
+```
+   1. (Dog sk1)                                    axiom
+   ...
+   8. (not (Kills curiosity tuna))                 negated goal
+  10. (Kills jack tuna)                            resolve 5, 8
+  13. (AnimalLover jack)                           resolve 12, 1
+  21. (not (AnimalLover jack))                     resolve 16, 9
+  26. □                                            resolve 21, 13
+```
+
+`result.status` is `proved`, `saturated` (the goal does not follow) or
+`gave-up` (the clause limit, `:limit 5000` by default, was reached). The
+prover proves Pelletier's problems 1 to 24 in milliseconds and problem 34
+(Andrews' challenge) in about five seconds. [doc/prover.md](doc/prover.md)
+explains how it works, step by step, with exercises.
+
+Term rewriting is included too:
+
+```hy
+(require hylogic.rewrite [defrules])
+(import hylogic [normalize])
+
+(defrules PEANO
+  (+ 0 ?y)      -> ?y
+  (+ (s ?x) ?y) -> (s (+ ?x ?y)))
+
+(get (normalize '(+ (s (s 0)) (s 0)) PEANO) 0)    ; #("s" #("s" #("s" 0)))
+```
+
+## From Python
+
+Formulas are nested tuples of strings, and the Hy names that end in `?` have
+Python aliases:
+
+```python
+import hylogic
+
+hylogic.is_tautology(("or", "P", ("not", "P")))           # True
+hylogic.entails([("=>", "P", "Q"), "P"], "Q")             # True
+hylogic.prove(("=>", ("forall", ("x",), ("P", "x")), ("P", "a"))).proved   # True
+```
+
+## Tests
+
+The tests check every connective against its definition, compare the
+extended connectives with their rewritten forms on every assignment, and run
+the prover on 300 random propositional formulas, where it must agree with
+the truth tables. The first-order problems were also checked with the Z3
+solver during development.
+
+## History
+
+Hylogic began in 2017 as a propositional logic evaluator for Hy 0.12 with an
+infix notation. Version 1.0 is a rewrite for Hy 1.x: the infix notation is
+gone, formulas are data, and the prover, models and arguments are new. The
+2017 version is tagged `v0.1.0`.
+
+## License
+
+MIT
