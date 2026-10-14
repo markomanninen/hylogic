@@ -196,6 +196,36 @@ Term rewriting is included too:
 (get (normalize '(+ (s (s 0)) (s 0)) PEANO) 0)    ; #("s" #("s" #("s" 0)))
 ```
 
+## Teaching and exercises
+
+`hylogic.exercises` checks the two classic kinds of exercise and explains a
+wrong answer in the words of the exercise. A formalization is correct when it
+is logically equivalent to the reference, however it is written. A wrong one
+gets a situation where the two come apart:
+
+```hy
+(import hylogic.exercise-sets [check-answer])
+
+(check-answer "F2" '(→ P Q))      ; "The street is wet only if it rains."
+; Not quite. Suppose “it rains” is false and “the street is wet” is true.
+; Then your formula is true, but the sentence is false.
+
+(check-answer "V9" True)          ; "Everybody loves somebody. So there is somebody whom everybody loves."
+; Not quite. The argument is invalid. In this world the premises are true and the conclusion is false:
+; Domain: d1, d2
+;   Loves holds for: (d1 d1), (d2 d2)
+```
+
+The exercise set has 16 sentences to formalize, propositional and
+first-order, and 10 arguments to judge. `check-formalization` and
+`check-validity-claim` work with your own exercises too, and a claim that an
+argument is invalid can come with a counterexample, which is checked.
+
+[Hylogic tutorial.ipynb](Hylogic%20tutorial.ipynb) walks through truth
+tables, arguments, exercises, models and proofs. It runs on the ordinary
+Python kernel with `%load_ext hylogic.ipython`, which adds a `%%hy` cell
+magic.
+
 ## Larger problems, countermodels and other solvers
 
 Truth tables double with every proposition. For larger propositional

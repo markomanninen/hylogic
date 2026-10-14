@@ -24,7 +24,8 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest>=7"]
+test = ["pytest>=7", "ipython", "ipykernel", "nbclient", "nbformat"]
+notebook = ["ipython"]
 # check-with-z3 hands large or hard problems to the Z3 solver
 z3 = ["z3-solver"]
 
