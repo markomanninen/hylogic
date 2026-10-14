@@ -30,3 +30,12 @@ def test_first_order_countermodel():
 def test_unreadable_formula_is_reported():
     with pytest.raises(ToolError, match="premise 1"):
         check_argument(["(=> P Q"], "Q")
+
+
+def test_double_encoded_and_mixed_formulas():
+    # seen in the field test: a formula sent as a JSON string inside a string
+    out = check_argument(["(=> (and W A) R)", "(=> R S)", "(or W S)"], '"(=> A S)"')
+    assert out.startswith("VALID")
+    assert "⊢ A → S" in out
+    out = check_argument([["=>", "(and P Q)", "R"], "P", "Q"], "R")
+    assert out.startswith("VALID")

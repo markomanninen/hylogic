@@ -54,12 +54,13 @@ true in at least two thirds of the situations the premises allow.
         allowed (lfor env (assignments names) :if (all (gfor p premises (evaluate p env))) env))
   (if allowed (/ (sum (gfor env allowed (evaluate conclusion env))) (len allowed)) 0))
 
-(defn propositional-items [rng want]
+(defn propositional-items [rng want [n-sentences 4] [min-premises 3] [max-premises 4]
+                           [min-temptation (/ 2 3)] [prefix "P"] [use-all-sentences False]]
   (setv items [] counts {True 0 False 0} tries 0)
   (while (< (len items) want)
     (+= tries 1)
-    (setv sentences (.sample rng SENTENCES 4)
-          k (.randint rng 3 4)
+    (setv sentences (.sample rng SENTENCES n-sentences)
+          k (.randint rng min-premises max-premises)
           ps (lfor _ (range k) (instance rng PREMISES sentences))
           [cf ct] (instance rng CONCLUSIONS sentences)
           pfs (lfor p ps (get p 0))
@@ -67,11 +68,13 @@ true in at least two thirds of the situations the premises allow.
     (when (>= (get counts valid) (// want 2)) (continue))
     (when (and valid (not (all (gfor i (range k) (not (valid? (+ (cut pfs 0 i) (cut pfs (+ i 1) None)) cf))))))
       (continue))
-    (when (and (not valid) (< (temptation pfs cf) (/ 2 3))) (continue))
+    (when (and (not valid) (< (temptation pfs cf) min-temptation)) (continue))
+    ;; every sentence chosen for the item must appear in it
+    (when (and use-all-sentences (< (len (propositions #("and" #* pfs cf))) n-sentences)) (continue))
     ;; no argument may be decided by the premises being contradictory
     (when (is (. (Argument pfs "false") valid) True) (continue))
     (+= (get counts valid) 1)
-    (.append items {"id" f"P{(+ (len items) 1)}" "kind" "propositional"
+    (.append items {"id" f"{prefix}{(+ (len items) 1)}" "kind" "propositional"
                     "text" (+ (.join " " (gfor p ps (get p 1))) " Therefore, " (+ (.lower (cut ct 0 1)) (cut ct 1 None)))
                     "premises" (lfor p pfs (pretty p)) "conclusion" (pretty cf)
                     "premise_terms" pfs "conclusion_term" cf "valid" valid}))
@@ -107,5 +110,10 @@ true in at least two thirds of the situations the premises allow.
          "premises" (lfor p ps (pretty p)) "conclusion" (pretty c)
          "premise_terms" ps "conclusion_term" c "valid" (valid? ps c)}))
 
-(setv items [#* (propositional-items (random.Random 2026) 32) #* (syllogism-items)])
+(setv items
+  (if (in "--hard" sys.argv)
+      ;; round 2: six sentences, five to seven premises, more tempting invalid items
+      (propositional-items (random.Random 2027) 30 :n-sentences 6 :min-premises 5 :max-premises 7
+                           :min-temptation (/ 4 5) :prefix "H" :use-all-sentences True)
+      [#* (propositional-items (random.Random 2026) 32) #* (syllogism-items)]))
 (print (json.dumps items :indent 1 :ensure-ascii False))

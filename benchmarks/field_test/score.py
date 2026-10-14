@@ -21,8 +21,8 @@ def answer(text):
     return None
 
 
-def main(run):
-    items = {i["id"]: i for i in json.load(open(HERE / "items.json"))}
+def main(run, items_file=HERE / "items.json"):
+    items = {i["id"]: i for i in json.load(open(items_file))}
     rows = []
     for result_path in sorted(Path(run).glob("*/*/*/result.json")):
         condition, model, item_id = result_path.parent.relative_to(run).parts
@@ -73,4 +73,4 @@ def main(run):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main(*sys.argv[1:])

@@ -37,14 +37,24 @@ and give their meanings to get the explanation in words.
 mcp = FastMCP("hylogic", instructions=INSTRUCTIONS)
 
 
+def _read(text):
+    """One formula read from s-expression text."""
+    forms = list(hy.read_many(text))
+    if len(forms) != 1:
+        raise ValueError(f"expected one formula, found {len(forms)}")
+    form = forms[0]
+    # a formula sent as a JSON string inside a string, "\"(=> P Q)\"", reads
+    # as a Hy string; it is the formula itself, not a proposition named so
+    if isinstance(form, hy.models.String):
+        return _read(str(form))
+    return form
+
+
 def _formula(value, where):
     """A formula from an s-expression string or a JSON array."""
     try:
         if isinstance(value, str):
-            forms = list(hy.read_many(value))
-            if len(forms) != 1:
-                raise ValueError(f"expected one formula, found {len(forms)}")
-            return formula(forms[0])
+            return formula(_read(value))
         if isinstance(value, list):
             return formula(_tuples(value))
     except Exception as e:  # reader and shape errors go back to the agent
@@ -55,6 +65,9 @@ def _formula(value, where):
 def _tuples(value):
     if isinstance(value, list):
         return tuple(_tuples(v) for v in value)
+    if isinstance(value, str) and value.lstrip().startswith(("(", '"')):
+        # an s-expression inside a JSON array
+        return term(_read(value))
     return term(value) if not isinstance(value, str) else value
 
 
