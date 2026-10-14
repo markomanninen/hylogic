@@ -2,7 +2,8 @@
 
 import pytest
 
-pytest.importorskip("mcp")
+# the server uses the mcp 1.x API (FastMCP); skip where mcp 2.x is installed
+pytest.importorskip("mcp.server.fastmcp")
 
 from mcp.server.fastmcp.exceptions import ToolError  # noqa: E402
 
