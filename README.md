@@ -196,6 +196,40 @@ Term rewriting is included too:
 (get (normalize '(+ (s (s 0)) (s 0)) PEANO) 0)    ; #("s" #("s" #("s" 0)))
 ```
 
+## Larger problems, countermodels and other solvers
+
+Truth tables double with every proposition. For larger propositional
+problems, `satisfiable` and `valid?` in `hylogic.sat` use the Tseitin
+transformation and the DPLL algorithm, which stay in milliseconds up to about
+40 variables. Arguments switch to it on their own above 10 propositions.
+
+```hy
+(import hylogic.sat [satisfiable valid?])
+(satisfiable '(∧ (∨ P Q) (¬ P)))      ; {"P" False "Q" True}
+```
+
+When a first-order argument is invalid, `countermodel` looks for a small
+world that shows it, by grounding the formulas over a domain of up to four
+elements and solving the result with DPLL:
+
+```hy
+(import hylogic [countermodel])
+(print (countermodel ['(∀ [x] (∃ [y] (Loves x y)))] '(∃ [y] (∀ [x] (Loves x y)))))
+```
+
+```
+Domain: d1, d2
+  Loves holds for: (d1 d1), (d2 d2)
+```
+
+Everybody loves somebody, here themselves, but nobody is loved by everybody.
+
+For problems beyond hylogic's reach, `to-smtlib` and `to-tptp` write the same
+question for real solvers such as Z3 and cvc5, or provers such as Vampire and
+E, and `to-dimacs` writes the SAT clauses for any SAT solver. With
+`pip install "hylogic[z3]"`, `check-with-z3` runs Z3 directly.
+[benchmarks/](benchmarks/) compares the four methods on the same problems.
+
 ## From Python
 
 Formulas are nested tuples of strings, and the Hy names that end in `?` have
