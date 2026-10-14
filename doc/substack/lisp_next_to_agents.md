@@ -6,7 +6,7 @@
 
 Same model, same tasks, same security system. When an AI agent wrote its plans in Python, it solved 38 of 39 banking tasks while under attack. When it wrote the same plans in Lisp, it solved 32.
 
-The more interesting questions are why, and where a Lisp is still the right tool now that language models write so much of our code. This article collects four measurements on those questions. Three went against Lisp and one went for it.
+The more interesting questions are why, and where a Lisp is still the right tool now that language models write so much of our code. This article collects five measurements on those questions. Three went against Lisp, one went for it, and the last one found where even a strict checker stops helping.
 
 ## Why ask at all
 
@@ -134,6 +134,23 @@ Valid, by truth table.
 
 An invalid argument gets a counterexample instead, such as "P = ⊥, Q = ⊤" for concluding that it rains because the street is wet. None of this would be impossible in Python, but in Hy the formulas, the rules and the code are one notation, and the program stays short enough to read in an evening.
 
+## Result 5. A logic checker added cost, not accuracy
+
+The last test turned the question around. If strict checking is what protects agents, perhaps agents also reason better with a checker at hand, in a domain where formulas are the natural notation. hylogic got an MCP tool, `check_argument`. The agent writes the premises and the conclusion as formulas, and the tool decides whether the argument is valid and returns a counterexample when it is not.
+
+To measure it, I generated 70 arguments in everyday English, each checked by both hylogic and Z3. A valid argument needs every one of its premises. An invalid one is tempting, because its conclusion holds in most of the situations the premises allow. The wording includes "only if" and "unless", which people often get wrong, and eight syllogisms test belief bias, such as "All roses are flowers. Some flowers fade quickly. Therefore, some roses fade quickly", which sounds right and does not follow. Each argument went once to each model, with and without the tool.
+
+| Arguments judged correctly | Without tool | With tool | Cost with the tool |
+|---|---:|---:|---:|
+| Claude Haiku | 67 of 70 | 69 of 70 | 1.7 times |
+| Claude Opus | 70 of 70 | 70 of 70 | 1.6 times |
+
+The models were far better than I expected. Haiku alone got 96 percent right, Opus everything, and neither fell for a single belief-bias syllogism. The tool raised Haiku by two arguments, which is within the variation between runs, and made every answer more expensive.
+
+The errors that remained tell more than the totals. Every argument Haiku got wrong, with or without the tool, contained a sentence of the form "Unless A, B". With the tool its formalizations show what went wrong. Haiku wrote that sentence as "not A or B", although the prompt said that "unless" means "or", and hylogic then confirmed the misread argument exactly as written. A checker can only check what it is given, and at this size the hard part was reading the English, not the reasoning.
+
+The field test also tested the tool. Twice Haiku sent a formula in a shape I had not planned for, once as a quoted string inside a string and once as a list with a single item, and the tool misread both. The call logs showed it, the fixes took a few lines, and the results above come from runs with the fixed tool. An agent is a tool's most demanding first user.
+
 ## What I take from this
 
 1. **Let models write the languages they know.** A less familiar notation costs retries and tokens, even when it is simpler on paper.
@@ -141,12 +158,14 @@ An invalid argument gets a counterexample instead, such as "P = ⊥, Q = ⊤" fo
 3. **Measure tokens instead of guessing.** Parentheses looked compact and were not, in either direction.
 4. **Use Lisp where programs handle the code.** Provers, rewriters and compilers read and transform trees, and there code as data and macros pay off.
 5. **Make the errors readable for the writer.** An agent fixed a precise error in one step and stumbled on a mangled one.
+6. **A checker only checks what it is given.** When the hard part is understanding the question, a tool for the reasoning adds cost and little else.
+7. **Test tools with agents before trusting them.** The field test found two bugs in my own tool that my tests had not.
 
 ## Limits, and trying it yourself
 
-The CaMeL test used one model, Claude Haiku, and one of AgentDojo's four suites. I stopped the attacked runs at 39 of 144 task pairs to limit model calls, and those 39 came from the tasks that finished first, so they are not a random sample. A stronger model may close part of the gap. The token counts use OpenAI's tokenizers, because Claude's is not available offline, and pages change over time. The prover is a study tool. Real provers such as Vampire and E handle millions of clauses with indexing and equality reasoning that hylogic does not have, and for serious mathematics [Lean](https://lean-lang.org) is where the work happens.
+The CaMeL test used one model, Claude Haiku, and one of AgentDojo's four suites. I stopped the attacked runs at 39 of 144 task pairs to limit model calls, and those 39 came from the tasks that finished first, so they are not a random sample. A stronger model may close part of the gap. The token counts use OpenAI's tokenizers, because Claude's is not available offline, and pages change over time. The logic field test gave each argument once to each model, and its arguments are generated, short and propositional apart from the syllogisms, so a checker may still pay off on longer first-order reasoning. The prover is a study tool. Real provers such as Vampire and E handle millions of clauses with indexing and equality reasoning that hylogic does not have, and for serious mathematics [Lean](https://lean-lang.org) is where the work happens.
 
-Everything is on GitHub. The CaMeL experiment, its hypotheses written before the runs, and the token measurement are in the [hyml repository](https://github.com/markomanninen/hyml/tree/camel-plan-language/experiments). hylogic installs with `pip install hylogic`, and `hy examples/tour.hy` walks through truth tables, arguments, rewriting and proofs, with a step-by-step guide to how the prover works.
+Everything is on GitHub. The CaMeL experiment, its hypotheses written before the runs, and the token measurement are in the [hyml repository](https://github.com/markomanninen/hyml/tree/camel-plan-language/experiments). The logic field test, its arguments and its hypotheses are in [hylogic's benchmarks](https://github.com/markomanninen/hylogic/tree/master/benchmarks), next to a comparison of truth tables, resolution, a SAT solver and Z3. hylogic installs with `pip install hylogic`, and `hy examples/tour.hy` walks through truth tables, arguments, rewriting and proofs, with a step-by-step guide to how the prover works.
 
 GitHub: [hylogic](https://github.com/markomanninen/hylogic) · [hyml](https://github.com/markomanninen/hyml)
 
