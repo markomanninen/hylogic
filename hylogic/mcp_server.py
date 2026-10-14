@@ -56,6 +56,9 @@ def _formula(value, where):
         if isinstance(value, str):
             return formula(_read(value))
         if isinstance(value, list):
+            # ["P"] is the proposition P, not a predicate without arguments
+            if len(value) == 1:
+                return _formula(value[0], where)
             return formula(_tuples(value))
     except Exception as e:  # reader and shape errors go back to the agent
         raise ToolError(f"{where}: cannot read {value!r}: {e}") from None

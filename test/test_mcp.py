@@ -39,3 +39,9 @@ def test_double_encoded_and_mixed_formulas():
     assert "⊢ A → S" in out
     out = check_argument([["=>", "(and P Q)", "R"], "P", "Q"], "R")
     assert out.startswith("VALID")
+
+
+def test_one_element_array_is_the_proposition():
+    # also seen in the field test: the conclusion R sent as ["R"]
+    out = check_argument(["(=> P R)", "P"], ["R"])
+    assert out.startswith("VALID (checked by truth table)")
