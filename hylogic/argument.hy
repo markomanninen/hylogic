@@ -14,8 +14,16 @@ predicates is checked with the resolution prover."
 
 (import hylogic.formulas [formula pretty operator-of args-of QUANTIFIERS]
         hylogic.terms [compound?]
-        hylogic.truth [counterexample]
-        hylogic.resolution [prove])
+        hylogic.truth [counterexample propositions]
+        hylogic.sat [counterexample :as sat-counterexample]
+        hylogic.resolution [prove]
+        hylogic.models [countermodel])
+
+;; Up to this many propositions an argument is checked with a truth table,
+;; which finds the first counterexample in table order. Beyond it the SAT
+;; solver is used: benchmarks/methods.hy shows a truth table taking about
+;; 0.15 s at 10 propositions and over 3 s at 14, and DPLL a few milliseconds.
+(setv TRUTH-TABLE-LIMIT 10)
 
 (defn propositional? [f]
   (setv op (operator-of f))
@@ -38,22 +46,34 @@ predicates is checked with the resolution prover."
     (setv self._checked True
           self.counterexample None
           self.proof None)
-    (if (all (gfor f [#* self.premises self.conclusion] (propositional? f)))
-        (setv self.method "truth table"
-              self.counterexample (counterexample self.premises self.conclusion)
-              self.valid (is self.counterexample None))
+    (setv self.countermodel None)
+    (cond
+      (not (all (gfor f [#* self.premises self.conclusion] (propositional? f))))
         (do
           (setv result (prove self.conclusion self.premises :limit self.limit)
                 self.method "resolution"
-                self.proof (.proof result)
-                self.valid (cond
-                             result.proved True
-                             (= result.status "saturated") False
-                             True None))))
+                self.proof (.proof result))
+          (if result.proved
+              (setv self.valid True)
+              ;; a small world where the premises hold and the conclusion fails
+              (do
+                (setv self.countermodel (countermodel self.premises self.conclusion))
+                (cond
+                  self.countermodel (setv self.valid False self.method "countermodel")
+                  (= result.status "saturated") (setv self.valid False)
+                  True (setv self.valid None)))))
+      (<= (len (propositions #("and" #* self.premises self.conclusion))) TRUTH-TABLE-LIMIT)
+        (setv self.method "truth table"
+              self.counterexample (counterexample self.premises self.conclusion)
+              self.valid (is self.counterexample None))
+      True
+        (setv self.method "SAT"
+              self.counterexample (sat-counterexample self.premises self.conclusion)
+              self.valid (is self.counterexample None)))
     self)
 
   (defn __getattr__ [self name]
-    (when (in name #{"valid" "method" "counterexample" "proof"})
+    (when (in name #{"valid" "method" "counterexample" "countermodel" "proof"})
       (.check self)
       (return (getattr self name)))
     (raise (AttributeError name)))
@@ -81,6 +101,9 @@ predicates is checked with the resolution prover."
       (.append lines (+ "Counterexample: "
                         (.join ", " (gfor [k v] (.items self.counterexample)
                                           (+ k " = " (if v "⊤" "⊥")))))))
+    (when self.countermodel
+      (.append lines "A world where the premises are true and the conclusion is false:")
+      (.append lines (str self.countermodel)))
     (.join "\n" lines)))
 
 (defmacro defargument [name #* body]

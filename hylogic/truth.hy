@@ -56,6 +56,7 @@ counterexample when they do not.
     (for [[values results] self.rows]
       (.append lines (.join " │ " (gfor [v w] (zip [#* values #* results] widths) (.center (_mark v) w)))))
     (.join "\n" lines))
+  (defn __repr__ [self] (str self))
   (defn _repr_html_ [self]
     (setv head (.join "" (gfor h (.headers self) f"<th>{(html.escape h)}</th>"))
           body (.join "" (gfor [values results] self.rows

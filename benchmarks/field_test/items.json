@@ -1,0 +1,1719 @@
+[
+ {
+  "id": "P1",
+  "kind": "propositional",
+  "text": "If the meeting is cancelled and the car is in the garage, then the door is locked. If the meeting is cancelled and the door is locked, then the car is in the garage. The car is in the garage or the door is locked, or both. If Anna is at home, then the meeting is cancelled. Therefore, the meeting is cancelled or the door is locked, or both.",
+  "premises": [
+   "(the meeting is cancelled ∧ the car is in the garage) → the door is locked",
+   "(the meeting is cancelled ∧ the door is locked) → the car is in the garage",
+   "the car is in the garage ∨ the door is locked",
+   "Anna is at home → the meeting is cancelled"
+  ],
+  "conclusion": "the meeting is cancelled ∨ the door is locked",
+  "premise_terms": [
+   [
+    "=>",
+    [
+     "and",
+     "the meeting is cancelled",
+     "the car is in the garage"
+    ],
+    "the door is locked"
+   ],
+   [
+    "=>",
+    [
+     "and",
+     "the meeting is cancelled",
+     "the door is locked"
+    ],
+    "the car is in the garage"
+   ],
+   [
+    "or",
+    "the car is in the garage",
+    "the door is locked"
+   ],
+   [
+    "=>",
+    "Anna is at home",
+    "the meeting is cancelled"
+   ]
+  ],
+  "conclusion_term": [
+   "or",
+   "the meeting is cancelled",
+   "the door is locked"
+  ],
+  "valid": false
+ },
+ {
+  "id": "P2",
+  "kind": "propositional",
+  "text": "The lights are on. If the lights are on and the heating is on, then the report is finished. The report is finished if the heating is on. If the server is down, then the heating is on. Therefore, if the report is finished, then the heating is on.",
+  "premises": [
+   "the lights are on",
+   "(the lights are on ∧ the heating is on) → the report is finished",
+   "the heating is on → the report is finished",
+   "the server is down → the heating is on"
+  ],
+  "conclusion": "the report is finished → the heating is on",
+  "premise_terms": [
+   "the lights are on",
+   [
+    "=>",
+    [
+     "and",
+     "the lights are on",
+     "the heating is on"
+    ],
+    "the report is finished"
+   ],
+   [
+    "=>",
+    "the heating is on",
+    "the report is finished"
+   ],
+   [
+    "=>",
+    "the server is down",
+    "the heating is on"
+   ]
+  ],
+  "conclusion_term": [
+   "=>",
+   "the report is finished",
+   "the heating is on"
+  ],
+  "valid": false
+ },
+ {
+  "id": "P3",
+  "kind": "propositional",
+  "text": "If the meeting is cancelled, then Anna is at home or the report is finished. The report is finished or the meeting is cancelled, or both. Unless the meeting is cancelled, Anna is at home. Therefore, if the lights are on, then the report is finished.",
+  "premises": [
+   "the meeting is cancelled → (Anna is at home ∨ the report is finished)",
+   "the report is finished ∨ the meeting is cancelled",
+   "the meeting is cancelled ∨ Anna is at home"
+  ],
+  "conclusion": "the lights are on → the report is finished",
+  "premise_terms": [
+   [
+    "=>",
+    "the meeting is cancelled",
+    [
+     "or",
+     "Anna is at home",
+     "the report is finished"
+    ]
+   ],
+   [
+    "or",
+    "the report is finished",
+    "the meeting is cancelled"
+   ],
+   [
+    "or",
+    "the meeting is cancelled",
+    "Anna is at home"
+   ]
+  ],
+  "conclusion_term": [
+   "=>",
+   "the lights are on",
+   "the report is finished"
+  ],
+  "valid": false
+ },
+ {
+  "id": "P4",
+  "kind": "propositional",
+  "text": "If the meeting is cancelled and the server is down, then the dog is outside. The dog is outside. If the dog is outside and the alarm is set, then the meeting is cancelled. Therefore, it is not the case that the alarm is set.",
+  "premises": [
+   "(the meeting is cancelled ∧ the server is down) → the dog is outside",
+   "the dog is outside",
+   "(the dog is outside ∧ the alarm is set) → the meeting is cancelled"
+  ],
+  "conclusion": "¬the alarm is set",
+  "premise_terms": [
+   [
+    "=>",
+    [
+     "and",
+     "the meeting is cancelled",
+     "the server is down"
+    ],
+    "the dog is outside"
+   ],
+   "the dog is outside",
+   [
+    "=>",
+    [
+     "and",
+     "the dog is outside",
+     "the alarm is set"
+    ],
+    "the meeting is cancelled"
+   ]
+  ],
+  "conclusion_term": [
+   "not",
+   "the alarm is set"
+  ],
+  "valid": false
+ },
+ {
+  "id": "P5",
+  "kind": "propositional",
+  "text": "If the report is finished and the printer is working, then the window is open. The report is finished only if the window is open. It is not the case that both the printer is working and the window is open. If the window is open, then the report is finished. Therefore, it is not the case that the report is finished.",
+  "premises": [
+   "(the report is finished ∧ the printer is working) → the window is open",
+   "the report is finished → the window is open",
+   "¬(the printer is working ∧ the window is open)",
+   "the window is open → the report is finished"
+  ],
+  "conclusion": "¬the report is finished",
+  "premise_terms": [
+   [
+    "=>",
+    [
+     "and",
+     "the report is finished",
+     "the printer is working"
+    ],
+    "the window is open"
+   ],
+   [
+    "=>",
+    "the report is finished",
+    "the window is open"
+   ],
+   [
+    "not",
+    [
+     "and",
+     "the printer is working",
+     "the window is open"
+    ]
+   ],
+   [
+    "=>",
+    "the window is open",
+    "the report is finished"
+   ]
+  ],
+  "conclusion_term": [
+   "not",
+   "the report is finished"
+  ],
+  "valid": false
+ },
+ {
+  "id": "P6",
+  "kind": "propositional",
+  "text": "The printer is working only if the window is open. If the printer is working, then the window is open. The lights are on only if the window is open. It is not the case that both the lights are on and the window is open. Therefore, the window is open.",
+  "premises": [
+   "the printer is working → the window is open",
+   "the printer is working → the window is open",
+   "the lights are on → the window is open",
+   "¬(the lights are on ∧ the window is open)"
+  ],
+  "conclusion": "the window is open",
+  "premise_terms": [
+   [
+    "=>",
+    "the printer is working",
+    "the window is open"
+   ],
+   [
+    "=>",
+    "the printer is working",
+    "the window is open"
+   ],
+   [
+    "=>",
+    "the lights are on",
+    "the window is open"
+   ],
+   [
+    "not",
+    [
+     "and",
+     "the lights are on",
+     "the window is open"
+    ]
+   ]
+  ],
+  "conclusion_term": "the window is open",
+  "valid": false
+ },
+ {
+  "id": "P7",
+  "kind": "propositional",
+  "text": "If the alarm is set and the window is open, then the dog is outside. The window is open if and only if the heating is on. The window is open only if the alarm is set. The alarm is set if and only if the dog is outside. Therefore, the dog is outside.",
+  "premises": [
+   "(the alarm is set ∧ the window is open) → the dog is outside",
+   "the window is open ↔ the heating is on",
+   "the window is open → the alarm is set",
+   "the alarm is set ↔ the dog is outside"
+  ],
+  "conclusion": "the dog is outside",
+  "premise_terms": [
+   [
+    "=>",
+    [
+     "and",
+     "the alarm is set",
+     "the window is open"
+    ],
+    "the dog is outside"
+   ],
+   [
+    "<=>",
+    "the window is open",
+    "the heating is on"
+   ],
+   [
+    "=>",
+    "the window is open",
+    "the alarm is set"
+   ],
+   [
+    "<=>",
+    "the alarm is set",
+    "the dog is outside"
+   ]
+  ],
+  "conclusion_term": "the dog is outside",
+  "valid": false
+ },
+ {
+  "id": "P8",
+  "kind": "propositional",
+  "text": "It is not the case that the car is in the garage. The car is in the garage or the server is down, or both. If the heating is on and the lights are on, then the server is down. Therefore, the lights are on or the heating is on, or both.",
+  "premises": [
+   "¬the car is in the garage",
+   "the car is in the garage ∨ the server is down",
+   "(the heating is on ∧ the lights are on) → the server is down"
+  ],
+  "conclusion": "the lights are on ∨ the heating is on",
+  "premise_terms": [
+   [
+    "not",
+    "the car is in the garage"
+   ],
+   [
+    "or",
+    "the car is in the garage",
+    "the server is down"
+   ],
+   [
+    "=>",
+    [
+     "and",
+     "the heating is on",
+     "the lights are on"
+    ],
+    "the server is down"
+   ]
+  ],
+  "conclusion_term": [
+   "or",
+   "the lights are on",
+   "the heating is on"
+  ],
+  "valid": false
+ },
+ {
+  "id": "P9",
+  "kind": "propositional",
+  "text": "The dog is outside if and only if the alarm is set. The dog is outside or the report is finished, or both. The report is finished or the dog is outside, or both. Therefore, if the dog is outside, then the printer is working.",
+  "premises": [
+   "the dog is outside ↔ the alarm is set",
+   "the dog is outside ∨ the report is finished",
+   "the report is finished ∨ the dog is outside"
+  ],
+  "conclusion": "the dog is outside → the printer is working",
+  "premise_terms": [
+   [
+    "<=>",
+    "the dog is outside",
+    "the alarm is set"
+   ],
+   [
+    "or",
+    "the dog is outside",
+    "the report is finished"
+   ],
+   [
+    "or",
+    "the report is finished",
+    "the dog is outside"
+   ]
+  ],
+  "conclusion_term": [
+   "=>",
+   "the dog is outside",
+   "the printer is working"
+  ],
+  "valid": false
+ },
+ {
+  "id": "P10",
+  "kind": "propositional",
+  "text": "If the car is in the garage, then the meeting is cancelled or the lights are on. The lights are on if the meeting is cancelled. The car is in the garage if and only if the meeting is cancelled. Unless the lights are on, the meeting is cancelled. Therefore, if the heating is on, then the meeting is cancelled.",
+  "premises": [
+   "the car is in the garage → (the meeting is cancelled ∨ the lights are on)",
+   "the meeting is cancelled → the lights are on",
+   "the car is in the garage ↔ the meeting is cancelled",
+   "the lights are on ∨ the meeting is cancelled"
+  ],
+  "conclusion": "the heating is on → the meeting is cancelled",
+  "premise_terms": [
+   [
+    "=>",
+    "the car is in the garage",
+    [
+     "or",
+     "the meeting is cancelled",
+     "the lights are on"
+    ]
+   ],
+   [
+    "=>",
+    "the meeting is cancelled",
+    "the lights are on"
+   ],
+   [
+    "<=>",
+    "the car is in the garage",
+    "the meeting is cancelled"
+   ],
+   [
+    "or",
+    "the lights are on",
+    "the meeting is cancelled"
+   ]
+  ],
+  "conclusion_term": [
+   "=>",
+   "the heating is on",
+   "the meeting is cancelled"
+  ],
+  "valid": false
+ },
+ {
+  "id": "P11",
+  "kind": "propositional",
+  "text": "The server is down if and only if the car is in the garage. If the server is down and the car is in the garage, then Anna is at home. If Anna is at home and the car is in the garage, then the lights are on. The car is in the garage or Anna is at home, or both. Therefore, the lights are on or the car is in the garage, or both.",
+  "premises": [
+   "the server is down ↔ the car is in the garage",
+   "(the server is down ∧ the car is in the garage) → Anna is at home",
+   "(Anna is at home ∧ the car is in the garage) → the lights are on",
+   "the car is in the garage ∨ Anna is at home"
+  ],
+  "conclusion": "the lights are on ∨ the car is in the garage",
+  "premise_terms": [
+   [
+    "<=>",
+    "the server is down",
+    "the car is in the garage"
+   ],
+   [
+    "=>",
+    [
+     "and",
+     "the server is down",
+     "the car is in the garage"
+    ],
+    "Anna is at home"
+   ],
+   [
+    "=>",
+    [
+     "and",
+     "Anna is at home",
+     "the car is in the garage"
+    ],
+    "the lights are on"
+   ],
+   [
+    "or",
+    "the car is in the garage",
+    "Anna is at home"
+   ]
+  ],
+  "conclusion_term": [
+   "or",
+   "the lights are on",
+   "the car is in the garage"
+  ],
+  "valid": false
+ },
+ {
+  "id": "P12",
+  "kind": "propositional",
+  "text": "It is not the case that the door is locked. If the printer is working, then the dog is outside. It is not the case that the report is finished. Therefore, the dog is outside or the printer is working, or both.",
+  "premises": [
+   "¬the door is locked",
+   "the printer is working → the dog is outside",
+   "¬the report is finished"
+  ],
+  "conclusion": "the dog is outside ∨ the printer is working",
+  "premise_terms": [
+   [
+    "not",
+    "the door is locked"
+   ],
+   [
+    "=>",
+    "the printer is working",
+    "the dog is outside"
+   ],
+   [
+    "not",
+    "the report is finished"
+   ]
+  ],
+  "conclusion_term": [
+   "or",
+   "the dog is outside",
+   "the printer is working"
+  ],
+  "valid": false
+ },
+ {
+  "id": "P13",
+  "kind": "propositional",
+  "text": "Unless the door is locked, the dog is outside. It is not the case that the alarm is set. The window is open if the alarm is set. Therefore, the dog is outside.",
+  "premises": [
+   "the door is locked ∨ the dog is outside",
+   "¬the alarm is set",
+   "the alarm is set → the window is open"
+  ],
+  "conclusion": "the dog is outside",
+  "premise_terms": [
+   [
+    "or",
+    "the door is locked",
+    "the dog is outside"
+   ],
+   [
+    "not",
+    "the alarm is set"
+   ],
+   [
+    "=>",
+    "the alarm is set",
+    "the window is open"
+   ]
+  ],
+  "conclusion_term": "the dog is outside",
+  "valid": false
+ },
+ {
+  "id": "P14",
+  "kind": "propositional",
+  "text": "Anna is at home only if the server is down. The car is in the garage or the printer is working, or both. Anna is at home if the printer is working. It is not the case that both the printer is working and Anna is at home. Therefore, it is not the case that Anna is at home.",
+  "premises": [
+   "Anna is at home → the server is down",
+   "the car is in the garage ∨ the printer is working",
+   "the printer is working → Anna is at home",
+   "¬(the printer is working ∧ Anna is at home)"
+  ],
+  "conclusion": "¬Anna is at home",
+  "premise_terms": [
+   [
+    "=>",
+    "Anna is at home",
+    "the server is down"
+   ],
+   [
+    "or",
+    "the car is in the garage",
+    "the printer is working"
+   ],
+   [
+    "=>",
+    "the printer is working",
+    "Anna is at home"
+   ],
+   [
+    "not",
+    [
+     "and",
+     "the printer is working",
+     "Anna is at home"
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "not",
+   "Anna is at home"
+  ],
+  "valid": false
+ },
+ {
+  "id": "P15",
+  "kind": "propositional",
+  "text": "The door is locked if the report is finished. The report is finished or the door is locked, or both. The door is locked or the window is open, or both. If the server is down, then the door is locked. Therefore, the window is open or the server is down, or both.",
+  "premises": [
+   "the report is finished → the door is locked",
+   "the report is finished ∨ the door is locked",
+   "the door is locked ∨ the window is open",
+   "the server is down → the door is locked"
+  ],
+  "conclusion": "the window is open ∨ the server is down",
+  "premise_terms": [
+   [
+    "=>",
+    "the report is finished",
+    "the door is locked"
+   ],
+   [
+    "or",
+    "the report is finished",
+    "the door is locked"
+   ],
+   [
+    "or",
+    "the door is locked",
+    "the window is open"
+   ],
+   [
+    "=>",
+    "the server is down",
+    "the door is locked"
+   ]
+  ],
+  "conclusion_term": [
+   "or",
+   "the window is open",
+   "the server is down"
+  ],
+  "valid": false
+ },
+ {
+  "id": "P16",
+  "kind": "propositional",
+  "text": "The lights are on only if the report is finished. Unless Anna is at home, the report is finished. If Anna is at home and the dog is outside, then the lights are on. Anna is at home. Therefore, if the report is finished, then the lights are on.",
+  "premises": [
+   "the lights are on → the report is finished",
+   "Anna is at home ∨ the report is finished",
+   "(Anna is at home ∧ the dog is outside) → the lights are on",
+   "Anna is at home"
+  ],
+  "conclusion": "the report is finished → the lights are on",
+  "premise_terms": [
+   [
+    "=>",
+    "the lights are on",
+    "the report is finished"
+   ],
+   [
+    "or",
+    "Anna is at home",
+    "the report is finished"
+   ],
+   [
+    "=>",
+    [
+     "and",
+     "Anna is at home",
+     "the dog is outside"
+    ],
+    "the lights are on"
+   ],
+   "Anna is at home"
+  ],
+  "conclusion_term": [
+   "=>",
+   "the report is finished",
+   "the lights are on"
+  ],
+  "valid": false
+ },
+ {
+  "id": "P17",
+  "kind": "propositional",
+  "text": "Anna is at home only if the meeting is cancelled. The car is in the garage if and only if the heating is on. Unless the car is in the garage, Anna is at home. Therefore, the heating is on or the meeting is cancelled, or both.",
+  "premises": [
+   "Anna is at home → the meeting is cancelled",
+   "the car is in the garage ↔ the heating is on",
+   "the car is in the garage ∨ Anna is at home"
+  ],
+  "conclusion": "the heating is on ∨ the meeting is cancelled",
+  "premise_terms": [
+   [
+    "=>",
+    "Anna is at home",
+    "the meeting is cancelled"
+   ],
+   [
+    "<=>",
+    "the car is in the garage",
+    "the heating is on"
+   ],
+   [
+    "or",
+    "the car is in the garage",
+    "Anna is at home"
+   ]
+  ],
+  "conclusion_term": [
+   "or",
+   "the heating is on",
+   "the meeting is cancelled"
+  ],
+  "valid": true
+ },
+ {
+  "id": "P18",
+  "kind": "propositional",
+  "text": "The report is finished if and only if the dog is outside. It is not the case that both the dog is outside and the meeting is cancelled. Unless the lights are on, the meeting is cancelled. It is not the case that both the lights are on and the report is finished. Therefore, it is not the case that the dog is outside.",
+  "premises": [
+   "the report is finished ↔ the dog is outside",
+   "¬(the dog is outside ∧ the meeting is cancelled)",
+   "the lights are on ∨ the meeting is cancelled",
+   "¬(the lights are on ∧ the report is finished)"
+  ],
+  "conclusion": "¬the dog is outside",
+  "premise_terms": [
+   [
+    "<=>",
+    "the report is finished",
+    "the dog is outside"
+   ],
+   [
+    "not",
+    [
+     "and",
+     "the dog is outside",
+     "the meeting is cancelled"
+    ]
+   ],
+   [
+    "or",
+    "the lights are on",
+    "the meeting is cancelled"
+   ],
+   [
+    "not",
+    [
+     "and",
+     "the lights are on",
+     "the report is finished"
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "not",
+   "the dog is outside"
+  ],
+  "valid": true
+ },
+ {
+  "id": "P19",
+  "kind": "propositional",
+  "text": "It is not the case that the meeting is cancelled. The meeting is cancelled if and only if the report is finished. Unless the lights are on, the report is finished. Therefore, the lights are on.",
+  "premises": [
+   "¬the meeting is cancelled",
+   "the meeting is cancelled ↔ the report is finished",
+   "the lights are on ∨ the report is finished"
+  ],
+  "conclusion": "the lights are on",
+  "premise_terms": [
+   [
+    "not",
+    "the meeting is cancelled"
+   ],
+   [
+    "<=>",
+    "the meeting is cancelled",
+    "the report is finished"
+   ],
+   [
+    "or",
+    "the lights are on",
+    "the report is finished"
+   ]
+  ],
+  "conclusion_term": "the lights are on",
+  "valid": true
+ },
+ {
+  "id": "P20",
+  "kind": "propositional",
+  "text": "The server is down or the heating is on, or both. If the heating is on, then the server is down or the lights are on. The server is down if and only if the lights are on. Therefore, if the dog is outside, then the lights are on.",
+  "premises": [
+   "the server is down ∨ the heating is on",
+   "the heating is on → (the server is down ∨ the lights are on)",
+   "the server is down ↔ the lights are on"
+  ],
+  "conclusion": "the dog is outside → the lights are on",
+  "premise_terms": [
+   [
+    "or",
+    "the server is down",
+    "the heating is on"
+   ],
+   [
+    "=>",
+    "the heating is on",
+    [
+     "or",
+     "the server is down",
+     "the lights are on"
+    ]
+   ],
+   [
+    "<=>",
+    "the server is down",
+    "the lights are on"
+   ]
+  ],
+  "conclusion_term": [
+   "=>",
+   "the dog is outside",
+   "the lights are on"
+  ],
+  "valid": true
+ },
+ {
+  "id": "P21",
+  "kind": "propositional",
+  "text": "Unless the window is open, the printer is working. The window is open only if the printer is working. The printer is working only if the lights are on. Therefore, the lights are on or the meeting is cancelled, or both.",
+  "premises": [
+   "the window is open ∨ the printer is working",
+   "the window is open → the printer is working",
+   "the printer is working → the lights are on"
+  ],
+  "conclusion": "the lights are on ∨ the meeting is cancelled",
+  "premise_terms": [
+   [
+    "or",
+    "the window is open",
+    "the printer is working"
+   ],
+   [
+    "=>",
+    "the window is open",
+    "the printer is working"
+   ],
+   [
+    "=>",
+    "the printer is working",
+    "the lights are on"
+   ]
+  ],
+  "conclusion_term": [
+   "or",
+   "the lights are on",
+   "the meeting is cancelled"
+  ],
+  "valid": true
+ },
+ {
+  "id": "P22",
+  "kind": "propositional",
+  "text": "The server is down if the car is in the garage. The car is in the garage or the alarm is set, or both. It is not the case that both the alarm is set and the lights are on. Therefore, if the lights are on, then the server is down.",
+  "premises": [
+   "the car is in the garage → the server is down",
+   "the car is in the garage ∨ the alarm is set",
+   "¬(the alarm is set ∧ the lights are on)"
+  ],
+  "conclusion": "the lights are on → the server is down",
+  "premise_terms": [
+   [
+    "=>",
+    "the car is in the garage",
+    "the server is down"
+   ],
+   [
+    "or",
+    "the car is in the garage",
+    "the alarm is set"
+   ],
+   [
+    "not",
+    [
+     "and",
+     "the alarm is set",
+     "the lights are on"
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "=>",
+   "the lights are on",
+   "the server is down"
+  ],
+  "valid": true
+ },
+ {
+  "id": "P23",
+  "kind": "propositional",
+  "text": "Unless the report is finished, the alarm is set. It is not the case that both the window is open and the report is finished. The alarm is set if and only if the report is finished. Therefore, if the window is open, then Anna is at home.",
+  "premises": [
+   "the report is finished ∨ the alarm is set",
+   "¬(the window is open ∧ the report is finished)",
+   "the alarm is set ↔ the report is finished"
+  ],
+  "conclusion": "the window is open → Anna is at home",
+  "premise_terms": [
+   [
+    "or",
+    "the report is finished",
+    "the alarm is set"
+   ],
+   [
+    "not",
+    [
+     "and",
+     "the window is open",
+     "the report is finished"
+    ]
+   ],
+   [
+    "<=>",
+    "the alarm is set",
+    "the report is finished"
+   ]
+  ],
+  "conclusion_term": [
+   "=>",
+   "the window is open",
+   "Anna is at home"
+  ],
+  "valid": true
+ },
+ {
+  "id": "P24",
+  "kind": "propositional",
+  "text": "If the window is open and Anna is at home, then the report is finished. If the report is finished, then the server is down. The window is open or the server is down, or both. Therefore, if Anna is at home, then the server is down.",
+  "premises": [
+   "(the window is open ∧ Anna is at home) → the report is finished",
+   "the report is finished → the server is down",
+   "the window is open ∨ the server is down"
+  ],
+  "conclusion": "Anna is at home → the server is down",
+  "premise_terms": [
+   [
+    "=>",
+    [
+     "and",
+     "the window is open",
+     "Anna is at home"
+    ],
+    "the report is finished"
+   ],
+   [
+    "=>",
+    "the report is finished",
+    "the server is down"
+   ],
+   [
+    "or",
+    "the window is open",
+    "the server is down"
+   ]
+  ],
+  "conclusion_term": [
+   "=>",
+   "Anna is at home",
+   "the server is down"
+  ],
+  "valid": true
+ },
+ {
+  "id": "P25",
+  "kind": "propositional",
+  "text": "The heating is on or the report is finished, or both. If the report is finished, then the door is locked. The heating is on only if the door is locked. Therefore, the door is locked.",
+  "premises": [
+   "the heating is on ∨ the report is finished",
+   "the report is finished → the door is locked",
+   "the heating is on → the door is locked"
+  ],
+  "conclusion": "the door is locked",
+  "premise_terms": [
+   [
+    "or",
+    "the heating is on",
+    "the report is finished"
+   ],
+   [
+    "=>",
+    "the report is finished",
+    "the door is locked"
+   ],
+   [
+    "=>",
+    "the heating is on",
+    "the door is locked"
+   ]
+  ],
+  "conclusion_term": "the door is locked",
+  "valid": true
+ },
+ {
+  "id": "P26",
+  "kind": "propositional",
+  "text": "The alarm is set or the meeting is cancelled, or both. The alarm is set only if the heating is on. It is not the case that the meeting is cancelled. Therefore, the heating is on or the car is in the garage, or both.",
+  "premises": [
+   "the alarm is set ∨ the meeting is cancelled",
+   "the alarm is set → the heating is on",
+   "¬the meeting is cancelled"
+  ],
+  "conclusion": "the heating is on ∨ the car is in the garage",
+  "premise_terms": [
+   [
+    "or",
+    "the alarm is set",
+    "the meeting is cancelled"
+   ],
+   [
+    "=>",
+    "the alarm is set",
+    "the heating is on"
+   ],
+   [
+    "not",
+    "the meeting is cancelled"
+   ]
+  ],
+  "conclusion_term": [
+   "or",
+   "the heating is on",
+   "the car is in the garage"
+  ],
+  "valid": true
+ },
+ {
+  "id": "P27",
+  "kind": "propositional",
+  "text": "If the car is in the garage, then the door is locked or the lights are on. If the door is locked, then the window is open. It is not the case that the lights are on. It is not the case that both the door is locked and the window is open. Therefore, it is not the case that the car is in the garage.",
+  "premises": [
+   "the car is in the garage → (the door is locked ∨ the lights are on)",
+   "the door is locked → the window is open",
+   "¬the lights are on",
+   "¬(the door is locked ∧ the window is open)"
+  ],
+  "conclusion": "¬the car is in the garage",
+  "premise_terms": [
+   [
+    "=>",
+    "the car is in the garage",
+    [
+     "or",
+     "the door is locked",
+     "the lights are on"
+    ]
+   ],
+   [
+    "=>",
+    "the door is locked",
+    "the window is open"
+   ],
+   [
+    "not",
+    "the lights are on"
+   ],
+   [
+    "not",
+    [
+     "and",
+     "the door is locked",
+     "the window is open"
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "not",
+   "the car is in the garage"
+  ],
+  "valid": true
+ },
+ {
+  "id": "P28",
+  "kind": "propositional",
+  "text": "The report is finished or the alarm is set, or both. It is not the case that both the lights are on and the report is finished. The dog is outside. The dog is outside if and only if the lights are on. Therefore, the alarm is set.",
+  "premises": [
+   "the report is finished ∨ the alarm is set",
+   "¬(the lights are on ∧ the report is finished)",
+   "the dog is outside",
+   "the dog is outside ↔ the lights are on"
+  ],
+  "conclusion": "the alarm is set",
+  "premise_terms": [
+   [
+    "or",
+    "the report is finished",
+    "the alarm is set"
+   ],
+   [
+    "not",
+    [
+     "and",
+     "the lights are on",
+     "the report is finished"
+    ]
+   ],
+   "the dog is outside",
+   [
+    "<=>",
+    "the dog is outside",
+    "the lights are on"
+   ]
+  ],
+  "conclusion_term": "the alarm is set",
+  "valid": true
+ },
+ {
+  "id": "P29",
+  "kind": "propositional",
+  "text": "It is not the case that both the server is down and the report is finished. The heating is on or the server is down, or both. If the server is down, then the report is finished. Therefore, if the door is locked, then the heating is on.",
+  "premises": [
+   "¬(the server is down ∧ the report is finished)",
+   "the heating is on ∨ the server is down",
+   "the server is down → the report is finished"
+  ],
+  "conclusion": "the door is locked → the heating is on",
+  "premise_terms": [
+   [
+    "not",
+    [
+     "and",
+     "the server is down",
+     "the report is finished"
+    ]
+   ],
+   [
+    "or",
+    "the heating is on",
+    "the server is down"
+   ],
+   [
+    "=>",
+    "the server is down",
+    "the report is finished"
+   ]
+  ],
+  "conclusion_term": [
+   "=>",
+   "the door is locked",
+   "the heating is on"
+  ],
+  "valid": true
+ },
+ {
+  "id": "P30",
+  "kind": "propositional",
+  "text": "The meeting is cancelled only if the lights are on. The heating is on or the lights are on, or both. The meeting is cancelled if the heating is on. Therefore, the lights are on.",
+  "premises": [
+   "the meeting is cancelled → the lights are on",
+   "the heating is on ∨ the lights are on",
+   "the heating is on → the meeting is cancelled"
+  ],
+  "conclusion": "the lights are on",
+  "premise_terms": [
+   [
+    "=>",
+    "the meeting is cancelled",
+    "the lights are on"
+   ],
+   [
+    "or",
+    "the heating is on",
+    "the lights are on"
+   ],
+   [
+    "=>",
+    "the heating is on",
+    "the meeting is cancelled"
+   ]
+  ],
+  "conclusion_term": "the lights are on",
+  "valid": true
+ },
+ {
+  "id": "P31",
+  "kind": "propositional",
+  "text": "The door is locked if and only if Anna is at home. It is not the case that Anna is at home. The report is finished or the door is locked, or both. Therefore, the report is finished.",
+  "premises": [
+   "the door is locked ↔ Anna is at home",
+   "¬Anna is at home",
+   "the report is finished ∨ the door is locked"
+  ],
+  "conclusion": "the report is finished",
+  "premise_terms": [
+   [
+    "<=>",
+    "the door is locked",
+    "Anna is at home"
+   ],
+   [
+    "not",
+    "Anna is at home"
+   ],
+   [
+    "or",
+    "the report is finished",
+    "the door is locked"
+   ]
+  ],
+  "conclusion_term": "the report is finished",
+  "valid": true
+ },
+ {
+  "id": "P32",
+  "kind": "propositional",
+  "text": "If the window is open and the alarm is set, then the heating is on. Unless the heating is on, the window is open. If the server is down, then the alarm is set. The server is down if and only if the window is open. Therefore, the heating is on.",
+  "premises": [
+   "(the window is open ∧ the alarm is set) → the heating is on",
+   "the heating is on ∨ the window is open",
+   "the server is down → the alarm is set",
+   "the server is down ↔ the window is open"
+  ],
+  "conclusion": "the heating is on",
+  "premise_terms": [
+   [
+    "=>",
+    [
+     "and",
+     "the window is open",
+     "the alarm is set"
+    ],
+    "the heating is on"
+   ],
+   [
+    "or",
+    "the heating is on",
+    "the window is open"
+   ],
+   [
+    "=>",
+    "the server is down",
+    "the alarm is set"
+   ],
+   [
+    "<=>",
+    "the server is down",
+    "the window is open"
+   ]
+  ],
+  "conclusion_term": "the heating is on",
+  "valid": true
+ },
+ {
+  "id": "S1",
+  "kind": "syllogism",
+  "text": "All roses are flowers. Some flowers fade quickly. Therefore, some roses fade quickly.",
+  "premises": [
+   "∀x ((Rose x) → (Flower x))",
+   "∃x ((Flower x) ∧ (FadesQuickly x))"
+  ],
+  "conclusion": "∃x ((Rose x) ∧ (FadesQuickly x))",
+  "premise_terms": [
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Rose",
+      "x"
+     ],
+     [
+      "Flower",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "exists",
+    [
+     "x"
+    ],
+    [
+     "and",
+     [
+      "Flower",
+      "x"
+     ],
+     [
+      "FadesQuickly",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "exists",
+   [
+    "x"
+   ],
+   [
+    "and",
+    [
+     "Rose",
+     "x"
+    ],
+    [
+     "FadesQuickly",
+     "x"
+    ]
+   ]
+  ],
+  "valid": false
+ },
+ {
+  "id": "S2",
+  "kind": "syllogism",
+  "text": "All mammals can fly. All whales are mammals. Therefore, all whales can fly.",
+  "premises": [
+   "∀x ((Mammal x) → (Flies x))",
+   "∀x ((Whale x) → (Mammal x))"
+  ],
+  "conclusion": "∀x ((Whale x) → (Flies x))",
+  "premise_terms": [
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Mammal",
+      "x"
+     ],
+     [
+      "Flies",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Whale",
+      "x"
+     ],
+     [
+      "Mammal",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "forall",
+   [
+    "x"
+   ],
+   [
+    "=>",
+    [
+     "Whale",
+     "x"
+    ],
+    [
+     "Flies",
+     "x"
+    ]
+   ]
+  ],
+  "valid": true
+ },
+ {
+  "id": "S3",
+  "kind": "syllogism",
+  "text": "All doctors went to university. No nurses are doctors. Therefore, no nurses went to university.",
+  "premises": [
+   "∀x ((Doctor x) → (University x))",
+   "¬∃x ((Nurse x) ∧ (Doctor x))"
+  ],
+  "conclusion": "¬∃x ((Nurse x) ∧ (University x))",
+  "premise_terms": [
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Doctor",
+      "x"
+     ],
+     [
+      "University",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "not",
+    [
+     "exists",
+     [
+      "x"
+     ],
+     [
+      "and",
+      [
+       "Nurse",
+       "x"
+      ],
+      [
+       "Doctor",
+       "x"
+      ]
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "not",
+   [
+    "exists",
+    [
+     "x"
+    ],
+    [
+     "and",
+     [
+      "Nurse",
+      "x"
+     ],
+     [
+      "University",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "valid": false
+ },
+ {
+  "id": "S4",
+  "kind": "syllogism",
+  "text": "No birds are mammals. Some pets are birds. Therefore, some pets are not mammals.",
+  "premises": [
+   "¬∃x ((Bird x) ∧ (Mammal x))",
+   "∃x ((Pet x) ∧ (Bird x))"
+  ],
+  "conclusion": "∃x ((Pet x) ∧ ¬(Mammal x))",
+  "premise_terms": [
+   [
+    "not",
+    [
+     "exists",
+     [
+      "x"
+     ],
+     [
+      "and",
+      [
+       "Bird",
+       "x"
+      ],
+      [
+       "Mammal",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "exists",
+    [
+     "x"
+    ],
+    [
+     "and",
+     [
+      "Pet",
+      "x"
+     ],
+     [
+      "Bird",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "exists",
+   [
+    "x"
+   ],
+   [
+    "and",
+    [
+     "Pet",
+     "x"
+    ],
+    [
+     "not",
+     [
+      "Mammal",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "valid": true
+ },
+ {
+  "id": "S5",
+  "kind": "syllogism",
+  "text": "Some athletes are students. Some students are musicians. Therefore, some athletes are musicians.",
+  "premises": [
+   "∃x ((Athlete x) ∧ (Student x))",
+   "∃x ((Student x) ∧ (Musician x))"
+  ],
+  "conclusion": "∃x ((Athlete x) ∧ (Musician x))",
+  "premise_terms": [
+   [
+    "exists",
+    [
+     "x"
+    ],
+    [
+     "and",
+     [
+      "Athlete",
+      "x"
+     ],
+     [
+      "Student",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "exists",
+    [
+     "x"
+    ],
+    [
+     "and",
+     [
+      "Student",
+      "x"
+     ],
+     [
+      "Musician",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "exists",
+   [
+    "x"
+   ],
+   [
+    "and",
+    [
+     "Athlete",
+     "x"
+    ],
+    [
+     "Musician",
+     "x"
+    ]
+   ]
+  ],
+  "valid": false
+ },
+ {
+  "id": "S6",
+  "kind": "syllogism",
+  "text": "All fish live in trees. Some salmon are fish. Therefore, some salmon live in trees.",
+  "premises": [
+   "∀x ((Fish x) → (LivesInTrees x))",
+   "∃x ((Salmon x) ∧ (Fish x))"
+  ],
+  "conclusion": "∃x ((Salmon x) ∧ (LivesInTrees x))",
+  "premise_terms": [
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Fish",
+      "x"
+     ],
+     [
+      "LivesInTrees",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "exists",
+    [
+     "x"
+    ],
+    [
+     "and",
+     [
+      "Salmon",
+      "x"
+     ],
+     [
+      "Fish",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "exists",
+   [
+    "x"
+   ],
+   [
+    "and",
+    [
+     "Salmon",
+     "x"
+    ],
+    [
+     "LivesInTrees",
+     "x"
+    ]
+   ]
+  ],
+  "valid": true
+ },
+ {
+  "id": "S7",
+  "kind": "syllogism",
+  "text": "All squares are rectangles. Therefore, all rectangles are squares.",
+  "premises": [
+   "∀x ((Square x) → (Rectangle x))"
+  ],
+  "conclusion": "∀x ((Rectangle x) → (Square x))",
+  "premise_terms": [
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Square",
+      "x"
+     ],
+     [
+      "Rectangle",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "forall",
+   [
+    "x"
+   ],
+   [
+    "=>",
+    [
+     "Rectangle",
+     "x"
+    ],
+    [
+     "Square",
+     "x"
+    ]
+   ]
+  ],
+  "valid": false
+ },
+ {
+  "id": "S8",
+  "kind": "syllogism",
+  "text": "No reptiles have fur. All snakes are reptiles. Therefore, no snakes have fur.",
+  "premises": [
+   "¬∃x ((Reptile x) ∧ (HasFur x))",
+   "∀x ((Snake x) → (Reptile x))"
+  ],
+  "conclusion": "¬∃x ((Snake x) ∧ (HasFur x))",
+  "premise_terms": [
+   [
+    "not",
+    [
+     "exists",
+     [
+      "x"
+     ],
+     [
+      "and",
+      [
+       "Reptile",
+       "x"
+      ],
+      [
+       "HasFur",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Snake",
+      "x"
+     ],
+     [
+      "Reptile",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "not",
+   [
+    "exists",
+    [
+     "x"
+    ],
+    [
+     "and",
+     [
+      "Snake",
+      "x"
+     ],
+     [
+      "HasFur",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "valid": true
+ }
+]

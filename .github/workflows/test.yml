@@ -25,4 +25,6 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - run: python -m pip install "${{ matrix.hy }}" -e ".[test]"
+      # optional: the Z3 cross-check tests skip where no z3-solver wheel exists
+      - run: python -m pip install z3-solver || true
       - run: python -m pytest
