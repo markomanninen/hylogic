@@ -24,13 +24,18 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest>=7", "ipython", "ipykernel", "nbclient", "nbformat"]
+test = ["pytest>=7", "ipython", "ipykernel", "nbclient", "nbformat", "mcp>=1.2,<2; python_version >= '3.10'"]
 notebook = ["ipython"]
+# mcp 2.x renamed FastMCP; the server uses the 1.x API
+mcp = ["mcp>=1.2,<2"]
 # check-with-z3 hands large or hard problems to the Z3 solver
 z3 = ["z3-solver"]
 
 [project.urls]
 Homepage = "https://github.com/markomanninen/hylogic"
+
+[project.scripts]
+hylogic-mcp = "hylogic.mcp_server:main"
 
 [tool.setuptools]
 packages = ["hylogic"]

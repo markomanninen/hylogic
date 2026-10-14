@@ -260,6 +260,31 @@ E, and `to-dimacs` writes the SAT clauses for any SAT solver. With
 `pip install "hylogic[z3]"`, `check-with-z3` runs Z3 directly.
 [benchmarks/](benchmarks/) compares the four methods on the same problems.
 
+## For AI agents
+
+`hylogic-mcp` is a [Model Context Protocol](https://modelcontextprotocol.io)
+server with one tool, `check_argument`. An agent formalizes an argument,
+calls the tool, and gets the verdict with a counterexample or countermodel
+when the argument is invalid. Formulas can be s-expression strings or JSON
+arrays, since models write JSON most reliably.
+
+```bash
+pip install "hylogic[mcp]"
+claude mcp add hylogic -- hylogic-mcp
+```
+
+```
+check_argument(premises=["(=> P Q)", "Q"], conclusion="P",
+               meanings={"P": "it rains", "Q": "the street is wet"})
+
+INVALID (checked by truth table)
+Read as: P → Q; Q ⊢ P
+Counterexample: “it rains” is false and “the street is wet” is true. Then every premise is true and the conclusion is false.
+```
+
+[benchmarks/field_test/](benchmarks/field_test/) measures whether the tool
+helps agents judge arguments, and what it costs.
+
 ## From Python
 
 Formulas are nested tuples of strings, and the Hy names that end in `?` have
