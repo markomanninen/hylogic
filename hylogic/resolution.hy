@@ -218,12 +218,34 @@ new clauses that are neither duplicates nor subsumed by older ones."
       (return True)))
   False)
 
-(defn resolvents [c1 c2]
-  "All binary resolvents of two clauses, c2 renamed apart first."
+(defn features [lits]
+  "The sign and predicate of each literal: a clause can subsume another only if its
+  features are a subset of the other's, and resolve with it only if they share a
+  predicate with opposite signs. Checking this first skips most futile work."
+  (frozenset (gfor l lits #((negative? l) (_predicate (atom-of l))))))
+
+(defn _predicate [atom] (if (compound? atom) (get atom 0) atom))
+
+(defn eligible [lits]
+  "The literals of a clause that ordered resolution may resolve on.
+  If the clause has negative literals, only the heaviest of them is selected;
+  otherwise its maximal literals in the Knuth-Bendix ordering of their atoms.
+  Resolving only on these literals keeps resolution complete while cutting most
+  inferences (Bachmair and Ganzinger, 1994)."
+  (setv negs (lfor l lits :if (negative? l) l))
+  (if negs
+      #{(max negs :key (fn [l] #((size l) (show l))))}
+      (set (gfor l lits :if (not (any (gfor m lits (sp.kbo> (atom-of m) (atom-of l))))) l))))
+
+(defn resolvents [c1 c2 [ordered False]]
+  "All binary resolvents of two clauses, c2 renamed apart first.
+  With ordered, only eligible literals are resolved on."
   (setv mapping {}
-        l2 (frozenset (gfor l c2 (rename l mapping))))
+        l2 (frozenset (gfor l c2 (rename l mapping)))
+        e1 (if ordered (eligible c1) c1)
+        e2 (if ordered (eligible l2) l2))
   ;; sorted, so that every run takes the same path whatever the hash seed
-  (for [a (sorted c1 :key show)  b (sorted l2 :key show)]
+  (for [a (sorted e1 :key show)  b (sorted e2 :key show)]
     (when (!= (negative? a) (negative? b))
       (setv s (unify (atom-of a) (atom-of b)))
       (when (is-not s None)
@@ -262,7 +284,8 @@ new clauses that are neither duplicates nor subsumed by older ones."
              (+ c.rule " " (.join ", " (gfor p c.parents (str p.id))))
              c.rule)))))
 
-(defn saturate [clauses [limit 5000] [timeout None] [age-ratio 0] [superposition 0]]
+(defn saturate [clauses [limit 5000] [timeout None] [age-ratio 0] [superposition 0]
+                [ordered 0] [index 0]]
   "The given-clause loop. clauses are Clause objects. Stops after timeout seconds if given.
 
   The next clause to process is the lightest one, except that with age-ratio n
@@ -272,7 +295,10 @@ new clauses that are neither duplicates nor subsumed by older ones."
 
   With superposition, equality is built in: new clauses are rewritten with the
   unit equations processed so far, and superposition, equality resolution and
-  equality factoring run alongside resolution (see hylogic.superposition)."
+  equality factoring run alongside resolution (see hylogic.superposition).
+
+  ordered restricts resolution to eligible literals (see eligible), and index
+  filters subsumption checks and resolution partners by features first."
   (setv deadline (when timeout (+ (time.monotonic) timeout))
         ids (count 1)
         tie (count)
@@ -309,7 +335,10 @@ new clauses that are neither duplicates nor subsumed by older ones."
     (setv key (canonical lits))
     (when (in key seen) (return None))
     (.add seen key)
-    (when (any (gfor p processed (subsumes? p.literals lits))) (return None))
+    (setv clause.features (features lits))
+    (when (any (gfor p processed (and (or (not index) (<= p.features clause.features))
+                                      (subsumes? p.literals lits))))
+      (return None))
     (setv clause.id (next ids)
           clause.done False)
     (+= (get stats "kept") 1)
@@ -321,8 +350,11 @@ new clauses that are neither duplicates nor subsumed by older ones."
     "Every clause derived from the given clause and the processed ones."
     (for [lits (factors given.literals)]
       (yield #(lits #(given) "factor")))
-    (for [other processed  lits (resolvents given.literals other.literals)]
-      (yield #(lits #(given other) "resolve")))
+    (setv partners (frozenset (gfor [neg pred] given.features #((not neg) pred))))
+    (for [other processed]
+      (when (or (not index) (& partners other.features))
+        (for [lits (resolvents given.literals other.literals ordered)]
+          (yield #(lits #(given other) "resolve")))))
     (when superposition
       (for [lits (sp.equality-resolvents given.literals)]
         (yield #(lits #(given) "equality resolution")))
@@ -341,10 +373,14 @@ new clauses that are neither duplicates nor subsumed by older ones."
   (while True
     (setv given (pick))
     (when (is given None) (break))
-    (when (any (gfor p processed (subsumes? p.literals given.literals)))
+    (when (any (gfor p processed (and (or (not index) (<= p.features given.features))
+                                      (subsumes? p.literals given.literals))))
       (continue))
     ;; drop processed clauses that the given clause makes redundant
-    (setv processed (lfor p processed :if (not (subsumes? given.literals p.literals)) p))
+    (setv processed (lfor p processed
+                          :if (not (and (or (not index) (<= given.features p.features))
+                                        (subsumes? given.literals p.literals)))
+                          p))
     (.append processed given)
     ;; a processed unit equation that can be oriented becomes a rewrite rule
     (when (and superposition (= (len given.literals) 1))
