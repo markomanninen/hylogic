@@ -234,16 +234,19 @@ new clauses that are neither duplicates nor subsumed by older ones."
   inferences (Bachmair and Ganzinger, 1994)."
   (setv negs (lfor l lits :if (negative? l) l))
   (if negs
-      #{(max negs :key (fn [l] #((size l) (show l))))}
+      #{(max negs :key (fn [l] #((size l) (show (_mask l)) (show l))))}
       (set (gfor l lits :if (not (any (gfor m lits (sp.kbo> (atom-of m) (atom-of l))))) l))))
 
 (defn resolvents [c1 c2 [ordered False]]
   "All binary resolvents of two clauses, c2 renamed apart first.
   With ordered, only eligible literals are resolved on."
+  ;; eligibility is decided before renaming: selection must not depend on
+  ;; variable names, or the same clause could select different literals
+  ;; at different times, and ordered resolution would lose completeness
   (setv mapping {}
-        l2 (frozenset (gfor l c2 (rename l mapping)))
         e1 (if ordered (eligible c1) c1)
-        e2 (if ordered (eligible l2) l2))
+        e2 (frozenset (gfor l (if ordered (eligible c2) c2) (rename l mapping)))
+        l2 (frozenset (gfor l c2 (rename l mapping))))
   ;; sorted, so that every run takes the same path whatever the hash seed
   (for [a (sorted e1 :key show)  b (sorted e2 :key show)]
     (when (!= (negative? a) (negative? b))

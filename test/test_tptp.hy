@@ -49,7 +49,9 @@
                   "cnf(c3, negated_conjecture, ~ q(a)).\n"))
   problems)
 
-(defn test-include-with-selection [tmp-path]
+(defn test-include-with-selection [tmp-path monkeypatch]
+  ;; includes resolve against this temporary root, not a real library in TPTP
+  (.delenv monkeypatch "TPTP" :raising False)
   (setv problems (problem-tree tmp-path)
         p (read-problem (/ problems "TST001+1.p")))
   ;; only the selected axiom comes in, not $false
