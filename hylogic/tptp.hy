@@ -249,7 +249,7 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
         axioms (if (and (= equality 1) problem.has-equality)
                    [#* problem.premises #* (equality-axioms [#* problem.premises problem.goal])]
                    problem.premises)
-        result (prove problem.goal axioms :limit limit :timeout (* 0.6 time-limit)
+        result (prove problem.goal axioms :limit limit :timeout (* 0.8 time-limit)
                       :superposition (if (= equality 2) 1 (.get options "superposition" 0))
                       #** (dfor [k v] (.items options) :if (!= k "superposition") k v))
         model None)
