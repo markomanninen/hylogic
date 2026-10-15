@@ -273,7 +273,8 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
   ;; the best combination measured in benchmarks/tptp; --set overrides each
   (setv args (list (or argv (cut sys.argv 1 None)))
         time-limit 10.0
-        options {"age_ratio" 10 "equality" 2 "ordered" 1 "index" 1 "definitional" 8 "epr" 1})
+        options {"age_ratio" 10 "equality" 2 "ordered" 1 "index" 1 "definitional" 8 "epr" 1
+                 "goal_bias" 6})
   ;; --set name=value passes a search option to prove, for experiments
   (while (in "--set" args)
     (setv i (.index args "--set")
