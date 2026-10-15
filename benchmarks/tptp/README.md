@@ -187,6 +187,11 @@ Started on the `prover-gap-2` branch, the same sample and time limit.
 | + goal-directed selection, bias 3 | 31 | 5 | 0 | 20 | 29 | 7 | 20 | 112 | 0 |
 | + goal-directed selection, bias 6 (the new default) | 31 | 5 | 2 | 19 | 31 | 9 | 20 | 117 | 0 |
 | + goal-directed selection, bias 10 | 31 | 5 | 1 | 21 | 30 | 7 | 20 | 115 | 0 |
+| Bias 6 + symbol filter, cheaper superposition and grounding | 31 | 5 | 2 | 19 | 31 | 9 | 20 | 117 | 0 |
+| The same with 20 seconds instead of 10 | 31 | 5 | 2 | 20 | 31 | 9 | 20 | 118 | 0 |
+| + portfolio, 50 % main search, then plain resolution | 30 | 5 | 2 | 20 | 30 | 9 | 20 | 116 | 0 |
+| + portfolio, 65 % main search | 31 | 5 | 2 | 19 | 32 | 9 | 20 | 118 | 0 |
+| + portfolio, 80 % main search (the new default) | 31 | 5 | 2 | 19 | 32 | 9 | 20 | 118 | 0 |
 
 **Finite models.** The flattening model finder (`hylogic.finite`, after
 Paradox) did not solve the EPR algebra problems: they are ground problems
@@ -213,3 +218,38 @@ it. The earlier rounds had no wrong answers, so their numbers stand.
 negated goal look heavier (6/2 = 3 times) kept the search near the goal and
 helped where the hypothesis did not expect it: the harder equality theorems,
 from 26 to 31 and from 3 to 9, not the NEQ ones.
+
+**Speed and indexing.** Profiling the problems that still time out showed
+three kinds of waste, none of them the classic indexing case: superposition
+renamed the partner clause before noticing there was no equation to use,
+grounding spent up to half the time on problems too large for it, and
+subsumption compared clauses that could not match. Fixing these let the
+prover keep about 20 % more clauses in the same time, and solved no new
+problem. Doubling the time limit to 20 seconds solved one. So a faster
+implementation, term indexing included, would add at most a problem or two
+at this size: the bottleneck is the search strategy, not speed.
+
+**Portfolio.** The 24 HyLogic runs together solved 126 problems, nine more
+than the best single setting, so the settings fail on different problems.
+The best pair was the default and plain resolution with fair selection, no
+ordering, no superposition: ordering prunes away some proofs that plain
+resolution finds at once. Running the default first and plain resolution
+with the time left added one problem.
+
+## Where the gap stands after round two
+
+| Theorems proved, of 234 | |
+|---|---:|
+| HyLogic, baseline | 39 |
+| HyLogic after round one | 86 |
+| HyLogic after round two | 98 |
+| Lean 4.35 `grind`, on HyLogic's export | 103 |
+| HyLogic or Lean | 141 |
+| E 3.2.5 | 207 |
+| Vampire 5.1.0, and HyLogic through the bridge | 231 |
+
+and 20 of the 40 non-theorems shown with countermodels, as many as Vampire
+(E: 16). Round two's biggest gain came from goal-directed selection, and it
+found and fixed a real soundness bug. The remaining distance to E and
+Vampire is strategy: decades of tuned heuristics, clause splitting and
+large strategy schedules, which this study does not attempt to copy.
