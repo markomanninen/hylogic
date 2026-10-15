@@ -167,3 +167,13 @@ one of the 440 proofs in the sample.
 
 Left for later: a Paradox-style finite model finder for the EPR algebra
 problems, better clause selection heuristics, and proper term indexing.
+
+## Round two: the items left for later
+
+Started on the `prover-gap-2` branch, the same sample and time limit.
+
+| Change | Expected |
+|---|---|
+| Finite model finder in the Paradox style: functions flattened into predicates with totality and functionality clauses, models searched with SAT for growing domain sizes. For problems whose axioms bound the domain (the EPR algebra problems), no model up to the bound means a theorem | most of the 13 unsolved EPR theorems, and a few more non-theorems |
+| Goal-directed clause selection: prefer clauses descended from the negated goal, as the set-of-support idea and E's heuristics do | 5 to 15 more theorems, mostly NEQ |
+| Term indexing for unification and subsumption candidates | faster searches, a few more theorems at the margin |
