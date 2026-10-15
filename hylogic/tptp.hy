@@ -213,31 +213,42 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
     (raise (TPTPError "more than one conjecture")))
   (Problem (. (Path path) stem) premises (if conjectures (get conjectures 0) None) (_status path)))
 
-(defn szs-status [problem result-status countermodel]
-  "The SZS status for a prover result."
+(defn szs-status [problem result-status countermodel [equality-built-in False]]
+  "The SZS status for a prover result. equality-built-in says whether the search knew
+  what = means (equality axioms or superposition), so that saturation is meaningful."
   (setv conj (is-not problem.conjecture None))
   (cond
     (= result-status "proved") (if conj "Theorem" "Unsatisfiable")
     countermodel (if conj "CounterSatisfiable" "Satisfiable")
     ;; saturation shows satisfiability only when = means nothing special
-    (and (= result-status "saturated") (not problem.has-equality)) (if conj "CounterSatisfiable" "Satisfiable")
+    (and (= result-status "saturated") (or equality-built-in (not problem.has-equality)))
+      (if conj "CounterSatisfiable" "Satisfiable")
     (= result-status "timeout") "Timeout"
     True "GaveUp"))
 
-(defn solve [path [time-limit 10.0] [limit 1000000] #** options]
-  "Read and attempt a TPTP problem. Returns the SZS status and the result."
+(defn solve [path [time-limit 10.0] [limit 1000000] [equality 0] #** options]
+  "Read and attempt a TPTP problem. Returns the SZS status and the result.
+  equality 1 adds the equality axioms when the problem uses =, and equality 2
+  builds equality into the search with superposition. Superposition here may
+  be incomplete, so its saturation is not taken as a CounterSatisfiable answer."
   (import hylogic.resolution [prove]
-          hylogic.models [find-model])
+          hylogic.models [find-model]
+          hylogic.equality [equality-axioms])
   (setv started (time.monotonic)
         problem (read-problem path)
-        result (prove problem.goal problem.premises :limit limit :timeout (* 0.8 time-limit) #** options)
+        axioms (if (and (= equality 1) problem.has-equality)
+                   [#* problem.premises #* (equality-axioms [#* problem.premises problem.goal])]
+                   problem.premises)
+        result (prove problem.goal axioms :limit limit :timeout (* 0.8 time-limit)
+                      :superposition (if (= equality 2) 1 (.get options "superposition" 0))
+                      #** (dfor [k v] (.items options) :if (!= k "superposition") k v))
         model None)
   (when (not result.proved)
     (setv remaining (- time-limit (- (time.monotonic) started)))
     (when (> remaining 0.5)
       (setv model (find-model [#* problem.premises #("not" problem.goal)] :max-size 3
                               :deadline (+ (time.monotonic) (- remaining 0.3))))))
-  #((szs-status problem result.status model) result problem))
+  #((szs-status problem result.status model (= equality 1)) result problem))
 
 (defn main [[argv None]]
   (setv args (list (or argv (cut sys.argv 1 None)))

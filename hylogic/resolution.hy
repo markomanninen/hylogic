@@ -26,6 +26,7 @@ new clauses that are neither duplicates nor subsumed by older ones."
 
 (import heapq
         time
+        hylogic.superposition :as sp
         itertools [count]
         hylogic.formulas [basic]
         hylogic.terms [term compound? show size variables-of]
@@ -100,17 +101,38 @@ new clauses that are neither duplicates nor subsumed by older ones."
     (is op None) (if (compound? f) #((get f 0) #* (gfor x (args f) (_replace-bound x env))) f)
     True #(op #* (gfor a (args f) (skolemize a env universals)))))
 
-(defn cnf-clauses [f]
+(setv DEFINITIONS (count 1))
+
+(defn cnf-clauses [f [definitions None] [max-product 8]]
   "Clauses (lists of literals) of a quantifier-free formula in negation normal form,
-  by distributing or over and. This can grow exponentially; real provers avoid
-  that with definitional (Tseitin) transformation."
+  by distributing or over and. This can grow exponentially.
+
+  With a definitions list, a disjunction whose distribution would make more than
+  max-product clauses gets its multi-clause parts named instead: a part C becomes a
+  new atom d(x...) over C's variables, and the clauses (not d(x...)) | c for each
+  clause c of C go to definitions. Since the formula is in negation normal form,
+  d occurs only positively, so this one direction is enough (Plaisted and
+  Greenbaum, 1986), and the clause set grows linearly."
   (setv op (if (connective? f) (get f 0) None))
   (cond
-    (= op "and") (lfor a (args f) c (cnf-clauses a) c)
+    (= op "and") (lfor a (args f) c (cnf-clauses a definitions max-product) c)
     (= op "or") (do
+      (setv parts (lfor a (args f) (cnf-clauses a definitions max-product)))
+      (when (is-not definitions None)
+        (setv product 1)
+        (for [p parts] (*= product (len p)))
+        (when (> product max-product)
+          (setv parts
+            (lfor p parts
+              (if (> (len p) 1)
+                  (do
+                    (setv atom #(f"$def{(next DEFINITIONS)}" #* (variables-of (tuple (gfor c p l c l)))))
+                    (for [c p] (.append definitions [#("not" atom) #* c]))
+                    [[atom]])
+                  p)))))
       (setv result [[]])
-      (for [a (args f)]
-        (setv result (lfor c1 result c2 (cnf-clauses a) (+ c1 c2))))
+      (for [p parts]
+        (setv result (lfor c1 result c2 p (+ c1 c2))))
       result)
     True [[f]]))
 
@@ -121,14 +143,19 @@ new clauses that are neither duplicates nor subsumed by older ones."
 (defn tautology? [lits]
   (any (gfor l lits (in (complement l) lits))))
 
-(defn clausify [formula]
-  "A formula (quoted Hy form or term) as a list of clauses, each a frozenset of literals."
-  (clauses-of (skolemize (nnf (eliminate-implications (basic formula))))))
+(defn clausify [formula [definitional False]]
+  "A formula (quoted Hy form or term) as a list of clauses, each a frozenset of literals.
+  definitional names subformulas instead of distributing them (see cnf-clauses)."
+  (clauses-of (skolemize (nnf (eliminate-implications (basic formula)))) definitional))
 
-(defn clauses-of [f]
+(defn clauses-of [f [definitional False]]
   "Clauses of a Skolemized formula, without tautologies and duplicates."
-  (setv clauses [])
-  (for [c (cnf-clauses f)]
+  (setv clauses []
+        definitions (when definitional []))
+  ;; definitional is off (False or 0), on (True: name above 8 clauses) or the threshold itself
+  (setv max-product (if (and (isinstance definitional int) (> definitional 1)) definitional 8)
+        clauses-f (cnf-clauses f definitions max-product))
+  (for [c (+ clauses-f (or definitions []))]
     ;; ⊤ makes a clause always true; ⊥ adds nothing to it
     (when (any (gfor l c (in l #{"true" #("not" "false")}))) (continue))
     (setv c (frozenset (gfor l c :if (not-in l #{"false" #("not" "true")}) l)))
@@ -235,13 +262,17 @@ new clauses that are neither duplicates nor subsumed by older ones."
              (+ c.rule " " (.join ", " (gfor p c.parents (str p.id))))
              c.rule)))))
 
-(defn saturate [clauses [limit 5000] [timeout None] [age-ratio 0]]
+(defn saturate [clauses [limit 5000] [timeout None] [age-ratio 0] [superposition 0]]
   "The given-clause loop. clauses are Clause objects. Stops after timeout seconds if given.
 
   The next clause to process is the lightest one, except that with age-ratio n
   every (n+1)th pick is the oldest unprocessed clause instead. Picking only by
   weight can postpone a heavy clause forever; mixing in age makes the search
-  fair, so every clause is eventually processed."
+  fair, so every clause is eventually processed.
+
+  With superposition, equality is built in: new clauses are rewritten with the
+  unit equations processed so far, and superposition, equality resolution and
+  equality factoring run alongside resolution (see hylogic.superposition)."
   (setv deadline (when timeout (+ (time.monotonic) timeout))
         ids (count 1)
         tie (count)
@@ -250,6 +281,7 @@ new clauses that are neither duplicates nor subsumed by older ones."
         by-age []
         picks 0
         seen #{}
+        rules []
         stats {"kept" 0 "generated" 0})
 
   (defn pick []
@@ -267,6 +299,11 @@ new clauses that are neither duplicates nor subsumed by older ones."
 
   (defn add [clause]
     "Keep a new clause unless it is a tautology, a duplicate or subsumed."
+    (when superposition
+      (setv [lits changed] (sp.demodulate (sp.drop-false-equations clause.literals) rules))
+      (when (sp.trivial? lits) (return None))
+      (when changed (setv clause.rule (+ clause.rule "+demod")))
+      (setv clause.literals lits))
     (setv lits clause.literals)
     (when (tautology? lits) (return None))
     (setv key (canonical lits))
@@ -280,6 +317,24 @@ new clauses that are neither duplicates nor subsumed by older ones."
     (when age-ratio (heapq.heappush by-age #(clause.id 0 clause)))
     clause)
 
+  (defn inferences [given processed]
+    "Every clause derived from the given clause and the processed ones."
+    (for [lits (factors given.literals)]
+      (yield #(lits #(given) "factor")))
+    (for [other processed  lits (resolvents given.literals other.literals)]
+      (yield #(lits #(given other) "resolve")))
+    (when superposition
+      (for [lits (sp.equality-resolvents given.literals)]
+        (yield #(lits #(given) "equality resolution")))
+      (for [lits (sp.equality-factors given.literals)]
+        (yield #(lits #(given) "equality factoring")))
+      (for [other processed]
+        (for [lits (sp.superpositions given.literals other.literals)]
+          (yield #(lits #(given other) "superposition")))
+        (when (is-not other given)
+          (for [lits (sp.superpositions other.literals given.literals)]
+            (yield #(lits #(other given) "superposition")))))))
+
   (for [c clauses]
     (add c)
     (when (not c.literals) (return (Result "proved" c stats))))
@@ -291,13 +346,17 @@ new clauses that are neither duplicates nor subsumed by older ones."
     ;; drop processed clauses that the given clause makes redundant
     (setv processed (lfor p processed :if (not (subsumes? given.literals p.literals)) p))
     (.append processed given)
-    (for [lits (factors given.literals)]
-      (add (Clause lits #(given) "factor")))
-    (for [other processed  lits (resolvents given.literals other.literals)]
+    ;; a processed unit equation that can be oriented becomes a rewrite rule
+    (when (and superposition (= (len given.literals) 1))
+      (setv [lit] given.literals)
+      (when (and (sp.equation? lit) (not (sp.negative? lit)))
+        (setv rule (sp.orient lit))
+        (when rule (.append rules rule))))
+    (for [[lits parents rule] (inferences given processed)]
       (+= (get stats "generated") 1)
       (when (and deadline (= (% (get stats "generated") 256) 0) (> (time.monotonic) deadline))
         (return (Result "timeout" None stats)))
-      (setv new (add (Clause lits #(given other) "resolve")))
+      (setv new (add (Clause lits parents rule)))
       (when (and new (not new.literals))
         (return (Result "proved" new stats))))
     (when (> (get stats "kept") limit)
@@ -306,11 +365,11 @@ new clauses that are neither duplicates nor subsumed by older ones."
       (return (Result "timeout" None stats))))
   (Result "saturated" None stats))
 
-(defn prove [goal [axioms #()] [limit 5000] [timeout None] #** options]
+(defn prove [goal [axioms #()] [limit 5000] [timeout None] [definitional False] #** options]
   "Try to prove goal from axioms: refute the axioms together with the negated goal."
   (setv clauses [])
-  (for [a axioms  lits (clausify a)]
+  (for [a axioms  lits (clausify a definitional)]
     (.append clauses (Clause lits)))
-  (for [lits (clausify #("not" (basic goal)))]
+  (for [lits (clausify #("not" (basic goal)) definitional)]
     (.append clauses (Clause lits :rule "negated goal")))
   (saturate clauses limit timeout #** options))

@@ -77,3 +77,28 @@
   (.write-text path "thf(a, axiom, p).\n")
   (with [(pytest.raises TPTPError :match "thf")]
     (read-problem path)))
+
+(defn test-equality-axioms-prove-a-substitution [tmp-path]
+  ;; a = b and p(a) give p(b) only when = means equality
+  (setv path (/ tmp-path "Problems" "TST" "TST005+1.p"))
+  (.mkdir path.parent :parents True)
+  (.write-text path "fof(e, axiom, a = b).\nfof(p, axiom, p(f(a))).\nfof(g, conjecture, p(f(b))).\n")
+  (assert (= (get (solve path :time-limit 5) 0) "GaveUp"))
+  (assert (= (get (solve path :time-limit 5 :equality 1) 0) "Theorem")))
+
+(defn test-superposition-proves-the-substitution [tmp-path]
+  (setv path (/ tmp-path "Problems" "TST" "TST005+1.p"))
+  (.mkdir path.parent :parents True)
+  (.write-text path "fof(e, axiom, a = b).\nfof(p, axiom, p(f(a))).\nfof(g, conjecture, p(f(b))).\n")
+  (assert (= (get (solve path :time-limit 5 :equality 2) 0) "Theorem")))
+
+(defn test-superposition-group-theory [tmp-path]
+  ;; in a group where every element is its own inverse, multiplication commutes
+  (setv path (/ tmp-path "Problems" "TST" "TST006+1.p"))
+  (.mkdir path.parent :parents True)
+  (.write-text path (+ "fof(assoc, axiom, ! [X,Y,Z] : m(m(X,Y),Z) = m(X,m(Y,Z))).\n"
+                       "fof(left_id, axiom, ! [X] : m(e,X) = X).\n"
+                       "fof(right_id, axiom, ! [X] : m(X,e) = X).\n"
+                       "fof(self_inv, axiom, ! [X] : m(X,X) = e).\n"
+                       "fof(goal, conjecture, ! [X,Y] : m(X,Y) = m(Y,X)).\n"))
+  (assert (= (get (solve path :time-limit 20 :equality 2) 0) "Theorem")))
