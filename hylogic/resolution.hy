@@ -25,6 +25,7 @@ unprocessed clause, resolve it against everything processed so far, keep the
 new clauses that are neither duplicates nor subsumed by older ones."
 
 (import heapq
+        time
         itertools [count]
         hylogic.formulas [basic]
         hylogic.terms [term compound? show size variables-of]
@@ -234,9 +235,10 @@ new clauses that are neither duplicates nor subsumed by older ones."
              (+ c.rule " " (.join ", " (gfor p c.parents (str p.id))))
              c.rule)))))
 
-(defn saturate [clauses [limit 5000]]
-  "The given-clause loop. clauses are Clause objects."
-  (setv ids (count 1)
+(defn saturate [clauses [limit 5000] [timeout None]]
+  "The given-clause loop. clauses are Clause objects. Stops after timeout seconds if given."
+  (setv deadline (when timeout (+ (time.monotonic) timeout))
+        ids (count 1)
         tie (count)
         processed []
         queue []
@@ -274,14 +276,16 @@ new clauses that are neither duplicates nor subsumed by older ones."
       (when (and new (not new.literals))
         (return (Result "proved" new stats))))
     (when (> (get stats "kept") limit)
-      (return (Result "gave-up" None stats))))
+      (return (Result "gave-up" None stats)))
+    (when (and deadline (> (time.monotonic) deadline))
+      (return (Result "timeout" None stats))))
   (Result "saturated" None stats))
 
-(defn prove [goal [axioms #()] [limit 5000]]
+(defn prove [goal [axioms #()] [limit 5000] [timeout None]]
   "Try to prove goal from axioms: refute the axioms together with the negated goal."
   (setv clauses [])
   (for [a axioms  lits (clausify a)]
     (.append clauses (Clause lits)))
   (for [lits (clausify #("not" (basic goal)))]
     (.append clauses (Clause lits :rule "negated goal")))
-  (saturate clauses limit))
+  (saturate clauses limit timeout))
