@@ -224,13 +224,13 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
     (= result-status "timeout") "Timeout"
     True "GaveUp"))
 
-(defn solve [path [time-limit 10.0] [limit 1000000]]
+(defn solve [path [time-limit 10.0] [limit 1000000] #** options]
   "Read and attempt a TPTP problem. Returns the SZS status and the result."
   (import hylogic.resolution [prove]
           hylogic.models [find-model])
   (setv started (time.monotonic)
         problem (read-problem path)
-        result (prove problem.goal problem.premises :limit limit :timeout (* 0.8 time-limit))
+        result (prove problem.goal problem.premises :limit limit :timeout (* 0.8 time-limit) #** options)
         model None)
   (when (not result.proved)
     (setv remaining (- time-limit (- (time.monotonic) started)))
@@ -241,7 +241,14 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
 
 (defn main [[argv None]]
   (setv args (list (or argv (cut sys.argv 1 None)))
-        time-limit 10.0)
+        time-limit 10.0
+        options {})
+  ;; --set name=value passes a search option to prove, for experiments
+  (while (in "--set" args)
+    (setv i (.index args "--set")
+          [k v] (.split (get args (+ i 1)) "=" 1)
+          (get options (hy.mangle k)) (int v))
+    (del (cut args i (+ i 2))))
   (when (in "--time-limit" args)
     (setv i (.index args "--time-limit")
           time-limit (float (get args (+ i 1))))
@@ -249,7 +256,7 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
   (for [path args]
     (setv name (. (Path path) stem))
     (try
-      (setv [status result _] (solve path :time-limit time-limit))
+      (setv [status result _] (solve path :time-limit time-limit #** options))
       (except [e TPTPError]
         (print f"% SZS status Inappropriate for {name}: {e}")
         (continue)))

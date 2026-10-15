@@ -20,9 +20,12 @@ ROOT = os.environ["TPTP"]
 VAMPIRE = os.environ.get("VAMPIRE", "vampire")
 
 
+OPTIONS = []
+
+
 def command(prover, path, limit):
     if prover == "hylogic":
-        return [sys.executable, "-m", "hylogic.tptp", "--time-limit", str(limit), path]
+        return [sys.executable, "-m", "hylogic.tptp", "--time-limit", str(limit), *OPTIONS, path]
     if prover == "eprover":
         return ["eprover", "--auto", "--silent", "--tstp-format", "--proof-object", f"--cpu-limit={limit}", path]
     if prover == "vampire":
@@ -51,7 +54,10 @@ def main():
     ap.add_argument("--time-limit", type=float, default=10)
     ap.add_argument("--label")
     ap.add_argument("--jobs", type=int, default=8)
+    ap.add_argument("--set", action="append", default=[], help="HyLogic search option name=value")
     args = ap.parse_args()
+    for option in args.set:
+        OPTIONS.extend(["--set", option])
     label = args.label or args.prover
     sample = [line.split() for line in (HERE / "sample.txt").read_text().splitlines()]
     out_path = HERE / "results" / f"{label}.jsonl"

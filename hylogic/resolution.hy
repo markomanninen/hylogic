@@ -235,15 +235,35 @@ new clauses that are neither duplicates nor subsumed by older ones."
              (+ c.rule " " (.join ", " (gfor p c.parents (str p.id))))
              c.rule)))))
 
-(defn saturate [clauses [limit 5000] [timeout None]]
-  "The given-clause loop. clauses are Clause objects. Stops after timeout seconds if given."
+(defn saturate [clauses [limit 5000] [timeout None] [age-ratio 0]]
+  "The given-clause loop. clauses are Clause objects. Stops after timeout seconds if given.
+
+  The next clause to process is the lightest one, except that with age-ratio n
+  every (n+1)th pick is the oldest unprocessed clause instead. Picking only by
+  weight can postpone a heavy clause forever; mixing in age makes the search
+  fair, so every clause is eventually processed."
   (setv deadline (when timeout (+ (time.monotonic) timeout))
         ids (count 1)
         tie (count)
         processed []
         queue []
+        by-age []
+        picks 0
         seen #{}
         stats {"kept" 0 "generated" 0})
+
+  (defn pick []
+    "The next unprocessed clause, by weight or, every (age-ratio + 1)th time, by age."
+    (nonlocal picks)
+    (+= picks 1)
+    (setv heap (if (and age-ratio (= (% picks (+ age-ratio 1)) 0)) by-age queue))
+    (for [h [heap queue by-age]]
+      (while h
+        (setv c (get (heapq.heappop h) 2))
+        (when (not c.done)
+          (setv c.done True)
+          (return c))))
+    None)
 
   (defn add [clause]
     "Keep a new clause unless it is a tautology, a duplicate or subsumed."
@@ -253,16 +273,19 @@ new clauses that are neither duplicates nor subsumed by older ones."
     (when (in key seen) (return None))
     (.add seen key)
     (when (any (gfor p processed (subsumes? p.literals lits))) (return None))
-    (setv clause.id (next ids))
+    (setv clause.id (next ids)
+          clause.done False)
     (+= (get stats "kept") 1)
     (heapq.heappush queue #((weight lits) (next tie) clause))
+    (when age-ratio (heapq.heappush by-age #(clause.id 0 clause)))
     clause)
 
   (for [c clauses]
     (add c)
     (when (not c.literals) (return (Result "proved" c stats))))
-  (while queue
-    (setv given (get (heapq.heappop queue) 2))
+  (while True
+    (setv given (pick))
+    (when (is given None) (break))
     (when (any (gfor p processed (subsumes? p.literals given.literals)))
       (continue))
     ;; drop processed clauses that the given clause makes redundant
@@ -272,6 +295,8 @@ new clauses that are neither duplicates nor subsumed by older ones."
       (add (Clause lits #(given) "factor")))
     (for [other processed  lits (resolvents given.literals other.literals)]
       (+= (get stats "generated") 1)
+      (when (and deadline (= (% (get stats "generated") 256) 0) (> (time.monotonic) deadline))
+        (return (Result "timeout" None stats)))
       (setv new (add (Clause lits #(given other) "resolve")))
       (when (and new (not new.literals))
         (return (Result "proved" new stats))))
@@ -281,11 +306,11 @@ new clauses that are neither duplicates nor subsumed by older ones."
       (return (Result "timeout" None stats))))
   (Result "saturated" None stats))
 
-(defn prove [goal [axioms #()] [limit 5000] [timeout None]]
+(defn prove [goal [axioms #()] [limit 5000] [timeout None] #** options]
   "Try to prove goal from axioms: refute the axioms together with the negated goal."
   (setv clauses [])
   (for [a axioms  lits (clausify a)]
     (.append clauses (Clause lits)))
   (for [lits (clausify #("not" (basic goal)))]
     (.append clauses (Clause lits :rule "negated goal")))
-  (saturate clauses limit timeout))
+  (saturate clauses limit timeout #** options))
