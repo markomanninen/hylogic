@@ -1,2 +1,3 @@
 results/*.jsonl
 !results/README.md
+results/*.txt

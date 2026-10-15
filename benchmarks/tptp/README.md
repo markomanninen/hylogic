@@ -130,3 +130,40 @@ problems and E 209, every one of them printed a proof, and HyLogic read all
 of them to the final contradiction: 100 % against a target of 90 %. With the
 bridge, HyLogic solves what Vampire solves and still shows the proof its own
 way.
+
+**Step 4: Lean.** `hylogic.lean` writes a problem as a Lean 4 theorem over an
+arbitrary nonempty type, with predicates as functions into Prop, and checks
+it with Lean 4.35.0. The first runs failed on name clashes, which guillemets
+did not prevent because «U» and U are the same name in Lean: TPTP variables
+named U clashed with the domain type, and TPTP functions named h1 with the
+hypotheses. After renaming both with a $, which no TPTP name can start with,
+and raising Lean's recursion limit for the largest formulas, all 274
+statements type-check (target 95 %). Lean's own automation, `grind`, proved
+103 of the 234 theorems within 20 seconds and none of the non-theorems.
+
+## Where the gap stands
+
+| Theorems proved, of 234 | |
+|---|---:|
+| HyLogic, baseline | 39 |
+| HyLogic, with the step 2 improvements | 86 |
+| Lean 4.35 `grind`, on HyLogic's export | 103 |
+| HyLogic or Lean | 134 |
+| E 3.2.5 | 207 |
+| Vampire 5.1.0, and HyLogic through the bridge | 231 |
+
+HyLogic's own prover more than doubled, from 39 to 86 theorems, with fair
+selection, superposition, ordered resolution, feature indexing, definitional
+clause form and grounding, and it never gave a wrong answer. It is still far
+from E and Vampire: in Python, and without their decades of strategy tuning,
+it times out on most harder problems. Lean's automation is a useful second
+opinion with different strengths: only 55 theorems were proved by both, and
+Lean proved 14 of the hardest NEQ theorems where HyLogic proved none.
+Neither proved anything Vampire did not.
+
+The gap closes in practice through the bridge: HyLogic hands the problem to
+Vampire, reads the proof, and presents it as its own, which it did for every
+one of the 440 proofs in the sample.
+
+Left for later: a Paradox-style finite model finder for the EPR algebra
+problems, better clause selection heuristics, and proper term indexing.
