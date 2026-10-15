@@ -285,7 +285,7 @@ new clauses that are neither duplicates nor subsumed by older ones."
              c.rule)))))
 
 (defn saturate [clauses [limit 5000] [timeout None] [age-ratio 0] [superposition 0]
-                [ordered 0] [index 0]]
+                [ordered 0] [index 0] [goal-bias 0]]
   "The given-clause loop. clauses are Clause objects. Stops after timeout seconds if given.
 
   The next clause to process is the lightest one, except that with age-ratio n
@@ -298,7 +298,11 @@ new clauses that are neither duplicates nor subsumed by older ones."
   equality factoring run alongside resolution (see hylogic.superposition).
 
   ordered restricts resolution to eligible literals (see eligible), and index
-  filters subsumption checks and resolution partners by features first."
+  filters subsumption checks and resolution partners by features first.
+
+  With goal-bias b, a clause that does not descend from the negated goal weighs
+  b/2 times its size when picking by weight (b = 2: no bias; b = 3: 1.5 times),
+  so the search stays near the goal, as in the set-of-support strategy."
   (setv deadline (when timeout (+ (time.monotonic) timeout))
         ids (count 1)
         tie (count)
@@ -340,9 +344,11 @@ new clauses that are neither duplicates nor subsumed by older ones."
                                       (subsumes? p.literals lits))))
       (return None))
     (setv clause.id (next ids)
-          clause.done False)
+          clause.done False
+          clause.goal (or (= clause.rule "negated goal") (any (gfor p clause.parents (getattr p "goal" False)))))
     (+= (get stats "kept") 1)
-    (heapq.heappush queue #((weight lits) (next tie) clause))
+    (heapq.heappush queue #((if (and goal-bias (not clause.goal)) (* (weight lits) (/ goal-bias 2)) (weight lits))
+                            (next tie) clause))
     (when age-ratio (heapq.heappush by-age #(clause.id 0 clause)))
     clause)
 
