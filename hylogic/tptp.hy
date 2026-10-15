@@ -249,11 +249,24 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
         axioms (if (and (= equality 1) problem.has-equality)
                    [#* problem.premises #* (equality-axioms [#* problem.premises problem.goal])]
                    problem.premises)
+        search-options (dfor [k v] (.items options) :if (not-in k #{"superposition" "portfolio"}) k v)
+        budget (- (* 0.8 time-limit) (- (time.monotonic) started))
+        main-share (if (.get options "portfolio" 0) (/ (get options "portfolio") 100) 1)
         result (prove problem.goal axioms :limit limit
-                      :timeout (max 0.5 (- (* 0.8 time-limit) (- (time.monotonic) started)))
+                      :timeout (max 0.5 (* main-share budget))
                       :superposition (if (= equality 2) 1 (.get options "superposition" 0))
-                      #** (dfor [k v] (.items options) :if (!= k "superposition") k v))
+                      #** search-options)
         model None)
+  ;; portfolio: if the main search fails, plain resolution with fair selection gets
+  ;; the rest of the search time; it finds some proofs that ordering prunes away
+  (when (and (.get options "portfolio" 0) (not result.proved) (!= result.status "saturated"))
+    (setv rest (- (* 0.8 time-limit) (- (time.monotonic) started)))
+    (when (> rest 0.5)
+      (setv second (prove problem.goal axioms :limit limit :timeout rest
+                          :age-ratio (.get options "age_ratio" 10)
+                          :definitional (.get options "definitional" False)))
+      (when (or second.proved (and (= second.status "saturated") (not problem.has-equality)))
+        (setv result second))))
   ;; the two model finders find different countermodels (benchmarks/tptp):
   ;; enumerating function tables, then flattening into SAT; they share the rest
   (when (not result.proved)
