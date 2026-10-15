@@ -260,6 +260,46 @@ E, and `to-dimacs` writes the SAT clauses for any SAT solver. With
 `pip install "hylogic[z3]"`, `check-with-z3` runs Z3 directly.
 [benchmarks/](benchmarks/) compares the four methods on the same problems.
 
+## TPTP problems, E, Vampire and Lean
+
+HyLogic reads problems in TPTP, the standard language of first-order
+provers, and answers the way they do, with an SZS status line:
+
+```bash
+python -m hylogic.tptp --time-limit 10 PUZ001+1.p
+# % SZS status Theorem for PUZ001+1
+```
+
+For problems beyond its own prover, HyLogic hands them to E or Vampire when
+they are installed, reads the proof they print, and shows it as its own
+numbered steps:
+
+```hy
+(import hylogic.external [prove-external])
+(setv r (prove-external '(Mortal socrates) ['(∀ [x] (→ (Man x) (Mortal x))) '(Man socrates)]
+                        :prover "vampire"))
+(for [line (.proof r)] (print line))
+```
+
+```
+   1. ∀X0 ((man X0) → (mortal X0))                 input
+   2. (man socrates)                               input
+  ...
+  10. ¬(man socrates)                              resolution 7, 9
+  11. ⊥                                            resolution 10, 8
+```
+
+`to-lean` writes a problem as a Lean 4 theorem, and `check-lean` runs Lean on
+it, with `sorry` to check the statement or `grind` to let Lean's automation
+prove it.
+
+On a fixed sample of 234 TPTP theorems within 10 seconds, HyLogic's own
+prover proves 86 (39 before its ordered resolution, superposition and other
+improvements), Lean's `grind` 103 of the exported problems, E 207 and
+Vampire 231; through the bridge HyLogic presented every one of the 440 E and
+Vampire proofs. [benchmarks/tptp/](benchmarks/tptp/) has the plan, every
+step and the numbers.
+
 ## For AI agents
 
 `hylogic-mcp` is a [Model Context Protocol](https://modelcontextprotocol.io)

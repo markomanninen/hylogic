@@ -59,3 +59,19 @@ cnf(c_0_9, negated_conjecture, ($false), inference(cn,[status(thm)],[inference(r
   (setv r (prove-external '(Mortal socrates) ['(∀ [x] (→ (Man x) (Mortal x))) '(Man socrates)] :prover prover))
   (assert r.proved)
   (assert (in "⊥" (get (.proof r) -1))))
+
+(import shutil
+        hylogic.lean [to-lean check-lean])
+
+(defn test-lean-statement []
+  (setv text (to-lean ['(∀ [x] (→ (Man x) (Mortal x))) '(Man socrates)] '(Mortal socrates) :name "s"))
+  (assert (in "(«Man» : «$U» → Prop)" text))
+  (assert (in "(«$h1» : (∀ «x» : «$U», ((«Man» «x») → («Mortal» «x»))))" text))
+  (assert (.endswith text "sorry\n")))
+
+(defn test-lean-checks-and-proves []
+  (when (is (shutil.which "lean") None) (pytest.skip "lean is not installed"))
+  (setv premises ['(∀ [x] (→ (Man x) (Mortal x))) '(Man socrates)])
+  (assert (get (check-lean (to-lean premises '(Mortal socrates) :tactic "grind")) 0))
+  ;; grind must not prove what does not follow
+  (assert (not (get (check-lean (to-lean premises '(Man plato) :tactic "grind")) 0))))
