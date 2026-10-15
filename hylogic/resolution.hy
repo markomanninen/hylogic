@@ -29,7 +29,7 @@ new clauses that are neither duplicates nor subsumed by older ones."
         hylogic.superposition :as sp
         itertools [count]
         hylogic.formulas [basic]
-        hylogic.terms [term compound? show size variables-of]
+        hylogic.terms [term variable? compound? show size variables-of]
         hylogic.unify [unify substitute match-term rename FRESH])
 
 (setv QUANTIFIERS #{"forall" "exists"}
@@ -224,6 +224,19 @@ new clauses that are neither duplicates nor subsumed by older ones."
   predicate with opposite signs. Checking this first skips most futile work."
   (frozenset (gfor l lits #((negative? l) (_predicate (atom-of l))))))
 
+(defn symbols [lits]
+  "The constants and function symbols of a clause. Matching only instantiates
+  variables, so a clause can subsume another only if its symbols occur there too."
+  (setv found #{})
+  (defn walk [t]
+    (cond
+      (variable? t) None
+      (compound? t) (do (.add found #((get t 0) (- (len t) 1))) (for [a (cut t 1 None)] (walk a)))
+      True (.add found #(t 0))))
+  (for [l lits  :setv a (atom-of l)]
+    (when (compound? a) (for [x (cut a 1 None)] (walk x))))
+  (frozenset found))
+
 (defn _predicate [atom] (if (compound? atom) (get atom 0) atom))
 
 (defn eligible [lits]
@@ -342,8 +355,10 @@ new clauses that are neither duplicates nor subsumed by older ones."
     (setv key (canonical lits))
     (when (in key seen) (return None))
     (.add seen key)
-    (setv clause.features (features lits))
-    (when (any (gfor p processed (and (or (not index) (<= p.features clause.features))
+    (setv clause.features (features lits)
+          clause.symbols (symbols lits))
+    (when (any (gfor p processed (and (or (not index) (and (<= p.features clause.features)
+                                                           (<= p.symbols clause.symbols)))
                                       (subsumes? p.literals lits))))
       (return None))
     (setv clause.id (next ids)
@@ -382,12 +397,14 @@ new clauses that are neither duplicates nor subsumed by older ones."
   (while True
     (setv given (pick))
     (when (is given None) (break))
-    (when (any (gfor p processed (and (or (not index) (<= p.features given.features))
+    (when (any (gfor p processed (and (or (not index) (and (<= p.features given.features)
+                                                           (<= p.symbols given.symbols)))
                                       (subsumes? p.literals given.literals))))
       (continue))
     ;; drop processed clauses that the given clause makes redundant
     (setv processed (lfor p processed
-                          :if (not (and (or (not index) (<= given.features p.features))
+                          :if (not (and (or (not index) (and (<= given.features p.features)
+                                                             (<= given.symbols p.symbols)))
                                         (subsumes? given.literals p.literals)))
                           p))
     (.append processed given)

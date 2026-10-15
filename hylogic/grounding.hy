@@ -13,6 +13,7 @@ satisfiable, so EPR problems get an exact answer either way. This is the idea
 behind instantiation-based provers such as iProver."
 
 (import itertools [product]
+        time
         hylogic.terms [variable? compound? show variables-of]
         hylogic.unify [instantiate]
         hylogic.sat [dpll])
@@ -50,7 +51,7 @@ behind instantiation-based provers such as iProver."
           (.append out [#("not" #("=" (get args i) b)) #("not" #(p #* args)) #(p #* moved)])))))
   out)
 
-(defn ground-clauses [clauses [max-clauses 200000]]
+(defn ground-clauses [clauses [max-clauses 50000] [deadline None]]
   "All ground instances of EPR clauses (with equality axioms if = occurs),
   or None if the clauses are not EPR or the instances would be too many."
   (setv [constants predicates functional] (_symbols clauses))
@@ -60,6 +61,7 @@ behind instantiation-based provers such as iProver."
   (for [c clauses]
     (setv vs (variables-of (tuple c)))
     (when (> (+ (len out) (** (len cs) (len vs))) max-clauses) (return None))
+    (when (and deadline (> (time.monotonic) deadline)) (return None))
     (for [values (product cs :repeat (len vs))]
       (setv s (dict (zip vs values)))
       (.append out (lfor l c (instantiate l s)))))
@@ -71,7 +73,7 @@ behind instantiation-based provers such as iProver."
 
 (defn decide-epr [clauses [deadline None]]
   "proved (unsatisfiable), saturated (satisfiable), or None when grounding does not apply."
-  (setv ground (ground-clauses clauses))
+  (setv ground (ground-clauses clauses :deadline deadline))
   (when (is ground None) (return None))
   (setv atoms {} cnf [])
   (for [c ground]

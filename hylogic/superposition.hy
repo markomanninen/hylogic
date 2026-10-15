@@ -91,6 +91,9 @@ Vampire use; this is a small version of it without literal selection."
 
 (defn superpositions [from-clause into-clause]
   "Superposition from the positive equations of from-clause into into-clause."
+  ;; nothing to do without a positive equation; checked before the costly renaming
+  (when (not (any (gfor l from-clause (and (not (negative? l)) (equation? l)))))
+    (return))
   ;; rename apart with one mapping, so a variable stays the same across the clause
   (setv mapping {}
         into (frozenset (gfor l into-clause (rename l mapping))))

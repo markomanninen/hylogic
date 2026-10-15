@@ -242,14 +242,15 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
             hylogic.grounding [decide-epr])
     (setv clauses (lfor f [#* problem.premises #("not" problem.goal)]
                           c (clausify f (.get options "definitional" False)) c)
-          verdict (decide-epr clauses :deadline (+ started (* 0.5 time-limit))))
+          verdict (decide-epr clauses :deadline (+ started (* 0.25 time-limit))))
     (when verdict
       (return #((szs-status problem verdict None True) (Result verdict None {"kept" 0 "generated" 0}) problem))))
   (setv problem problem
         axioms (if (and (= equality 1) problem.has-equality)
                    [#* problem.premises #* (equality-axioms [#* problem.premises problem.goal])]
                    problem.premises)
-        result (prove problem.goal axioms :limit limit :timeout (* 0.8 time-limit)
+        result (prove problem.goal axioms :limit limit
+                      :timeout (max 0.5 (- (* 0.8 time-limit) (- (time.monotonic) started)))
                       :superposition (if (= equality 2) 1 (.get options "superposition" 0))
                       #** (dfor [k v] (.items options) :if (!= k "superposition") k v))
         model None)
