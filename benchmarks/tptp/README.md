@@ -177,3 +177,39 @@ Started on the `prover-gap-2` branch, the same sample and time limit.
 | Finite model finder in the Paradox style: functions flattened into predicates with totality and functionality clauses, models searched with SAT for growing domain sizes. For problems whose axioms bound the domain (the EPR algebra problems), no model up to the bound means a theorem | most of the 13 unsolved EPR theorems, and a few more non-theorems |
 | Goal-directed clause selection: prefer clauses descended from the negated goal, as the set-of-support idea and E's heuristics do | 5 to 15 more theorems, mostly NEQ |
 | Term indexing for unification and subsumption candidates | faster searches, a few more theorems at the margin |
+
+### Results of round two
+
+| Step | NEQ r0 | NEQ r1 | NEQ r2 | EQ r0 | EQ r1 | EQ r2 | Non-theorems | All | Wrong |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Round one's defaults | 31 | 5 | 0 | 21 | 26 | 3 | 18 | 104 | 0 |
+| + flattening model finder, prover keeps 80 % of the time | 31 | 5 | 0 | 21 | 26 | 3 | 20 | 106 | 0 |
+| + goal-directed selection, bias 3 | 31 | 5 | 0 | 20 | 29 | 7 | 20 | 112 | 0 |
+| + goal-directed selection, bias 6 (the new default) | 31 | 5 | 2 | 19 | 31 | 9 | 20 | 117 | 0 |
+| + goal-directed selection, bias 10 | 31 | 5 | 1 | 21 | 30 | 7 | 20 | 115 | 0 |
+
+**Finite models.** The flattening model finder (`hylogic.finite`, after
+Paradox) did not solve the EPR algebra problems: they are ground problems
+with functions defined only on the constants of one algebra, so neither a
+domain axiom nor closure under the functions bounds their models, and
+deciding them needs ground equality reasoning (congruence closure inside the
+SAT search, as in Z3), which is a larger piece of work. As a model finder it
+pays off: it finds 17 of the 40 countermodels, the old finder 18, and the two
+together 20, as many as Vampire. Giving it more time at the prover's expense
+cost two theorems, so the prover keeps 80 % of the time and the finders
+share the rest.
+
+**A soundness bug.** The first goal-directed runs answered
+CounterSatisfiable for SWB020+2, a theorem. The prover had saturated without
+a proof: ordered resolution chose the selected literal by size with ties
+broken by the printed literal, which includes variable names, and a partner
+clause was renamed before its eligible literals were computed, so one clause
+could select different literals at different times. Ordered resolution is
+complete only with a fixed selection. Eligibility is now computed before
+renaming, every combination proves SWB020+2, and a regression test covers
+it. The earlier rounds had no wrong answers, so their numbers stand.
+
+**Goal-directed selection.** Making clauses that do not descend from the
+negated goal look heavier (6/2 = 3 times) kept the search near the goal and
+helped where the hypothesis did not expect it: the harder equality theorems,
+from 26 to 31 and from 3 to 9, not the NEQ ones.
