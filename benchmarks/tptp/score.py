@@ -12,8 +12,8 @@ SOLVED = {"Theorem", "Unsatisfiable", "CounterSatisfiable", "Satisfiable"}
 WRONG = {("Theorem", "CounterSatisfiable"), ("Theorem", "Satisfiable"),
          ("CounterSatisfiable", "Theorem"), ("CounterSatisfiable", "Unsatisfiable")}
 
-print("| Prover | " + " | ".join(CELLS) + " | All | Wrong |")
-print("|---|" + "---:|" * (len(CELLS) + 2))
+print("| Prover | " + " | ".join(CELLS) + " | All | Wrong | Errors |")
+print("|---|" + "---:|" * (len(CELLS) + 3))
 for path in sys.argv[1:]:
     rows = [json.loads(l) for l in open(path)]
     by_cell = defaultdict(list)
@@ -26,6 +26,7 @@ for path in sys.argv[1:]:
         ok = sum(r["status"] == r["expected"] or (r["expected"] == "Theorem" and r["status"] == "Unsatisfiable") for r in rs)
         cells.append(f"{ok}/{len(rs)}")
     total = sum(r["status"] in SOLVED and (r["expected"], r["status"]) not in WRONG for r in rows)
-    print(f"| {Path(path).stem} | " + " | ".join(cells) + f" | {total}/{len(rows)} | {len(wrong)} |")
+    errors = sum(r["status"] == "Error" for r in rows)
+    print(f"| {Path(path).stem} | " + " | ".join(cells) + f" | {total}/{len(rows)} | {len(wrong)} | {errors} |")
     if wrong:
         print("  WRONG:", ", ".join(wrong))

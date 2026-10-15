@@ -68,6 +68,16 @@ CounterSatisfiable. "Wrong" counts answers that contradict the known status.
 | Vampire 5.1.0 (`--mode casc`) | 40 | 40 | 33 | 40 | 40 | 38 | 20 | 251 | 0 |
 | E 3.2.5 (`--auto`) | 40 | 38 | 22 | 39 | 40 | 28 | 16 | 223 | 0 |
 | HyLogic, baseline | 22 | 2 | 0 | 9 | 6 | 0 | 18 | 57 | 0 |
+| Fair selection, age ratio 1 | 23 | 2 | 0 | 8 | 9 | 0 | 18 | 60 | 0 |
+| Fair selection, age ratio 3 | 23 | 2 | 0 | 10 | 11 | 0 | 18 | 64 | 0 |
+| Fair selection, age ratio 5 | 23 | 2 | 0 | 11 | 11 | 0 | 18 | 65 | 0 |
+| Fair selection, age ratio 10 | 24 | 2 | 0 | 11 | 11 | 0 | 18 | 66 | 0 |
+| Definitional clause form, threshold 8 or 64 | 22 | 2 | 0 | 9 | 6 | 0 | 18 | 57 | 0 |
+| Equality axioms | 22 | 2 | 0 | 8 | 2 | 0 | 15 | 49 | 0 |
+| Superposition | 22 | 2 | 0 | 12 | 10 | 0 | 18 | 64 | 0 |
+| Fair 10 + superposition + ordered resolution | 28 | 4 | 0 | 17 | 25 | 2 | 18 | 94 | 0 |
+| + feature indexing | 29 | 4 | 0 | 18 | 25 | 3 | 18 | 97 | 0 |
+| + definitional clause form | 31 | 5 | 0 | 20 | 26 | 3 | 18 | 103 | 0 |
 
 Out of 40 (34 for NEQ r2).
 
@@ -80,3 +90,25 @@ worse. On the non-theorems HyLogic nearly matched Vampire, 18 against 20,
 because the finite model finder settles small counter-satisfiable problems
 quickly. The median HyLogic run used the whole 10 seconds, Vampire's took
 0.04 seconds.
+
+**Step 2, round 1: one change at a time.** Fair selection helped a little,
+more with more weight on age: 66 at ratio 10, nine more than the baseline,
+mostly equality problems (the hypothesis said NEQ). Definitional clause form
+changed nothing, because these small problems have no nested equivalences to
+blow up; on Andrews' challenge it cut the clauses from 1,296 to 47 but made
+the search slower. Equality axioms made things worse, 49, as the textbooks
+warn: they resolve with almost everything. Superposition alone gave 64, seven
+more, all of them equality theorems.
+
+**Step 2, round 2: together.** Ordered resolution with literal selection is
+the change that mattered most: with fair selection and superposition it
+lifted the total to 94, and the rating 0.01 to 0.20 equality theorems from 6
+to 25. Feature indexing added 3 more by saving time, and definitional clause
+form 6 more once the rest was in place: 103 in all, 81 more theorems than the
+baseline's 39 plus the same 18 non-theorems. No step gave a wrong answer.
+
+Two bugs turned up on the way and were fixed: matching applied with chained
+substitution looped when a rule and a term shared variable names, and the
+model finder built every function interpretation before checking its time
+limit. A third failure was not in HyLogic: a zsh command passed all options
+as one argument, so the first round 2 run failed on every problem.
