@@ -34,7 +34,7 @@ formed, and grind asks Lean's own automation to find the proof."
   (setv op (operator-of f))
   (cond
     (in op QUANTIFIERS)
-      (+ "(" (if (= op "forall") "∀" "∃") " " (.join " " (map _name (get f 1))) " : U, " (_formula (get f 2)) ")")
+      (+ "(" (if (= op "forall") "∀" "∃") " " (.join " " (map _name (get f 1))) " : " DOMAIN ", " (_formula (get f 2)) ")")
     (= op "not") (+ "¬" (_formula (get f 1)))
     op (do
          (setv xs (lfor a (args-of f) (_formula a)))
@@ -48,7 +48,10 @@ formed, and grind asks Lean's own automation to find the proof."
     (compound? f) (_term f)
     True (_name f)))
 
-(defn _arrow [n result] (.join " → " [#* (* ["U"] n) result]))
+;; the domain type; $ cannot start a TPTP name, so no symbol can clash with it
+(setv DOMAIN "«$U»")
+
+(defn _arrow [n result] (.join " → " [#* (* [DOMAIN] n) result]))
 
 (defn to-lean [premises goal [name "problem"] [tactic "sorry"]]
   "A Lean 4 theorem saying that the premises entail the goal."
@@ -59,10 +62,12 @@ formed, and grind asks Lean's own automation to find the proof."
   (for [p (sorted (get sig "propositions"))] (.append params f"({(_name p)} : Prop)"))
   (for [[p n] (sorted (.items (get sig "predicates")))]
     (when (!= p "=") (.append params (+ "(" (_name p) " : " (_arrow n "Prop") ")"))))
-  (for [[f n] (sorted (.items (get sig "functions")))] (.append params (+ "(" (_name f) " : " (_arrow n "U") ")")))
-  (for [c (sorted (get sig "constants"))] (.append params f"({(_name c)} : U)"))
-  (for [[i f] (enumerate fs)] (.append params f"(h{(+ i 1)} : {(_formula f)})"))
-  (+ "theorem " (_name name) " {U : Type} [Nonempty U]\n    "
+  (for [[f n] (sorted (.items (get sig "functions")))] (.append params (+ "(" (_name f) " : " (_arrow n DOMAIN) ")")))
+  (for [c (sorted (get sig "constants"))] (.append params (+ "(" (_name c) " : " DOMAIN ")")))
+  (for [[i f] (enumerate fs)] (.append params (+ "(«$h" (str (+ i 1)) "» : " (_formula f) ")")))
+  ;; large problems nest deeply; Lean's default recursion limit is too small for them
+  (+ "set_option maxRecDepth 100000 in\n"
+     "theorem " (_name name) " {" DOMAIN " : Type} [Nonempty " DOMAIN "]\n    "
      (.join "\n    " params)
      " :\n    " (_formula g) " := by\n  " tactic "\n"))
 
