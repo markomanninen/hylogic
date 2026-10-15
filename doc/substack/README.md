@@ -1,7 +1,7 @@
 # Article: Where a Lisp still fits next to AI agents
 
 A Substack article on five measurements of where Hy, and Lisp notation in
-general, helps AI agents and where it does not, with hylogic as the
+general, helps AI agents and where it does not, with HyLogic as the
 positive case.
 
 | File | Contents |

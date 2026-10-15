@@ -67,8 +67,8 @@ table("table2_tokens", "Tokens to describe a page's interactive elements to a mo
        ["JSON, compact", "78,730", "1.52"], ["JSON, indented", "99,246", "1.91"]],
       "1,661 elements from Wikipedia, Hacker News and GitHub's login page, counted with OpenAI's o200k tokenizer.",
       highlight=lambda row: row[0].startswith("HyML"))
-table("table3_checker", "Arguments judged correctly, with and without hylogic's checker",
+table("table3_checker", "Arguments judged correctly, with and without HyLogic's checker",
       ["", "Without tool", "With tool", "Cost with the tool"],
       [["Claude Haiku", "67 of 70", "69 of 70", "1.7 times"], ["Claude Opus", "70 of 70", "70 of 70", "1.6 times"]],
-      "70 generated arguments in English, each checked with hylogic and Z3, judged once per model and condition.")
+      "70 generated arguments in English, each checked with HyLogic and Z3, judged once per model and condition.")
 print(sorted(p.name for p in OUT.iterdir()))
