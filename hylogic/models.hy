@@ -81,14 +81,17 @@ for small domains.
     True f))
 
 (defn _tables [functions domain]
-  "Every way to interpret the functions over the domain."
+  "Every way to interpret the functions over the domain, one at a time.
+  There can be billions (4^16 for one binary function over four elements), so
+  nothing is built in advance."
   (setv names (sorted functions)
-        options [])
-  (for [name names]
-    (setv inputs (list (product domain :repeat (get functions name))))
-    (.append options (lfor outputs (product domain :repeat (len inputs))
-                           (dict (zip inputs outputs)))))
-  (gfor choice (product #* options) (dict (zip names choice))))
+        inputs (lfor name names (list (product domain :repeat (get functions name)))))
+  (defn tables [i chosen]
+    (if (= i (len names))
+        (yield (dict chosen))
+        (for [outputs (product domain :repeat (len (get inputs i)))]
+          (yield :from (tables (+ i 1) [#* chosen #((get names i) (dict (zip (get inputs i) outputs)))])))))
+  (tables 0 []))
 
 (defn find-model [formulas [max-size 4] [max-tries 20000] [deadline None]]
   "A smallest finite model of the formulas, or None if none has at most max-size elements."

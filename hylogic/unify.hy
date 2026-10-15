@@ -50,6 +50,15 @@ rewritten must not change."
       (tuple (gfor x t (substitute x s)))
       t))
 
+(defn instantiate [t s]
+  "Replace the variables of t by their values in s, once, without following chains.
+  This is how a match applies: the matched term's variables may share names with
+  the pattern's, and following chains could then loop (?x -> ?y -> ?x)."
+  (cond
+    (variable? t) (.get s t t)
+    (compound? t) (tuple (gfor x t (instantiate x s)))
+    True t))
+
 (defn match-term [pattern t [s None]]
   "A substitution for the variables of pattern that turns it into t, or None.
   Variables in t are treated like constants."

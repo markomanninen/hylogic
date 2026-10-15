@@ -354,7 +354,7 @@ new clauses that are neither duplicates nor subsumed by older ones."
         (when rule (.append rules rule))))
     (for [[lits parents rule] (inferences given processed)]
       (+= (get stats "generated") 1)
-      (when (and deadline (= (% (get stats "generated") 256) 0) (> (time.monotonic) deadline))
+      (when (and deadline (> (time.monotonic) deadline))
         (return (Result "timeout" None stats)))
       (setv new (add (Clause lits parents rule)))
       (when (and new (not new.literals))

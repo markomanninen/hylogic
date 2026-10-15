@@ -114,3 +114,11 @@
   test-hard-problems-need-a-larger-search [name axioms goal]
   (assert (= (. (prove goal axioms :limit 2000) status) "gave-up"))
   (assert (. (prove goal axioms :limit 10000) proved)))
+
+(defn test-matching-with-shared-variable-names-does-not-loop []
+  ;; the rule's ?x and ?y meet a term that uses the same names swapped
+  (import hylogic.superposition [demodulate orient])
+  (setv rule (orient #("=" #("m" "?x" "?y") "?x")))
+  (setv [out changed] (demodulate (frozenset [#("p" #("m" "?y" "?x"))]) [rule]))
+  (assert changed)
+  (assert (= out (frozenset [#("p" "?y")]))))

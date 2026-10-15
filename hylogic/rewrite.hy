@@ -22,7 +22,7 @@ and the condition has to become a function of the rule's bindings."
 
 (import collections [namedtuple]
         hylogic.terms [term compound? show]
-        hylogic.unify [match-term substitute])
+        hylogic.unify [match-term instantiate])
 
 (setv Rule (namedtuple "Rule" ["lhs" "rhs" "condition"]))
 
@@ -76,7 +76,7 @@ and the condition has to become a function of the rule's bindings."
   (for [rule rules]
     (setv s (match-term rule.lhs t))
     (when (and (is-not s None) (or (is rule.condition None) (rule.condition s)))
-      (return #((substitute rule.rhs s) rule))))
+      (return #((instantiate rule.rhs s) rule))))
   None)
 
 (defn normalize [t rules [limit 10000]]

@@ -19,7 +19,7 @@ Vampire use; this is a small version of it without literal selection."
 
 (import collections [Counter]
         hylogic.terms [variable? compound? size]
-        hylogic.unify [unify substitute match-term rename])
+        hylogic.unify [unify substitute match-term rename instantiate])
 
 ;; The Knuth-Bendix ordering
 
@@ -146,11 +146,11 @@ Vampire use; this is a small version of it without literal selection."
   (for [[l r] rules]
     (setv m (match-term l t))
     (when (is-not m None)
-      (setv [t2 n] (_rewrite-term (substitute r m) rules (- budget used 1)))
+      (setv [t2 n] (_rewrite-term (instantiate r m) rules (- budget used 1)))
       (return #(t2 (+ used 1 n)))))
   #(t used))
 
-(defn demodulate [literals rules [budget 200]]
+(defn demodulate [literals rules [budget 50]]
   "The literals with every argument rewritten by the rules; #(literals changed?)."
   (when (not rules) (return #(literals False)))
   (setv out [] changed False)
