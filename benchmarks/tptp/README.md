@@ -78,6 +78,7 @@ CounterSatisfiable. "Wrong" counts answers that contradict the known status.
 | Fair 10 + superposition + ordered resolution | 28 | 4 | 0 | 17 | 25 | 2 | 18 | 94 | 0 |
 | + feature indexing | 29 | 4 | 0 | 18 | 25 | 3 | 18 | 97 | 0 |
 | + definitional clause form | 31 | 5 | 0 | 20 | 26 | 3 | 18 | 103 | 0 |
+| + EPR grounding (the new defaults) | 31 | 5 | 0 | 21 | 26 | 3 | 18 | 104 | 0 |
 
 Out of 40 (34 for NEQ r2).
 
@@ -112,3 +113,20 @@ substitution looped when a rule and a term shared variable names, and the
 model finder built every function interpretation before checking its time
 limit. A third failure was not in HyLogic: a zsh command passed all options
 as one argument, so the first round 2 run failed on every problem.
+
+**Step 2, round 3: grounding.** Function-free problems can be decided exactly
+by substituting every constant for every variable and handing the result to
+the SAT solver. It added one problem, not the thirteen EPR problems still
+open: those algebra problems are EPR in TPTP's sense because an axiom limits
+the domain to their constants, but they have functions, so grounding over
+constants alone does not apply. A Paradox-style model finder that turns
+functions into predicates is the method for them, and is left for later.
+
+**Step 3: the bridge.** `hylogic.external` runs E or Vampire on a problem and
+reads the proof they print in TSTP, the TPTP proof format, into HyLogic's
+numbered steps with rules and parents; E's nested inferences are unwrapped
+into chains such as `cn ∘ rw ∘ spm`. On the sample, Vampire proved 231
+problems and E 209, every one of them printed a proof, and HyLogic read all
+of them to the final contradiction: 100 % against a target of 90 %. With the
+bridge, HyLogic solves what Vampire solves and still shows the proof its own
+way.
