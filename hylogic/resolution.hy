@@ -269,7 +269,7 @@ new clauses that are neither duplicates nor subsumed by older ones."
   (defn [property] proved [self] (= self.status "proved"))
   (defn proof [self]
     "The proof as numbered lines, from input clauses to the empty clause."
-    (when (not self.proved) (return []))
+    (when (or (not self.proved) (is self.clause None)) (return []))
     (setv order [] seen #{})
     (defn visit [c]
       (when (not-in c.id seen)

@@ -226,7 +226,7 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
     (= result-status "timeout") "Timeout"
     True "GaveUp"))
 
-(defn solve [path [time-limit 10.0] [limit 1000000] [equality 0] #** options]
+(defn solve [path [time-limit 10.0] [limit 1000000] [equality 0] [epr 0] #** options]
   "Read and attempt a TPTP problem. Returns the SZS status and the result.
   equality 1 adds the equality axioms when the problem uses =, and equality 2
   builds equality into the search with superposition. Superposition here may
@@ -235,7 +235,17 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
           hylogic.models [find-model]
           hylogic.equality [equality-axioms])
   (setv started (time.monotonic)
-        problem (read-problem path)
+        problem (read-problem path))
+  ;; effectively propositional problems are decided exactly by grounding and SAT
+  (when epr
+    (import hylogic.resolution [clausify Result]
+            hylogic.grounding [decide-epr])
+    (setv clauses (lfor f [#* problem.premises #("not" problem.goal)]
+                          c (clausify f (.get options "definitional" False)) c)
+          verdict (decide-epr clauses :deadline (+ started (* 0.5 time-limit))))
+    (when verdict
+      (return #((szs-status problem verdict None True) (Result verdict None {"kept" 0 "generated" 0}) problem))))
+  (setv problem problem
         axioms (if (and (= equality 1) problem.has-equality)
                    [#* problem.premises #* (equality-axioms [#* problem.premises problem.goal])]
                    problem.premises)
@@ -251,9 +261,10 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
   #((szs-status problem result.status model (= equality 1)) result problem))
 
 (defn main [[argv None]]
+  ;; the best combination measured in benchmarks/tptp; --set overrides each
   (setv args (list (or argv (cut sys.argv 1 None)))
         time-limit 10.0
-        options {})
+        options {"age_ratio" 10 "equality" 2 "ordered" 1 "index" 1 "definitional" 8 "epr" 1})
   ;; --set name=value passes a search option to prove, for experiments
   (while (in "--set" args)
     (setv i (.index args "--set")

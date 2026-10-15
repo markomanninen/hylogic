@@ -102,3 +102,13 @@
                        "fof(self_inv, axiom, ! [X] : m(X,X) = e).\n"
                        "fof(goal, conjecture, ! [X,Y] : m(X,Y) = m(Y,X)).\n"))
   (assert (= (get (solve path :time-limit 20 :equality 2) 0) "Theorem")))
+
+(defn test-epr-problems-are-decided-by-grounding [tmp-path]
+  (setv d (/ tmp-path "Problems" "TST"))
+  (.mkdir d :parents True)
+  ;; a theorem: with a = b and p(a), p(b) holds
+  (.write-text (/ d "TST007+1.p") "fof(e, axiom, a = b).\nfof(p, axiom, ! [X] : (q(X) => p(X))).\nfof(q, axiom, q(a)).\nfof(g, conjecture, p(b)).\n")
+  ;; not a theorem: nothing says a and b are equal
+  (.write-text (/ d "TST008+1.p") "fof(p, axiom, p(a)).\nfof(g, conjecture, p(b)).\n")
+  (assert (= (get (solve (/ d "TST007+1.p") :time-limit 5 :epr 1) 0) "Theorem"))
+  (assert (= (get (solve (/ d "TST008+1.p") :time-limit 5 :epr 1) 0) "CounterSatisfiable")))

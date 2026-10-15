@@ -17,7 +17,8 @@ negative integer is a negated variable.
   (satisfiable '(∧ (∨ P Q) (¬ P)))     ; {\"P\" False \"Q\" True}
   (valid? '(→ (∧ P Q) P))              ; True"
 
-(import hylogic.formulas [basic operator-of args-of QUANTIFIERS]
+(import time
+        hylogic.formulas [basic operator-of args-of QUANTIFIERS]
         hylogic.terms [compound? show])
 
 (defclass CNF []
@@ -74,15 +75,21 @@ negative integer is a negated variable.
   (.add cnf (_encode (basic form) cnf))
   cnf)
 
-(defn dpll [clauses]
-  "A satisfying assignment {variable: bool} for the clauses, or None."
-  (_dpll (lfor c clauses (tuple c)) {}))
+(defclass _Timeout [Exception])
+
+(defn dpll [clauses [deadline None]]
+  "A satisfying assignment {variable: bool} for the clauses, None if there is none,
+  or the string timeout if the deadline (a time.monotonic value) passes first."
+  (try
+    (_dpll (lfor c clauses (tuple c)) {} deadline)
+    (except [_Timeout] "timeout")))
 
 (defn _value [lit assignment]
   (setv v (.get assignment (abs lit)))
   (if (is v None) None (= v (> lit 0))))
 
-(defn _dpll [clauses assignment]
+(defn _dpll [clauses assignment [deadline None]]
+  (when (and deadline (> (time.monotonic) deadline)) (raise (_Timeout)))
   (setv assignment (dict assignment))
   ;; unit propagation: a clause with one open literal and no true one forces it
   (setv changed True)
@@ -111,7 +118,7 @@ negative integer is a negated variable.
   (when (not counts) (return assignment))       ; every clause satisfied
   (setv var (max counts :key (fn [v] (get counts v))))
   (for [choice [True False]]
-    (setv result (_dpll clauses (| assignment {var choice})))
+    (setv result (_dpll clauses (| assignment {var choice}) deadline))
     (when (is-not result None) (return result)))
   None)
 
