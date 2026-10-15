@@ -231,7 +231,7 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
   equality 1 adds the equality axioms when the problem uses =, and equality 2
   builds equality into the search with superposition. Superposition here may
   be incomplete, so its saturation is not taken as a CounterSatisfiable answer."
-  (import hylogic.resolution [prove]
+  (import hylogic.resolution [prove clausify]
           hylogic.models [find-model]
           hylogic.equality [equality-axioms])
   (setv started (time.monotonic)
@@ -249,15 +249,24 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
         axioms (if (and (= equality 1) problem.has-equality)
                    [#* problem.premises #* (equality-axioms [#* problem.premises problem.goal])]
                    problem.premises)
-        result (prove problem.goal axioms :limit limit :timeout (* 0.8 time-limit)
+        result (prove problem.goal axioms :limit limit :timeout (* 0.6 time-limit)
                       :superposition (if (= equality 2) 1 (.get options "superposition" 0))
                       #** (dfor [k v] (.items options) :if (!= k "superposition") k v))
         model None)
+  ;; the two model finders find different countermodels (benchmarks/tptp):
+  ;; enumerating function tables, then flattening into SAT; they share the rest
   (when (not result.proved)
-    (setv remaining (- time-limit (- (time.monotonic) started)))
-    (when (> remaining 0.5)
+    (import hylogic.finite [find-finite-model distinct-constants])
+    (setv remaining (- time-limit (- (time.monotonic) started) 0.3))
+    (when (> remaining 0.4)
       (setv model (find-model [#* problem.premises #("not" problem.goal)] :max-size 3
-                              :deadline (+ (time.monotonic) (- remaining 0.3))))))
+                              :deadline (+ (time.monotonic) (/ remaining 2))))
+      (when (not model)
+        (setv clauses (lfor f [#* problem.premises #("not" problem.goal)]
+                            c (clausify f (.get options "definitional" False)) c)
+              found (find-finite-model clauses :max-size 6 :fixed-constants (distinct-constants clauses)
+                                       :deadline (- (+ started time-limit) 0.3))
+              model (isinstance found tuple)))))
   #((szs-status problem result.status model (= equality 1)) result problem))
 
 (defn main [[argv None]]

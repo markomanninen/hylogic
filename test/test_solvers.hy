@@ -131,3 +131,31 @@
         a (Argument (lfor [p q] (zip names (cut names 1 None)) #("=>" p q)) #("=>" (get names 0) (get names -1))))
   (assert a.valid)
   (assert (= a.method "SAT")))
+
+;; Finite models by flattening into SAT
+
+(import hylogic.finite [find-finite-model flatten-clause distinct-constants]
+        hylogic.resolution [clausify])
+
+(defn clauses-of-all [fs] (lfor f fs c (clausify f) c))
+
+(defn test-flattening []
+  (setv flat (flatten-clause [#("p" #("f" "a"))]))
+  ;; p(f(a)) becomes p(y1) with ¬$fn(a, y2) and ¬$fn(f, y2, y1)
+  (assert (= (len flat) 3))
+  (assert (any (gfor l flat (and (= (get l 0) "not") (= (get l 1 1) "f"))))))
+
+(defn test-finite-model-for-a-function []
+  ;; everyone's mother loves them, but not everyone loves their mother
+  (setv found (find-finite-model (clauses-of-all ['(∀ [x] (Loves (mother x) x))
+                                                  '(¬ (∀ [x] (Loves x (mother x))))])))
+  (assert (isinstance found tuple)))
+
+(defn test-no-finite-model-for-a-theorem []
+  (assert (= (find-finite-model (clauses-of-all ['(∀ [x] (→ (Man x) (Mortal x))) '(Man socrates)
+                                                 '(¬ (Mortal socrates))]) :max-size 3)
+             "unsat")))
+
+(defn test-distinct-constants []
+  (assert (= (sorted (distinct-constants (clauses-of-all ['(¬ (= a b)) '(¬ (= b c)) '(¬ (= a c))])))
+             ["a" "b" "c"])))
