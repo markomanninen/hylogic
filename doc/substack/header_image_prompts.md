@@ -17,3 +17,12 @@ Color palette: muted slate blue-grey background, off-white paper tones for the t
 
 Atmosphere: calm, precise, thoughtful. No people, no hands, no robots, no logos, no padlocks, no shields.
 ```
+
+## Lettering changed to "HyLogic"
+
+The generated image said "Hy". The lettering was replaced locally rather than
+by regenerating, which could have changed the correctly spelled code on the
+tiles: the old lettering was covered with background copied from the empty
+area to its right, with soft edges, and "HyLogic" was set in Times New Roman
+Bold in the lettering's cream colour (248, 224, 193), placed so that the
+descenders stay clear of the code tiles.
