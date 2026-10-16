@@ -117,7 +117,7 @@ miss, recorded as its trap.
 | Trap | Change |
 |---|---|
 | `converse` | one rule turned around, "everyone who has a badge works remotely" where the chain needs the converse |
-| `some` | one "everyone who" weakened to "someone who" |
+| `some` | one "everyone who" weakened to "at least one person who" |
 | `scope` | "everyone trusts someone" taken as "someone is trusted by everyone" |
 | `other` | the chain starts from a fact about another person |
 

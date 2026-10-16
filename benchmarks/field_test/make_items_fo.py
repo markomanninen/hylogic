@@ -10,7 +10,7 @@ hasty reader can miss, and records which:
 
   converse    one rule turned around: "everyone who has a badge is a manager"
               where the chain needs "every manager has a badge"
-  some        one "everyone who" weakened to "someone who"
+  some        one "everyone who" weakened to "at least one person who"
   scope       "everyone trusts someone" read as "someone is trusted by everyone"
   other       the chain starts from a fact about another person
 
@@ -71,7 +71,9 @@ def only(p, q):  # only someone who p, q   (q -> p)
 
 
 def some(p, q):
-    return ("exists", ("x",), ("and", X(p[0]), X(q[0]))), f"Someone who {p[1]} {q[1]}."
+    # not "someone who p, q": English also reads that as a rule ("someone who
+    # knows the code can open the door"), and the field test pilot did so
+    return ("exists", ("x",), ("and", X(p[0]), X(q[0]))), f"At least one person who {p[1]} {q[1]}."
 
 
 def fact(name, p, positive=True):

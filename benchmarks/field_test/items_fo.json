@@ -161,7 +161,7 @@
   "id": "F3",
   "kind": "first-order",
   "trap": "some",
-  "text": "David has a company laptop. Someone who has a company laptop can enter the lab. Everyone who can enter the lab has done the safety training. Everyone who has done the safety training has a badge. Everyone who has a badge can see the payroll. Therefore, David can see the payroll.",
+  "text": "David has a company laptop. At least one person who has a company laptop can enter the lab. Everyone who can enter the lab has done the safety training. Everyone who has done the safety training has a badge. Everyone who has a badge can see the payroll. Therefore, David can see the payroll.",
   "premises": [
    "(Laptop David)",
    "∃x ((Laptop x) ∧ (Lab x))",
@@ -355,7 +355,7 @@
   "id": "F5",
   "kind": "first-order",
   "trap": "some",
-  "text": "Eva mentors a trainee. Only someone who is on call this week mentors a trainee. Everyone who is on call this week can see the payroll. Someone who can see the payroll has done the safety training. Everyone who has done the safety training is a manager. Therefore, Eva is a manager.",
+  "text": "Eva mentors a trainee. Only someone who is on call this week mentors a trainee. Everyone who is on call this week can see the payroll. At least one person who can see the payroll has done the safety training. Everyone who has done the safety training is a manager. Therefore, Eva is a manager.",
   "premises": [
    "(Mentor Eva)",
    "∀x ((Mentor x) → (Oncall x))",
@@ -625,7 +625,7 @@
   "id": "F8",
   "kind": "first-order",
   "trap": "some",
-  "text": "Ben works remotely. Someone who works remotely is on call this week. Everyone who is on call this week can see the payroll. Therefore, Ben can see the payroll.",
+  "text": "Ben works remotely. At least one person who works remotely is on call this week. Everyone who is on call this week can see the payroll. Therefore, Ben can see the payroll.",
   "premises": [
    "(Remote Ben)",
    "∃x ((Remote x) ∧ (Oncall x))",
@@ -857,7 +857,7 @@
   "id": "F11",
   "kind": "first-order",
   "trap": "some",
-  "text": "Anna is on call this week. Everyone who is on call this week works remotely. Someone who works remotely can see the payroll. No one who can see the payroll is an engineer. Therefore, Anna is not an engineer.",
+  "text": "Anna is on call this week. Everyone who is on call this week works remotely. At least one person who works remotely can see the payroll. No one who can see the payroll is an engineer. Therefore, Anna is not an engineer.",
   "premises": [
    "(Oncall Anna)",
    "∀x ((Oncall x) → (Remote x))",
@@ -1521,7 +1521,7 @@
   "id": "F18",
   "kind": "first-order",
   "trap": "some",
-  "text": "Ben is an engineer. Someone who is an engineer is on call this week. Everyone who is on call this week works remotely. Everyone who works remotely has done the safety training. Everyone who has done the safety training is a manager. Therefore, Ben is a manager.",
+  "text": "Ben is an engineer. At least one person who is an engineer is on call this week. Everyone who is on call this week works remotely. Everyone who works remotely has done the safety training. Everyone who has done the safety training is a manager. Therefore, Ben is a manager.",
   "premises": [
    "(Engineer Ben)",
    "∃x ((Engineer x) ∧ (Oncall x))",
@@ -1706,7 +1706,7 @@
   "id": "F20",
   "kind": "first-order",
   "trap": "some",
-  "text": "Ben mentors a trainee. Someone who mentors a trainee can enter the lab. Everyone who can enter the lab works remotely. Everyone who works remotely can see the payroll. Therefore, Ben can see the payroll.",
+  "text": "Ben mentors a trainee. At least one person who mentors a trainee can enter the lab. Everyone who can enter the lab works remotely. Everyone who works remotely can see the payroll. Therefore, Ben can see the payroll.",
   "premises": [
    "(Mentor Ben)",
    "∃x ((Mentor x) ∧ (Lab x))",
@@ -1940,7 +1940,7 @@
   "id": "F23",
   "kind": "first-order",
   "trap": "some",
-  "text": "Anna is an engineer. Everyone who is an engineer has a company laptop. Everyone who has a company laptop works remotely. Someone who works remotely can enter the lab. Everyone who can enter the lab has a badge. No one who has a badge is on call this week. Therefore, Anna is not on call this week.",
+  "text": "Anna is an engineer. Everyone who is an engineer has a company laptop. Everyone who has a company laptop works remotely. At least one person who works remotely can enter the lab. Everyone who can enter the lab has a badge. No one who has a badge is on call this week. Therefore, Anna is not on call this week.",
   "premises": [
    "(Engineer Anna)",
    "∀x ((Engineer x) → (Laptop x))",
@@ -2465,7 +2465,7 @@
   "id": "F29",
   "kind": "first-order",
   "trap": "some",
-  "text": "Ben has done the safety training. Only someone who has a company laptop has done the safety training. Everyone who has a company laptop can enter the lab. Everyone who can enter the lab works remotely. Someone who works remotely has a badge. Therefore, Ben has a badge.",
+  "text": "Ben has done the safety training. Only someone who has a company laptop has done the safety training. Everyone who has a company laptop can enter the lab. Everyone who can enter the lab works remotely. At least one person who works remotely has a badge. Therefore, Ben has a badge.",
   "premises": [
    "(Training Ben)",
    "∀x ((Training x) → (Laptop x))",
@@ -3406,7 +3406,7 @@
   "id": "F40",
   "kind": "first-order",
   "trap": "some",
-  "text": "Farid works remotely. Only someone who can see the payroll works remotely. Someone who can see the payroll has done the safety training. Everyone who has done the safety training can enter the lab. Therefore, Farid can enter the lab.",
+  "text": "Farid works remotely. Only someone who can see the payroll works remotely. At least one person who can see the payroll has done the safety training. Everyone who has done the safety training can enter the lab. Therefore, Farid can enter the lab.",
   "premises": [
    "(Remote Farid)",
    "∀x ((Remote x) → (Payroll x))",
