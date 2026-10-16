@@ -52,6 +52,28 @@ model up to k proves the clauses unsatisfiable: a theorem."
     (.append out (if (_negative? l) #("not" flat-atom) flat-atom)))
   [#* out #* extra])
 
+(defn split-clause [clause fresh]
+  "Flat clauses equivalent to the clause on every domain, each with fewer variables.
+  A clause A ∨ B whose parts share only the variables I becomes A ∨ s(I) and
+  ¬s(I) ∨ B, with s a new predicate (clause splitting, as in Paradox): grounding
+  then costs n^|A| + n^|B| instead of n^|A ∪ B| for a domain of n elements."
+  (setv clause (list clause) all-vars (variables-of (tuple clause)))
+  (when (<= (len all-vars) 3) (return [clause]))
+  (setv best None)
+  (for [v all-vars]
+    (setv a (lfor l clause :if (in v (variables-of l)) l)
+          b (lfor l clause :if (not-in v (variables-of l)) l))
+    (when (not b) (continue))
+    (setv va (set (variables-of (tuple a))) vb (set (variables-of (tuple b))))
+    (when (and (< (len va) (len all-vars)) (< (len vb) (len all-vars)))
+      (setv key #((max (len va) (len vb)) (+ (len va) (len vb))))
+      (when (or (is best None) (< key (get best 0)))
+        (setv best #(key a b (sorted (& va vb)))))))
+  (when (is best None) (return [clause]))
+  (setv [_ a b shared] best
+        atom #(f"$split{(next fresh)}" #* shared))
+  [#* (split-clause [#* a atom] fresh) #* (split-clause [#("not" atom) #* b] fresh)])
+
 (defn _signature [flat-clauses]
   "Predicates and functions (with constants as 0-ary functions) with arities."
   (setv preds {} funs {})
@@ -126,7 +148,7 @@ model up to k proves the clauses unsatisfiable: a theorem."
 
 (defclass _TooBig [Exception])
 
-(defn _encode [flat-clauses n preds funs [max-clauses 400000]]
+(defn _encode [flat-clauses n preds funs [max-clauses 400000] [deadline None]]
   "SAT clauses for a model of size n, with the variable numbering."
   (setv domain (list (range 1 (+ n 1))) vars {} cnf [])
   (defn var [key]
@@ -139,6 +161,7 @@ model up to k proves the clauses unsatisfiable: a theorem."
         (.append cnf [(- (var #("$fn" f #* args e1))) (- (var #("$fn" f #* args e2)))]))))
   (for [c flat-clauses]
     (setv vs (variables-of (tuple c)))
+    (when (and deadline (> (time.monotonic) deadline)) (raise (_TooBig)))
     (for [values (product domain :repeat (len vs))]
       (setv s (dict (zip vs values)) row [] satisfied False)
       (for [l c]
@@ -163,18 +186,21 @@ model up to k proves the clauses unsatisfiable: a theorem."
   not finish (too large, or out of time)."
   (setv fixed-constants (or fixed-constants [])
         fixed (dfor [i c] (enumerate fixed-constants) c (+ i 1))
-        flat (lfor c clauses (flatten-clause c fixed))
+        fresh (count 1)
+        flat (lfor c clauses  part (split-clause (flatten-clause c fixed) fresh) part)
         [preds funs] (_signature flat))
   (for [n (or sizes (range (max 1 (len fixed-constants)) (+ max-size 1)))]
     (when (and deadline (> (time.monotonic) deadline)) (return None))
     (try
-      (setv [cnf vars] (_encode flat n preds funs))
+      (setv [cnf vars] (_encode flat n preds funs :deadline deadline))
       (except [_TooBig] (return None)))
     (setv model (dpll cnf :deadline deadline))
     (cond
       (= model "timeout") (return None)
       (is-not model None)
-        (return #(n (lfor [key v] (.items vars) :if (.get model v False) key)))))
+        (return #(n (lfor [key v] (.items vars)
+                          :if (and (.get model v False) (not (.startswith (get key 0) "$split")))
+                          key)))))
   "unsat")
 
 (defn decide-finite [clauses [deadline None] [max-size 4]]

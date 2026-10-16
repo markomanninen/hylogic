@@ -82,10 +82,27 @@ new clauses that are neither duplicates nor subsumed by older ones."
     (in t env) (get env t)
     True t))
 
-(defn skolemize [f [env None] [universals #()]]
+(defn _free-names [f [bound #()]]
+  "The names occurring free in a formula: in its atoms, outside quantifiers binding them."
+  (setv out #{})
+  (defn walk [t bound]
+    (cond
+      (compound? t) (for [x (args t)] (walk x bound))
+      (and (isinstance t str) (not-in t bound)) (.add out t)))
+  (defn visit [g bound]
+    (setv op (if (connective? g) (get g 0) None))
+    (cond
+      (in op QUANTIFIERS) (visit (get g 2) #(#* bound #* (get g 1)))
+      (is op None) (walk g bound)
+      True (for [a (args g)] (visit a bound))))
+  (visit f bound)
+  out)
+
+(defn skolemize [f [env None] [universals #()] [keep-forall False]]
   "Give each universal variable a fresh clause variable (?x1, ...), replace each
-  existential one by a Skolem term over the universals in scope, and drop the
-  quantifiers. The formula must be in negation normal form."
+  existential one by a Skolem term over the universals it depends on, and drop the
+  quantifiers. The formula must be in negation normal form. keep-forall keeps
+  the universal quantifiers, over the new names, to mark their scope."
   (when (is env None) (setv env {}))
   (setv op (if (connective? f) (get f 0) None))
   (cond
@@ -96,10 +113,19 @@ new clauses that are neither duplicates nor subsumed by older ones."
         (if (= op "forall")
             (setv (get env v) f"?{v}{n}"
                   universals #(#* universals (get env v)))
-            (setv (get env v) (if universals #(f"sk{n}" #* universals) f"sk{n}"))))
-      (skolemize (get f 2) env universals))
+            ;; a Skolem term needs only the universals free under its quantifier
+            ;; (inner Skolemization): fewer arguments, smaller terms and models
+            (setv used (_free-names f)
+                  ;; through outer Skolem terms too: their universals count
+                  reached (sfor [name t] (.items env) :if (in name used) u (variables-of t) u)
+                  deps (tuple (gfor u universals :if (in u reached) u))
+                  (get env v) (if deps #(f"sk{n}" #* deps) f"sk{n}"))))
+      (setv body (skolemize (get f 2) env universals keep-forall))
+      (if (and keep-forall (= op "forall"))
+          #("forall" (tuple (gfor v (get f 1) (get env v))) body)
+          body))
     (is op None) (if (compound? f) #((get f 0) #* (gfor x (args f) (_replace-bound x env))) f)
-    True #(op #* (gfor a (args f) (skolemize a env universals)))))
+    True #(op #* (gfor a (args f) (skolemize a env universals keep-forall)))))
 
 (setv DEFINITIONS (count 1))
 
@@ -115,6 +141,7 @@ new clauses that are neither duplicates nor subsumed by older ones."
   Greenbaum, 1986), and the clause set grows linearly."
   (setv op (if (connective? f) (get f 0) None))
   (cond
+    (= op "forall") (cnf-clauses (get f 2) definitions max-product)
     (= op "and") (lfor a (args f) c (cnf-clauses a definitions max-product) c)
     (= op "or") (do
       (setv parts (lfor a (args f) (cnf-clauses a definitions max-product)))
@@ -123,10 +150,14 @@ new clauses that are neither duplicates nor subsumed by older ones."
         (for [p parts] (*= product (len p)))
         (when (> product max-product)
           (setv parts
-            (lfor p parts
+            (lfor [a p] (zip (args f) parts)
               (if (> (len p) 1)
                   (do
-                    (setv atom #(f"$def{(next DEFINITIONS)}" #* (variables-of (tuple (gfor c p l c l)))))
+                    ;; the name takes the part's free variables: those bound inside it
+                    ;; (marked by kept universal quantifiers) stay universal in its clauses
+                    (setv inside (_bound-inside a)
+                          atom #(f"$def{(next DEFINITIONS)}"
+                                 #* (gfor v (variables-of (tuple (gfor c p l c l))) :if (not-in v inside) v)))
                     (for [c p] (.append definitions [#("not" atom) #* c]))
                     [[atom]])
                   p)))))
@@ -143,10 +174,21 @@ new clauses that are neither duplicates nor subsumed by older ones."
 (defn tautology? [lits]
   (any (gfor l lits (in (complement l) lits))))
 
+(defn _bound-inside [f]
+  "The variables bound by universal quantifiers kept inside f."
+  (setv out #{})
+  (defn visit [g]
+    (when (connective? g)
+      (when (= (get g 0) "forall") (.update out (get g 1)))
+      (for [a (if (in (get g 0) QUANTIFIERS) [(get g 2)] (args g))] (visit a))))
+  (visit f)
+  out)
+
 (defn clausify [formula [definitional False]]
   "A formula (quoted Hy form or term) as a list of clauses, each a frozenset of literals.
   definitional names subformulas instead of distributing them (see cnf-clauses)."
-  (clauses-of (skolemize (nnf (eliminate-implications (basic formula)))) definitional))
+  (clauses-of (skolemize (nnf (eliminate-implications (basic formula))) :keep-forall True)
+              definitional))
 
 (defn clauses-of [f [definitional False]]
   "Clauses of a Skolemized formula, without tautologies and duplicates."
