@@ -21,7 +21,7 @@ model up to k proves the clauses unsatisfiable: a theorem."
 (import itertools [product count]
         time
         hylogic.terms [variable? compound? variables-of]
-        hylogic.sat [dpll])
+        hylogic.cdcl [cdcl :as dpll])
 
 (defn _negative? [l] (and (compound? l) (= (get l 0) "not")))
 (defn _atom [l] (if (_negative? l) (get l 1) l))

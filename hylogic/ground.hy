@@ -26,7 +26,7 @@ which removes symmetric models."
 (import itertools [product]
         time
         hylogic.terms [variable? compound? variables-of]
-        hylogic.sat [dpll]
+        hylogic.cdcl [cdcl :as dpll]
         hylogic.finite [distinct-constants])
 
 (defn _negative? [l] (and (compound? l) (= (get l 0) "not")))
