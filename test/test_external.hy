@@ -75,3 +75,83 @@ cnf(c_0_9, negated_conjecture, ($false), inference(cn,[status(thm)],[inference(r
   (assert (get (check-lean (to-lean premises '(Mortal socrates) :tactic "grind")) 0))
   ;; grind must not prove what does not follow
   (assert (not (get (check-lean (to-lean premises '(Man plato) :tactic "grind")) 0))))
+
+;; Lean checks HyLogic's own proofs step by step (hylogic.certify)
+
+(import hylogic.certify [certify to-lean-proof proof-clauses]
+        hylogic.resolution [prove clausify]
+        hylogic.grounding [epr-refutation]
+        hylogic.euf [euf-refutation]
+        hylogic.problems [FIRST-ORDER])
+
+(defn _need-lean []
+  (when (is (shutil.which "lean") None) (pytest.skip "lean is not installed")))
+
+(defn _verified [result rules]
+  "Certify a proof, check that Lean accepted every step, and that it had the rules."
+  (setv c (certify result))
+  (assert (get c "verified") (lfor s (get c "steps") :if (not (get s "ok")) s))
+  (setv seen (sfor s (get c "steps") (get s "rule")))
+  (for [r rules] (assert (any (gfor s seen (in r s))) #(r seen)))
+  c)
+
+(defn test-lean-proof-text []
+  (setv [_ axioms goal] (get FIRST-ORDER 0)
+        [text steps] (to-lean-proof (prove goal axioms)))
+  (assert (in "theorem «$s" text))
+  (assert (in "theorem «$refutation»" text))
+  ;; the instance the resolution used is written out, not left to search
+  (assert (in "have «$i1» := «$h1» «socrates»" text))
+  (assert (= (. (get steps -1) ["rule"]) "refutation")))
+
+(defn test-lean-checks-resolution-proofs []
+  (_need-lean)
+  (setv rules #{})
+  (for [[name axioms goal] FIRST-ORDER]
+    (setv r (prove goal axioms))
+    (assert r.proved name)
+    (.update rules (gfor s (get (_verified r []) "steps") (get s "rule"))))
+  (assert (& rules #{"resolve" "resolve+unit deletion"})))
+
+(defn test-lean-checks-superposition-and-demodulation []
+  (_need-lean)
+  (setv axioms ['(forall [x] (= (mult e x) x))
+                '(forall [x] (= (mult (inv x) x) e))
+                '(forall [x y z] (= (mult (mult x y) z) (mult x (mult y z))))]
+        r (prove '(= (mult (inv a) (mult a b)) b) axioms :superposition 1))
+  (_verified r ["superposition+demod" "demodulation"])
+  None)
+
+(defn test-lean-checks-epr-proof-with-split []
+  (_need-lean)
+  (setv clauses (lfor f ['(forall [x y] (or (P x) (Q y))) '(not (P a)) '(not (Q b))]
+                      c (clausify f) c)
+        c (_verified (epr-refutation clauses) ["instance, split" "resolve"]))
+  ;; the split predicate is discharged by its definition
+  (assert (in "theorem «$closed»" (get c "text"))))
+
+(defn test-lean-checks-euf-proof []
+  (_need-lean)
+  (setv clauses [(frozenset [#("=" "a" "b")])
+                 (frozenset [#("=" #("f" #("f" "a")) "c")])
+                 (frozenset [#("not" #("=" #("f" #("f" "b")) "c"))])])
+  (_verified (euf-refutation clauses) ["equality lemma" "resolve"])
+  None)
+
+(defn test-lean-rejects-a-corrupted-step []
+  (_need-lean)
+  (setv [_ axioms goal] (get FIRST-ORDER 1)
+        r (prove goal axioms)
+        clauses (proof-clauses r)
+        step (next (gfor c clauses :if (and c.parents c.literals) c))
+        number (+ (.index clauses step) 1))
+  ;; one derived clause made into something its premises do not imply
+  (setv step.literals (frozenset (gfor l step.literals (if (and (isinstance l tuple) (= (get l 0) "not"))
+                                                           (get l 1)
+                                                           #("not" l)))))
+  (setv c (certify r)
+        bad (lfor s (get c "steps") :if (not (get s "ok")) (get s "number")))
+  (assert (not (get c "verified")))
+  ;; Lean reports that step first; a later step may fail too, when it no
+  ;; longer follows from the corrupted clause
+  (assert (= (get bad 0) number)))
