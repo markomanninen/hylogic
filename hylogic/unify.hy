@@ -61,22 +61,26 @@ rewritten must not change."
 
 (defn match-term [pattern t [s None]]
   "A substitution for the variables of pattern that turns it into t, or None.
-  Variables in t are treated like constants."
-  (when (is s None) (setv s {}))
+  Variables in t are treated like constants. s is extended in a copy, never
+  changed: subsumption backtracks to it."
+  (setv out (if s (dict s) {}))
+  (if (_match pattern t out) out None))
+
+(defn _match [pattern t s]
+  "match-term's work: binds into s in place, True when pattern matches t.
+  The hottest loop of the prover, so the type tests are written out."
   (cond
-    (variable? pattern)
-      (cond
-        (not-in pattern s) (| s {pattern t})
-        (= (get s pattern) t) s
-        True None)
-    (and (compound? pattern) (compound? t) (= (len pattern) (len t)))
+    (and (is (type pattern) str) (.startswith pattern "?"))
       (do
-        (for [[p x] (zip pattern t)]
-          (setv s (match-term p x s))
-          (when (is s None) (return None)))
-        s)
-    (= pattern t) s
-    True None))
+        (setv bound (.get s pattern))
+        (cond
+          (is bound None) (do (setv (get s pattern) t) True)
+          True (= bound t)))
+    (is (type pattern) tuple)
+      (and (is (type t) tuple)
+           (= (len pattern) (len t))
+           (all (gfor [p x] (zip pattern t) (_match p x s))))
+    True (= pattern t)))
 
 (setv FRESH (count 1))
 

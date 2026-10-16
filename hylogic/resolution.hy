@@ -284,6 +284,18 @@ new clauses that are neither duplicates nor subsumed by older ones."
 
 (defn _predicate [atom] (if (compound? atom) (get atom 0) atom))
 
+(defn _unit-key [sign atom [pattern False]]
+  "Where unit deletion files a unit atom, or looks for units matching an atom:
+  sign, predicate and the head of the first argument. A unit whose first
+  argument is a variable can match anything, so it is filed under *."
+  (setv first (when (and (compound? atom) (> (len atom) 1)) (get atom 1)))
+  #(sign (_predicate atom)
+    (cond (is first None) "-"
+          (and pattern (variable? first)) "*"
+          (variable? first) "?"
+          (compound? first) #((get first 0) (len first))
+          True first)))
+
 (defn eligible [lits]
   "The literals of a clause that ordered resolution may resolve on.
   If the clause has negative literals, only the heaviest of them is selected;
@@ -374,7 +386,7 @@ new clauses that are neither duplicates nor subsumed by older ones."
         by-age []
         picks 0
         seen #{}
-        rules []
+        rules (sp.RuleIndex)
         rule-source {}
         units {}
         unit-count 0
@@ -387,8 +399,10 @@ new clauses that are neither duplicates nor subsumed by older ones."
     (when (not units) (return #(lits False [])))
     (setv out [] used [])
     (for [l lits]
-      (setv hit (next (gfor [u source] (.get units #((not (negative? l)) (_predicate (atom-of l))) [])
-                            :if (is-not (match-term u (atom-of l)) None) source)
+      (setv a (atom-of l) sign (not (negative? l))
+            hit (next (gfor key [(_unit-key sign a) #(sign (_predicate a) "*")]
+                            [u source] (.get units key [])
+                            :if (is-not (match-term u a) None) source)
                       None))
       (if (is hit None) (.append out l) (.append used hit)))
     #((frozenset out) (bool used) used))
@@ -496,7 +510,8 @@ new clauses that are neither duplicates nor subsumed by older ones."
     (.append processed given)
     (when (= (len given.literals) 1)
       (setv [lit] given.literals)
-      (.append (.setdefault units #((negative? lit) (_predicate (atom-of lit))) []) #((atom-of lit) given))
+      (.append (.setdefault units (_unit-key (negative? lit) (atom-of lit) True) [])
+               #((atom-of lit) given))
       (+= unit-count 1))
     ;; a processed unit equation becomes rewrite rules, which also rewrite the
     ;; processed clauses (backward demodulation): a rewritten one is taken out
