@@ -23,7 +23,14 @@ who ... "), with two to four distractors that sound relevant, such as the
 converse of a chain rule, and the premises in random order. A valid hard item
 rests on exactly its chain: the proof uses no distractor.
 
-    TPTP-free; needs z3:  python make_items_fo.py [N] [--hard] > items_fo.json
+With --harder a valid chain also needs a contrapositive step ("no one on
+call is in the union; everyone with an archive key is in the union; Eva is on
+call", so Eva has no key), a case split ("everyone who ... is remote or on
+nights, or both", both branches leading on) and a transitive relation through
+three people, among four to six distractors. Its traps add `branch` (one case
+leads elsewhere) and `direction` (a relation fact turned around).
+
+    TPTP-free; needs z3:  python make_items_fo.py [N] [--hard | --harder] > items_fo.json
 """
 import json
 import random
@@ -238,6 +245,126 @@ def hard_chain(rng):
     return shuffled, conclusion, chain_at, spots, (a, b, r, props)
 
 
+def unless_not(p, q):  # everyone who does not p, q
+    return ("forall", ("x",), ("=>", ("not", X(p[0])), X(q[0]))), f"Everyone who {p[2]} {q[1]}."
+
+
+def either(p, q1, q2):  # everyone who p, q1 or q2 (or both)
+    return (("forall", ("x",), ("=>", X(p[0]), ("or", X(q1[0]), X(q2[0])))),
+            f"Everyone who {p[1]} {q1[1]} or {q2[1]}, or both.")
+
+
+def transitive(r):
+    return (("forall", ("x", "y", "z"), ("=>", ("and", (r[0], "x", "y"), (r[0], "y", "z")), (r[0], "x", "z"))),
+            f"Anyone who {r[1]} someone who {r[1]} a third person also {r[1]} that third person.")
+
+
+def harder_chain(rng):
+    """A valid chain that needs a contrapositive step, a case split and a
+    transitive relation through three people, among distractors, shuffled.
+    Returns premises, conclusion, chain indices, trap spots and the trap makers."""
+    props = rng.sample(PROPERTIES, 18)
+    a, b, c = rng.sample(PEOPLE, 3)
+    r = (("ReportsTo", "reports to"))
+    it = iter(props)
+    nxt = lambda: next(it)
+    chain, traps = [], []
+    # about c: forward steps, then modus tollens to a negative property
+    p = nxt()
+    chain.append(fact(c, p))
+    for _ in range(rng.randint(1, 2)):
+        q = nxt()
+        chain.append(every(p, q))
+        traps.append(("converse", len(chain) - 1, (p, q)))
+        p = q
+    blocked, neg = nxt(), nxt()
+    chain.append(no_one(p, blocked))                   # c is not <blocked>
+    chain.append(every(neg, blocked))                  # so c is not <neg> (tollens)
+    traps.append(("converse", len(chain) - 1, (neg, blocked)))
+    p = nxt()
+    chain.append(unless_not(neg, p))                   # c does not <neg>, so <p>
+    # a case split
+    q1, q2, joined = nxt(), nxt(), nxt()
+    chain.append(either(p, q1, q2))
+    chain.append(every(q1, joined))
+    chain.append(every(q2, joined))
+    traps.append(("branch", len(chain) - 1, (q2, joined)))
+    p = joined
+    # a reports to b, b reports to c: a reports to c, and the rule needs that
+    chain.append(rel_fact(r, a, b))
+    traps.append(("direction", len(chain) - 1, (b, a)))
+    chain.append(rel_fact(r, b, c))
+    chain.append(transitive(r))
+    q = nxt()
+    chain.append(via(r, p, q))
+    p = q
+    for _ in range(rng.randint(2, 3)):
+        q = nxt()
+        chain.append(every(p, q))
+        traps.append(("converse", len(chain) - 1, (p, q)))
+        traps.append(("some", len(chain) - 1, (p, q)))
+        p = q
+    conclusion = fact(a, p)
+    spare = list(it)
+    distractors = [every(chain_q, chain_p) for chain_p, chain_q in
+                   [rng.choice([t[2] for t in traps if t[0] == "converse"])]]
+    d = rng.choice([x for x in PEOPLE if x not in (a, b, c)])
+    distractors.append(fact(d, rng.choice(props[:10])))
+    distractors.append(rel_fact(r, d, a))
+    for _ in range(rng.randint(2, 3)):
+        if len(spare) >= 2:
+            x, y = rng.sample(spare, 2)
+            distractors.append(rng.choice([every, no_one, unless_not])(x, y))
+    return chain, distractors, conclusion, traps, r
+
+
+def harder_main(want):
+    rng = random.Random(2028)
+    items, counts, seen = [], {True: 0, False: 0}, set()
+    while len(items) < want:
+        chain, distractors, concl, traps, r = harder_chain(rng)
+        kind = None
+        if rng.random() < 0.5:
+            kind, at, (x, y) = rng.choice(traps)
+            if kind == "converse":
+                chain[at] = every(y, x)
+            elif kind == "some":
+                chain[at] = some(x, y)
+            elif kind == "branch":
+                # one branch leads elsewhere: the case split no longer closes
+                other = next(p for p in PROPERTIES if p not in (x, y))
+                chain[at] = every(x, other)
+            elif kind == "direction":
+                chain[at] = rel_fact(r, x, y)
+        premises = chain + distractors
+        order = list(range(len(premises)))
+        rng.shuffle(order)
+        ps = [premises[k] for k in order]
+        chain_at = sorted(order.index(k) for k in range(len(chain)))
+        pfs, cf = [p[0] for p in ps], concl[0]
+        key = (tuple(map(str, pfs)), str(cf))
+        if key in seen:
+            continue
+        arg = Argument(pfs, cf, timeout=10)
+        valid = arg.valid
+        if valid is None or z3_valid(pfs, cf) is not valid:
+            continue
+        if valid == (kind is not None) or counts[valid] >= want // 2:
+            continue
+        if valid and arg.used != [k + 1 for k in chain_at]:
+            continue
+        if Argument(pfs, "false", timeout=10).valid is True:
+            continue
+        seen.add(key)
+        counts[valid] += 1
+        items.append({"id": f"X{len(items) + 1}", "kind": "first-order", "trap": kind,
+                      "text": " ".join(p[1] for p in ps) + " Therefore, " + lower(concl[1]),
+                      "premises": [pretty(f) for f in pfs], "conclusion": pretty(cf),
+                      "premise_terms": pfs, "conclusion_term": cf, "valid": valid,
+                      "steps": len(pfs), "needed": [k + 1 for k in chain_at]})
+    return items
+
+
 def hard_main(want):
     rng = random.Random(2027)
     items, counts, seen = [], {True: 0, False: 0}, set()
@@ -286,6 +413,12 @@ def z3_valid(premises, conclusion):
 def main():
     args = [x for x in sys.argv[1:] if x != "--hard"]
     want = int(args[0]) if args else 40
+    args = [x for x in args if x != "--harder"]
+    want = int(args[0]) if args else 40
+    if "--harder" in sys.argv:
+        json.dump(harder_main(want), sys.stdout, ensure_ascii=False, indent=1)
+        print()
+        return
     if "--hard" in sys.argv:
         json.dump(hard_main(want), sys.stdout, ensure_ascii=False, indent=1)
         print()
