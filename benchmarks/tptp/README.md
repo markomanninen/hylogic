@@ -316,3 +316,62 @@ it is now SMT-LIB's and TPTP's own equality.
 | Vampire 5.1.0 (`casc`), and HyLogic through the bridge | 231 | 20 |
 | Vampire 5.1.0, satisfiability schedule (`casc_sat`) | | 36 |
 | Vampire 5.1.0, finite model builder only (`-sa fmb`) | | 34 |
+
+## Round four: exact ground equality and smaller models
+
+Round three left the isomorphism problems and two thirds of the gap in
+non-theorems. Four changes closed most of both, each measured on its own.
+
+| Step | NEQ r0 | NEQ r1 | NEQ r2 | EQ r0 | EQ r1 | EQ r2 | Non-theorems | All | Wrong |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Round three's defaults | 31 | 5 | 2 | 26 | 32 | 9 | 23 | 128 | 0 |
+| + SAT with congruence closure, 30 % of the time | 31 | 5 | 2 | 30 | 32 | 9 | 23 | 132 | 0 |
+| + 256 lemmas per round, 75 % of the time | 31 | 5 | 2 | 32 | 32 | 9 | 23 | 134 | 0 |
+| + clause splitting, inner Skolemization, scoped definitions | 31 | 6 | 2 | 32 | 32 | 9 | 27 | 139 | 0 |
+| + model search first, 15 % of the time | 31 | 6 | 3 | 32 | 32 | 9 | 30 | 143 | 0 |
+| + model search first, 30 % (the new default) | 31 | 6 | 3 | 32 | 32 | 9 | 31 | 144 | 0 |
+| + model search first, 50 % | 31 | 4 | 3 | 32 | 32 | 9 | 31 | 142 | 0 |
+
+**Ground equality decided exactly** (`hylogic.euf`). Equality with
+uninterpreted functions is decidable for ground clauses, with no bound on
+the domain. The SAT solver proposes truth values for the equations, a
+congruence closure checks them, and each violated equation comes back as a
+lemma whose premises are read off the closure's merge history (a proof
+forest). This is how SMT solvers such as Z3 work. It agreed with Z3 on 500
+random problems, and the CDCL solver learned to take new clauses between
+calls so that lemmas no longer rebuild it. The isomorphism problems that
+round three's bounded search could not reach fell one by one, from minutes
+to under a second for most of them. Six of the seven are solved in the
+10 seconds. ALG026+1, where both group tables are unknown, needs about 16.
+
+**Smaller models.** The model finder failed on non-theorems whose models
+have two elements, which Vampire finds in milliseconds. The clauses were too
+wide to ground. Three changes narrowed them from up to 76 variables to 3.
+Clause splitting turns A ∨ B, whose parts share the variables I, into
+A ∨ s(I) and ¬s(I) ∨ B, as Paradox does. Skolem functions now take only the
+universal variables free under their quantifier, which cut their arity from
+21 to 1 on the modal logic problems. Definitions introduced to keep the
+clause form small took every variable of the named part, including those
+bound inside it; they now take only its free variables. All three preserve
+satisfiability over the same domain, so a model found is a model of the
+problem.
+
+**Model search first.** The finders ran last, on what resolution left, so
+models that take half a second were missed. A short search before resolution
+found them. At 30 % of the time no theorem was lost; at 50 % two were.
+
+## Where the gap stands after round four
+
+| | Theorems, of 234 | Non-theorems, of 40 |
+|---|---:|---:|
+| HyLogic after round three | 105 | 23 |
+| HyLogic after round four | 113 | 31 |
+| E 3.2.5 | 207 | 16 |
+| Vampire 5.1.0 (`casc`) | 231 | 20 |
+| Vampire 5.1.0, satisfiability schedule (`casc_sat`) | | 36 |
+| Vampire 5.1.0, finite model builder only (`-sa fmb`) | | 34 |
+
+Nine non-theorems remain. GRA021+1 needs a model of about 12 elements,
+SWW897+1 and SWW919+1 still have clauses of 29 to 38 variables after
+splitting, and the other six have no finite model that Vampire's builder
+finds in 10 seconds either.
