@@ -1,0 +1,3481 @@
+[
+ {
+  "id": "F1",
+  "kind": "first-order",
+  "trap": null,
+  "text": "Eva is on call this week. Everyone who is on call this week mentors a trainee. Everyone who mentors a trainee is an engineer. Everyone who is an engineer can see the payroll. Everyone who can see the payroll works remotely. Therefore, someone works remotely.",
+  "premises": [
+   "(Oncall Eva)",
+   "∀x ((Oncall x) → (Mentor x))",
+   "∀x ((Mentor x) → (Engineer x))",
+   "∀x ((Engineer x) → (Payroll x))",
+   "∀x ((Payroll x) → (Remote x))"
+  ],
+  "conclusion": "∃x (Remote x)",
+  "premise_terms": [
+   [
+    "Oncall",
+    "Eva"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Oncall",
+      "x"
+     ],
+     [
+      "Mentor",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Mentor",
+      "x"
+     ],
+     [
+      "Engineer",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Engineer",
+      "x"
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Payroll",
+      "x"
+     ],
+     [
+      "Remote",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "exists",
+   [
+    "x"
+   ],
+   [
+    "Remote",
+    "x"
+   ]
+  ],
+  "valid": true,
+  "steps": 5
+ },
+ {
+  "id": "F2",
+  "kind": "first-order",
+  "trap": null,
+  "text": "Anna mentors a trainee. Only someone who can see the payroll mentors a trainee. Everyone who can see the payroll can enter the lab. Therefore, Anna can enter the lab.",
+  "premises": [
+   "(Mentor Anna)",
+   "∀x ((Mentor x) → (Payroll x))",
+   "∀x ((Payroll x) → (Lab x))"
+  ],
+  "conclusion": "(Lab Anna)",
+  "premise_terms": [
+   [
+    "Mentor",
+    "Anna"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Mentor",
+      "x"
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Payroll",
+      "x"
+     ],
+     [
+      "Lab",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "Lab",
+   "Anna"
+  ],
+  "valid": true,
+  "steps": 3
+ },
+ {
+  "id": "F3",
+  "kind": "first-order",
+  "trap": "some",
+  "text": "David has a company laptop. Someone who has a company laptop can enter the lab. Everyone who can enter the lab has done the safety training. Everyone who has done the safety training has a badge. Everyone who has a badge can see the payroll. Therefore, David can see the payroll.",
+  "premises": [
+   "(Laptop David)",
+   "∃x ((Laptop x) ∧ (Lab x))",
+   "∀x ((Lab x) → (Training x))",
+   "∀x ((Training x) → (Badge x))",
+   "∀x ((Badge x) → (Payroll x))"
+  ],
+  "conclusion": "(Payroll David)",
+  "premise_terms": [
+   [
+    "Laptop",
+    "David"
+   ],
+   [
+    "exists",
+    [
+     "x"
+    ],
+    [
+     "and",
+     [
+      "Laptop",
+      "x"
+     ],
+     [
+      "Lab",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lab",
+      "x"
+     ],
+     [
+      "Training",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Training",
+      "x"
+     ],
+     [
+      "Badge",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Badge",
+      "x"
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "Payroll",
+   "David"
+  ],
+  "valid": false,
+  "steps": 5
+ },
+ {
+  "id": "F4",
+  "kind": "first-order",
+  "trap": "converse",
+  "text": "Carla works remotely. Everyone who works remotely can see the payroll. Everyone who has a badge can see the payroll. Everyone who has a badge has a company laptop. No one who has a company laptop has done the safety training. Therefore, Carla has not done the safety training.",
+  "premises": [
+   "(Remote Carla)",
+   "∀x ((Remote x) → (Payroll x))",
+   "∀x ((Badge x) → (Payroll x))",
+   "∀x ((Badge x) → (Laptop x))",
+   "∀x ((Laptop x) → ¬(Training x))"
+  ],
+  "conclusion": "¬(Training Carla)",
+  "premise_terms": [
+   [
+    "Remote",
+    "Carla"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Remote",
+      "x"
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Badge",
+      "x"
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Badge",
+      "x"
+     ],
+     [
+      "Laptop",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Laptop",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Training",
+       "x"
+      ]
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "not",
+   [
+    "Training",
+    "Carla"
+   ]
+  ],
+  "valid": false,
+  "steps": 5
+ },
+ {
+  "id": "F5",
+  "kind": "first-order",
+  "trap": "some",
+  "text": "Eva mentors a trainee. Only someone who is on call this week mentors a trainee. Everyone who is on call this week can see the payroll. Someone who can see the payroll has done the safety training. Everyone who has done the safety training is a manager. Therefore, Eva is a manager.",
+  "premises": [
+   "(Mentor Eva)",
+   "∀x ((Mentor x) → (Oncall x))",
+   "∀x ((Oncall x) → (Payroll x))",
+   "∃x ((Payroll x) ∧ (Training x))",
+   "∀x ((Training x) → (Manager x))"
+  ],
+  "conclusion": "(Manager Eva)",
+  "premise_terms": [
+   [
+    "Mentor",
+    "Eva"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Mentor",
+      "x"
+     ],
+     [
+      "Oncall",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Oncall",
+      "x"
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "exists",
+    [
+     "x"
+    ],
+    [
+     "and",
+     [
+      "Payroll",
+      "x"
+     ],
+     [
+      "Training",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Training",
+      "x"
+     ],
+     [
+      "Manager",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "Manager",
+   "Eva"
+  ],
+  "valid": false,
+  "steps": 5
+ },
+ {
+  "id": "F6",
+  "kind": "first-order",
+  "trap": null,
+  "text": "Anna can see the payroll. Everyone who can see the payroll is on call this week. Everyone who is on call this week is a manager. Everyone who is a manager works remotely. Everyone who works remotely is an engineer. Therefore, Anna is an engineer.",
+  "premises": [
+   "(Payroll Anna)",
+   "∀x ((Payroll x) → (Oncall x))",
+   "∀x ((Oncall x) → (Manager x))",
+   "∀x ((Manager x) → (Remote x))",
+   "∀x ((Remote x) → (Engineer x))"
+  ],
+  "conclusion": "(Engineer Anna)",
+  "premise_terms": [
+   [
+    "Payroll",
+    "Anna"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Payroll",
+      "x"
+     ],
+     [
+      "Oncall",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Oncall",
+      "x"
+     ],
+     [
+      "Manager",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Manager",
+      "x"
+     ],
+     [
+      "Remote",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Remote",
+      "x"
+     ],
+     [
+      "Engineer",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "Engineer",
+   "Anna"
+  ],
+  "valid": true,
+  "steps": 5
+ },
+ {
+  "id": "F7",
+  "kind": "first-order",
+  "trap": null,
+  "text": "Farid can see the payroll. Everyone who can see the payroll can enter the lab. Everyone who can enter the lab is an engineer. Everyone who is an engineer has a company laptop. Therefore, someone has a company laptop.",
+  "premises": [
+   "(Payroll Farid)",
+   "∀x ((Payroll x) → (Lab x))",
+   "∀x ((Lab x) → (Engineer x))",
+   "∀x ((Engineer x) → (Laptop x))"
+  ],
+  "conclusion": "∃x (Laptop x)",
+  "premise_terms": [
+   [
+    "Payroll",
+    "Farid"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Payroll",
+      "x"
+     ],
+     [
+      "Lab",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lab",
+      "x"
+     ],
+     [
+      "Engineer",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Engineer",
+      "x"
+     ],
+     [
+      "Laptop",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "exists",
+   [
+    "x"
+   ],
+   [
+    "Laptop",
+    "x"
+   ]
+  ],
+  "valid": true,
+  "steps": 4
+ },
+ {
+  "id": "F8",
+  "kind": "first-order",
+  "trap": "some",
+  "text": "Ben works remotely. Someone who works remotely is on call this week. Everyone who is on call this week can see the payroll. Therefore, Ben can see the payroll.",
+  "premises": [
+   "(Remote Ben)",
+   "∃x ((Remote x) ∧ (Oncall x))",
+   "∀x ((Oncall x) → (Payroll x))"
+  ],
+  "conclusion": "(Payroll Ben)",
+  "premise_terms": [
+   [
+    "Remote",
+    "Ben"
+   ],
+   [
+    "exists",
+    [
+     "x"
+    ],
+    [
+     "and",
+     [
+      "Remote",
+      "x"
+     ],
+     [
+      "Oncall",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Oncall",
+      "x"
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "Payroll",
+   "Ben"
+  ],
+  "valid": false,
+  "steps": 3
+ },
+ {
+  "id": "F9",
+  "kind": "first-order",
+  "trap": null,
+  "text": "David is on call this week. Only someone who can see the payroll is on call this week. Everyone who can see the payroll has a company laptop. Everyone who has a company laptop is an engineer. Everyone who is an engineer has a badge. Therefore, David has a badge.",
+  "premises": [
+   "(Oncall David)",
+   "∀x ((Oncall x) → (Payroll x))",
+   "∀x ((Payroll x) → (Laptop x))",
+   "∀x ((Laptop x) → (Engineer x))",
+   "∀x ((Engineer x) → (Badge x))"
+  ],
+  "conclusion": "(Badge David)",
+  "premise_terms": [
+   [
+    "Oncall",
+    "David"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Oncall",
+      "x"
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Payroll",
+      "x"
+     ],
+     [
+      "Laptop",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Laptop",
+      "x"
+     ],
+     [
+      "Engineer",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Engineer",
+      "x"
+     ],
+     [
+      "Badge",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "Badge",
+   "David"
+  ],
+  "valid": true,
+  "steps": 5
+ },
+ {
+  "id": "F10",
+  "kind": "first-order",
+  "trap": "scope",
+  "text": "Everyone trusts someone who has a company laptop. Everyone who has a company laptop can see the payroll. Therefore, someone who can see the payroll is someone everyone trusts.",
+  "premises": [
+   "∀x ∃y ((Laptop y) ∧ (Trusts x y))",
+   "∀x ((Laptop x) → (Payroll x))"
+  ],
+  "conclusion": "∃y ((Payroll y) ∧ ∀x (Trusts x y))",
+  "premise_terms": [
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "exists",
+     [
+      "y"
+     ],
+     [
+      "and",
+      [
+       "Laptop",
+       "y"
+      ],
+      [
+       "Trusts",
+       "x",
+       "y"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Laptop",
+      "x"
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "exists",
+   [
+    "y"
+   ],
+   [
+    "and",
+    [
+     "Payroll",
+     "y"
+    ],
+    [
+     "forall",
+     [
+      "x"
+     ],
+     [
+      "Trusts",
+      "x",
+      "y"
+     ]
+    ]
+   ]
+  ],
+  "valid": false,
+  "steps": 2
+ },
+ {
+  "id": "F11",
+  "kind": "first-order",
+  "trap": "some",
+  "text": "Anna is on call this week. Everyone who is on call this week works remotely. Someone who works remotely can see the payroll. No one who can see the payroll is an engineer. Therefore, Anna is not an engineer.",
+  "premises": [
+   "(Oncall Anna)",
+   "∀x ((Oncall x) → (Remote x))",
+   "∃x ((Remote x) ∧ (Payroll x))",
+   "∀x ((Payroll x) → ¬(Engineer x))"
+  ],
+  "conclusion": "¬(Engineer Anna)",
+  "premise_terms": [
+   [
+    "Oncall",
+    "Anna"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Oncall",
+      "x"
+     ],
+     [
+      "Remote",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "exists",
+    [
+     "x"
+    ],
+    [
+     "and",
+     [
+      "Remote",
+      "x"
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Payroll",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Engineer",
+       "x"
+      ]
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "not",
+   [
+    "Engineer",
+    "Anna"
+   ]
+  ],
+  "valid": false,
+  "steps": 4
+ },
+ {
+  "id": "F12",
+  "kind": "first-order",
+  "trap": null,
+  "text": "Eva is a manager. Anna reports to Eva. Everyone who reports to someone who is a manager is an engineer. Everyone who is an engineer mentors a trainee. Everyone who mentors a trainee can enter the lab. Therefore, Anna can enter the lab.",
+  "premises": [
+   "(Manager Eva)",
+   "(ReportsTo Anna Eva)",
+   "∀x y (((ReportsTo x y) ∧ (Manager y)) → (Engineer x))",
+   "∀x ((Engineer x) → (Mentor x))",
+   "∀x ((Mentor x) → (Lab x))"
+  ],
+  "conclusion": "(Lab Anna)",
+  "premise_terms": [
+   [
+    "Manager",
+    "Eva"
+   ],
+   [
+    "ReportsTo",
+    "Anna",
+    "Eva"
+   ],
+   [
+    "forall",
+    [
+     "x",
+     "y"
+    ],
+    [
+     "=>",
+     [
+      "and",
+      [
+       "ReportsTo",
+       "x",
+       "y"
+      ],
+      [
+       "Manager",
+       "y"
+      ]
+     ],
+     [
+      "Engineer",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Engineer",
+      "x"
+     ],
+     [
+      "Mentor",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Mentor",
+      "x"
+     ],
+     [
+      "Lab",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "Lab",
+   "Anna"
+  ],
+  "valid": true,
+  "steps": 5
+ },
+ {
+  "id": "F13",
+  "kind": "first-order",
+  "trap": "converse",
+  "text": "David works remotely. Eva mentors David. Everyone who mentors someone who works remotely has a company laptop. Everyone who has a company laptop has a badge. Everyone who is a manager has a badge. Everyone who is a manager can see the payroll. Everyone who can see the payroll mentors a trainee. Therefore, Eva mentors a trainee.",
+  "premises": [
+   "(Remote David)",
+   "(Mentors Eva David)",
+   "∀x y (((Mentors x y) ∧ (Remote y)) → (Laptop x))",
+   "∀x ((Laptop x) → (Badge x))",
+   "∀x ((Manager x) → (Badge x))",
+   "∀x ((Manager x) → (Payroll x))",
+   "∀x ((Payroll x) → (Mentor x))"
+  ],
+  "conclusion": "(Mentor Eva)",
+  "premise_terms": [
+   [
+    "Remote",
+    "David"
+   ],
+   [
+    "Mentors",
+    "Eva",
+    "David"
+   ],
+   [
+    "forall",
+    [
+     "x",
+     "y"
+    ],
+    [
+     "=>",
+     [
+      "and",
+      [
+       "Mentors",
+       "x",
+       "y"
+      ],
+      [
+       "Remote",
+       "y"
+      ]
+     ],
+     [
+      "Laptop",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Laptop",
+      "x"
+     ],
+     [
+      "Badge",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Manager",
+      "x"
+     ],
+     [
+      "Badge",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Manager",
+      "x"
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Payroll",
+      "x"
+     ],
+     [
+      "Mentor",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "Mentor",
+   "Eva"
+  ],
+  "valid": false,
+  "steps": 7
+ },
+ {
+  "id": "F14",
+  "kind": "first-order",
+  "trap": "converse",
+  "text": "Ben mentors a trainee. Everyone who mentors a trainee is on call this week. Everyone who is on call this week works remotely. Everyone who is a manager works remotely. Therefore, someone is a manager.",
+  "premises": [
+   "(Mentor Ben)",
+   "∀x ((Mentor x) → (Oncall x))",
+   "∀x ((Oncall x) → (Remote x))",
+   "∀x ((Manager x) → (Remote x))"
+  ],
+  "conclusion": "∃x (Manager x)",
+  "premise_terms": [
+   [
+    "Mentor",
+    "Ben"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Mentor",
+      "x"
+     ],
+     [
+      "Oncall",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Oncall",
+      "x"
+     ],
+     [
+      "Remote",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Manager",
+      "x"
+     ],
+     [
+      "Remote",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "exists",
+   [
+    "x"
+   ],
+   [
+    "Manager",
+    "x"
+   ]
+  ],
+  "valid": false,
+  "steps": 4
+ },
+ {
+  "id": "F15",
+  "kind": "first-order",
+  "trap": "other",
+  "text": "Eva can enter the lab. Everyone who can enter the lab has done the safety training. Everyone who has done the safety training is a manager. No one who is a manager can see the payroll. Therefore, Anna cannot see the payroll.",
+  "premises": [
+   "(Lab Eva)",
+   "∀x ((Lab x) → (Training x))",
+   "∀x ((Training x) → (Manager x))",
+   "∀x ((Manager x) → ¬(Payroll x))"
+  ],
+  "conclusion": "¬(Payroll Anna)",
+  "premise_terms": [
+   [
+    "Lab",
+    "Eva"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lab",
+      "x"
+     ],
+     [
+      "Training",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Training",
+      "x"
+     ],
+     [
+      "Manager",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Manager",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Payroll",
+       "x"
+      ]
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "not",
+   [
+    "Payroll",
+    "Anna"
+   ]
+  ],
+  "valid": false,
+  "steps": 4
+ },
+ {
+  "id": "F16",
+  "kind": "first-order",
+  "trap": null,
+  "text": "Ben is a manager. Everyone who is a manager has a badge. Everyone who has a badge can enter the lab. Everyone who can enter the lab has done the safety training. No one who has done the safety training works remotely. Therefore, Ben does not work remotely.",
+  "premises": [
+   "(Manager Ben)",
+   "∀x ((Manager x) → (Badge x))",
+   "∀x ((Badge x) → (Lab x))",
+   "∀x ((Lab x) → (Training x))",
+   "∀x ((Training x) → ¬(Remote x))"
+  ],
+  "conclusion": "¬(Remote Ben)",
+  "premise_terms": [
+   [
+    "Manager",
+    "Ben"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Manager",
+      "x"
+     ],
+     [
+      "Badge",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Badge",
+      "x"
+     ],
+     [
+      "Lab",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lab",
+      "x"
+     ],
+     [
+      "Training",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Training",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Remote",
+       "x"
+      ]
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "not",
+   [
+    "Remote",
+    "Ben"
+   ]
+  ],
+  "valid": true,
+  "steps": 5
+ },
+ {
+  "id": "F17",
+  "kind": "first-order",
+  "trap": "converse",
+  "text": "David has done the safety training. Everyone who has done the safety training works remotely. Everyone who has a badge works remotely. Everyone who has a badge can see the payroll. No one who can see the payroll is an engineer. Therefore, David is not an engineer.",
+  "premises": [
+   "(Training David)",
+   "∀x ((Training x) → (Remote x))",
+   "∀x ((Badge x) → (Remote x))",
+   "∀x ((Badge x) → (Payroll x))",
+   "∀x ((Payroll x) → ¬(Engineer x))"
+  ],
+  "conclusion": "¬(Engineer David)",
+  "premise_terms": [
+   [
+    "Training",
+    "David"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Training",
+      "x"
+     ],
+     [
+      "Remote",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Badge",
+      "x"
+     ],
+     [
+      "Remote",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Badge",
+      "x"
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Payroll",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Engineer",
+       "x"
+      ]
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "not",
+   [
+    "Engineer",
+    "David"
+   ]
+  ],
+  "valid": false,
+  "steps": 5
+ },
+ {
+  "id": "F18",
+  "kind": "first-order",
+  "trap": "some",
+  "text": "Ben is an engineer. Someone who is an engineer is on call this week. Everyone who is on call this week works remotely. Everyone who works remotely has done the safety training. Everyone who has done the safety training is a manager. Therefore, Ben is a manager.",
+  "premises": [
+   "(Engineer Ben)",
+   "∃x ((Engineer x) ∧ (Oncall x))",
+   "∀x ((Oncall x) → (Remote x))",
+   "∀x ((Remote x) → (Training x))",
+   "∀x ((Training x) → (Manager x))"
+  ],
+  "conclusion": "(Manager Ben)",
+  "premise_terms": [
+   [
+    "Engineer",
+    "Ben"
+   ],
+   [
+    "exists",
+    [
+     "x"
+    ],
+    [
+     "and",
+     [
+      "Engineer",
+      "x"
+     ],
+     [
+      "Oncall",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Oncall",
+      "x"
+     ],
+     [
+      "Remote",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Remote",
+      "x"
+     ],
+     [
+      "Training",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Training",
+      "x"
+     ],
+     [
+      "Manager",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "Manager",
+   "Ben"
+  ],
+  "valid": false,
+  "steps": 5
+ },
+ {
+  "id": "F19",
+  "kind": "first-order",
+  "trap": null,
+  "text": "Farid has a badge. Eva mentors Farid. Everyone who mentors someone who has a badge is a manager. Everyone who is a manager has a company laptop. Everyone who has a company laptop has done the safety training. Therefore, Eva has done the safety training.",
+  "premises": [
+   "(Badge Farid)",
+   "(Mentors Eva Farid)",
+   "∀x y (((Mentors x y) ∧ (Badge y)) → (Manager x))",
+   "∀x ((Manager x) → (Laptop x))",
+   "∀x ((Laptop x) → (Training x))"
+  ],
+  "conclusion": "(Training Eva)",
+  "premise_terms": [
+   [
+    "Badge",
+    "Farid"
+   ],
+   [
+    "Mentors",
+    "Eva",
+    "Farid"
+   ],
+   [
+    "forall",
+    [
+     "x",
+     "y"
+    ],
+    [
+     "=>",
+     [
+      "and",
+      [
+       "Mentors",
+       "x",
+       "y"
+      ],
+      [
+       "Badge",
+       "y"
+      ]
+     ],
+     [
+      "Manager",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Manager",
+      "x"
+     ],
+     [
+      "Laptop",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Laptop",
+      "x"
+     ],
+     [
+      "Training",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "Training",
+   "Eva"
+  ],
+  "valid": true,
+  "steps": 5
+ },
+ {
+  "id": "F20",
+  "kind": "first-order",
+  "trap": "some",
+  "text": "Ben mentors a trainee. Someone who mentors a trainee can enter the lab. Everyone who can enter the lab works remotely. Everyone who works remotely can see the payroll. Therefore, Ben can see the payroll.",
+  "premises": [
+   "(Mentor Ben)",
+   "∃x ((Mentor x) ∧ (Lab x))",
+   "∀x ((Lab x) → (Remote x))",
+   "∀x ((Remote x) → (Payroll x))"
+  ],
+  "conclusion": "(Payroll Ben)",
+  "premise_terms": [
+   [
+    "Mentor",
+    "Ben"
+   ],
+   [
+    "exists",
+    [
+     "x"
+    ],
+    [
+     "and",
+     [
+      "Mentor",
+      "x"
+     ],
+     [
+      "Lab",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lab",
+      "x"
+     ],
+     [
+      "Remote",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Remote",
+      "x"
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "Payroll",
+   "Ben"
+  ],
+  "valid": false,
+  "steps": 4
+ },
+ {
+  "id": "F21",
+  "kind": "first-order",
+  "trap": null,
+  "text": "Anna works remotely. Everyone who works remotely has done the safety training. Everyone who has done the safety training is a manager. Everyone who is a manager can see the payroll. Everyone who can see the payroll is on call this week. Therefore, Anna is on call this week.",
+  "premises": [
+   "(Remote Anna)",
+   "∀x ((Remote x) → (Training x))",
+   "∀x ((Training x) → (Manager x))",
+   "∀x ((Manager x) → (Payroll x))",
+   "∀x ((Payroll x) → (Oncall x))"
+  ],
+  "conclusion": "(Oncall Anna)",
+  "premise_terms": [
+   [
+    "Remote",
+    "Anna"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Remote",
+      "x"
+     ],
+     [
+      "Training",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Training",
+      "x"
+     ],
+     [
+      "Manager",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Manager",
+      "x"
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Payroll",
+      "x"
+     ],
+     [
+      "Oncall",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "Oncall",
+   "Anna"
+  ],
+  "valid": true,
+  "steps": 5
+ },
+ {
+  "id": "F22",
+  "kind": "first-order",
+  "trap": null,
+  "text": "Anna has a company laptop. Everyone who has a company laptop mentors a trainee. Everyone who mentors a trainee can see the payroll. Therefore, someone can see the payroll.",
+  "premises": [
+   "(Laptop Anna)",
+   "∀x ((Laptop x) → (Mentor x))",
+   "∀x ((Mentor x) → (Payroll x))"
+  ],
+  "conclusion": "∃x (Payroll x)",
+  "premise_terms": [
+   [
+    "Laptop",
+    "Anna"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Laptop",
+      "x"
+     ],
+     [
+      "Mentor",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Mentor",
+      "x"
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "exists",
+   [
+    "x"
+   ],
+   [
+    "Payroll",
+    "x"
+   ]
+  ],
+  "valid": true,
+  "steps": 3
+ },
+ {
+  "id": "F23",
+  "kind": "first-order",
+  "trap": "some",
+  "text": "Anna is an engineer. Everyone who is an engineer has a company laptop. Everyone who has a company laptop works remotely. Someone who works remotely can enter the lab. Everyone who can enter the lab has a badge. No one who has a badge is on call this week. Therefore, Anna is not on call this week.",
+  "premises": [
+   "(Engineer Anna)",
+   "∀x ((Engineer x) → (Laptop x))",
+   "∀x ((Laptop x) → (Remote x))",
+   "∃x ((Remote x) ∧ (Lab x))",
+   "∀x ((Lab x) → (Badge x))",
+   "∀x ((Badge x) → ¬(Oncall x))"
+  ],
+  "conclusion": "¬(Oncall Anna)",
+  "premise_terms": [
+   [
+    "Engineer",
+    "Anna"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Engineer",
+      "x"
+     ],
+     [
+      "Laptop",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Laptop",
+      "x"
+     ],
+     [
+      "Remote",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "exists",
+    [
+     "x"
+    ],
+    [
+     "and",
+     [
+      "Remote",
+      "x"
+     ],
+     [
+      "Lab",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lab",
+      "x"
+     ],
+     [
+      "Badge",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Badge",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Oncall",
+       "x"
+      ]
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "not",
+   [
+    "Oncall",
+    "Anna"
+   ]
+  ],
+  "valid": false,
+  "steps": 6
+ },
+ {
+  "id": "F24",
+  "kind": "first-order",
+  "trap": null,
+  "text": "Eva is an engineer. Everyone who is an engineer works remotely. Everyone who works remotely has done the safety training. Therefore, someone has done the safety training.",
+  "premises": [
+   "(Engineer Eva)",
+   "∀x ((Engineer x) → (Remote x))",
+   "∀x ((Remote x) → (Training x))"
+  ],
+  "conclusion": "∃x (Training x)",
+  "premise_terms": [
+   [
+    "Engineer",
+    "Eva"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Engineer",
+      "x"
+     ],
+     [
+      "Remote",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Remote",
+      "x"
+     ],
+     [
+      "Training",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "exists",
+   [
+    "x"
+   ],
+   [
+    "Training",
+    "x"
+   ]
+  ],
+  "valid": true,
+  "steps": 3
+ },
+ {
+  "id": "F25",
+  "kind": "first-order",
+  "trap": "converse",
+  "text": "Carla mentors a trainee. Everyone who mentors a trainee is an engineer. Everyone who is an engineer is on call this week. Only someone who is a manager is on call this week. Therefore, Carla is not a manager.",
+  "premises": [
+   "(Mentor Carla)",
+   "∀x ((Mentor x) → (Engineer x))",
+   "∀x ((Engineer x) → (Oncall x))",
+   "∀x ((Oncall x) → (Manager x))"
+  ],
+  "conclusion": "¬(Manager Carla)",
+  "premise_terms": [
+   [
+    "Mentor",
+    "Carla"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Mentor",
+      "x"
+     ],
+     [
+      "Engineer",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Engineer",
+      "x"
+     ],
+     [
+      "Oncall",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Oncall",
+      "x"
+     ],
+     [
+      "Manager",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "not",
+   [
+    "Manager",
+    "Carla"
+   ]
+  ],
+  "valid": false,
+  "steps": 4
+ },
+ {
+  "id": "F26",
+  "kind": "first-order",
+  "trap": null,
+  "text": "Eva can enter the lab. Everyone who can enter the lab has done the safety training. Everyone who has done the safety training mentors a trainee. Everyone who mentors a trainee is on call this week. Everyone who is on call this week is an engineer. Therefore, someone is an engineer.",
+  "premises": [
+   "(Lab Eva)",
+   "∀x ((Lab x) → (Training x))",
+   "∀x ((Training x) → (Mentor x))",
+   "∀x ((Mentor x) → (Oncall x))",
+   "∀x ((Oncall x) → (Engineer x))"
+  ],
+  "conclusion": "∃x (Engineer x)",
+  "premise_terms": [
+   [
+    "Lab",
+    "Eva"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lab",
+      "x"
+     ],
+     [
+      "Training",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Training",
+      "x"
+     ],
+     [
+      "Mentor",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Mentor",
+      "x"
+     ],
+     [
+      "Oncall",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Oncall",
+      "x"
+     ],
+     [
+      "Engineer",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "exists",
+   [
+    "x"
+   ],
+   [
+    "Engineer",
+    "x"
+   ]
+  ],
+  "valid": true,
+  "steps": 5
+ },
+ {
+  "id": "F27",
+  "kind": "first-order",
+  "trap": null,
+  "text": "David has a badge. Everyone who has a badge can enter the lab. Everyone who can enter the lab is a manager. No one who is a manager can see the payroll. Therefore, David cannot see the payroll.",
+  "premises": [
+   "(Badge David)",
+   "∀x ((Badge x) → (Lab x))",
+   "∀x ((Lab x) → (Manager x))",
+   "∀x ((Manager x) → ¬(Payroll x))"
+  ],
+  "conclusion": "¬(Payroll David)",
+  "premise_terms": [
+   [
+    "Badge",
+    "David"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Badge",
+      "x"
+     ],
+     [
+      "Lab",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lab",
+      "x"
+     ],
+     [
+      "Manager",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Manager",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Payroll",
+       "x"
+      ]
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "not",
+   [
+    "Payroll",
+    "David"
+   ]
+  ],
+  "valid": true,
+  "steps": 4
+ },
+ {
+  "id": "F28",
+  "kind": "first-order",
+  "trap": null,
+  "text": "Carla has a badge. Everyone who has a badge is on call this week. Everyone who is on call this week is a manager. No one who is a manager has a company laptop. Therefore, Carla does not have a company laptop.",
+  "premises": [
+   "(Badge Carla)",
+   "∀x ((Badge x) → (Oncall x))",
+   "∀x ((Oncall x) → (Manager x))",
+   "∀x ((Manager x) → ¬(Laptop x))"
+  ],
+  "conclusion": "¬(Laptop Carla)",
+  "premise_terms": [
+   [
+    "Badge",
+    "Carla"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Badge",
+      "x"
+     ],
+     [
+      "Oncall",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Oncall",
+      "x"
+     ],
+     [
+      "Manager",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Manager",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Laptop",
+       "x"
+      ]
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "not",
+   [
+    "Laptop",
+    "Carla"
+   ]
+  ],
+  "valid": true,
+  "steps": 4
+ },
+ {
+  "id": "F29",
+  "kind": "first-order",
+  "trap": "some",
+  "text": "Ben has done the safety training. Only someone who has a company laptop has done the safety training. Everyone who has a company laptop can enter the lab. Everyone who can enter the lab works remotely. Someone who works remotely has a badge. Therefore, Ben has a badge.",
+  "premises": [
+   "(Training Ben)",
+   "∀x ((Training x) → (Laptop x))",
+   "∀x ((Laptop x) → (Lab x))",
+   "∀x ((Lab x) → (Remote x))",
+   "∃x ((Remote x) ∧ (Badge x))"
+  ],
+  "conclusion": "(Badge Ben)",
+  "premise_terms": [
+   [
+    "Training",
+    "Ben"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Training",
+      "x"
+     ],
+     [
+      "Laptop",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Laptop",
+      "x"
+     ],
+     [
+      "Lab",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lab",
+      "x"
+     ],
+     [
+      "Remote",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "exists",
+    [
+     "x"
+    ],
+    [
+     "and",
+     [
+      "Remote",
+      "x"
+     ],
+     [
+      "Badge",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "Badge",
+   "Ben"
+  ],
+  "valid": false,
+  "steps": 5
+ },
+ {
+  "id": "F30",
+  "kind": "first-order",
+  "trap": null,
+  "text": "Ben mentors a trainee. Everyone who mentors a trainee works remotely. Everyone who works remotely can enter the lab. Everyone who can enter the lab is an engineer. Everyone who is an engineer has a company laptop. No one who has a company laptop can see the payroll. Therefore, Ben cannot see the payroll.",
+  "premises": [
+   "(Mentor Ben)",
+   "∀x ((Mentor x) → (Remote x))",
+   "∀x ((Remote x) → (Lab x))",
+   "∀x ((Lab x) → (Engineer x))",
+   "∀x ((Engineer x) → (Laptop x))",
+   "∀x ((Laptop x) → ¬(Payroll x))"
+  ],
+  "conclusion": "¬(Payroll Ben)",
+  "premise_terms": [
+   [
+    "Mentor",
+    "Ben"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Mentor",
+      "x"
+     ],
+     [
+      "Remote",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Remote",
+      "x"
+     ],
+     [
+      "Lab",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lab",
+      "x"
+     ],
+     [
+      "Engineer",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Engineer",
+      "x"
+     ],
+     [
+      "Laptop",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Laptop",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Payroll",
+       "x"
+      ]
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "not",
+   [
+    "Payroll",
+    "Ben"
+   ]
+  ],
+  "valid": true,
+  "steps": 6
+ },
+ {
+  "id": "F31",
+  "kind": "first-order",
+  "trap": null,
+  "text": "Ben has a badge. Everyone who has a badge is an engineer. Everyone who is an engineer works remotely. Therefore, someone works remotely.",
+  "premises": [
+   "(Badge Ben)",
+   "∀x ((Badge x) → (Engineer x))",
+   "∀x ((Engineer x) → (Remote x))"
+  ],
+  "conclusion": "∃x (Remote x)",
+  "premise_terms": [
+   [
+    "Badge",
+    "Ben"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Badge",
+      "x"
+     ],
+     [
+      "Engineer",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Engineer",
+      "x"
+     ],
+     [
+      "Remote",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "exists",
+   [
+    "x"
+   ],
+   [
+    "Remote",
+    "x"
+   ]
+  ],
+  "valid": true,
+  "steps": 3
+ },
+ {
+  "id": "F32",
+  "kind": "first-order",
+  "trap": "converse",
+  "text": "Farid works remotely. Everyone who works remotely is a manager. Everyone who has done the safety training is a manager. Therefore, Farid has done the safety training.",
+  "premises": [
+   "(Remote Farid)",
+   "∀x ((Remote x) → (Manager x))",
+   "∀x ((Training x) → (Manager x))"
+  ],
+  "conclusion": "(Training Farid)",
+  "premise_terms": [
+   [
+    "Remote",
+    "Farid"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Remote",
+      "x"
+     ],
+     [
+      "Manager",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Training",
+      "x"
+     ],
+     [
+      "Manager",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "Training",
+   "Farid"
+  ],
+  "valid": false,
+  "steps": 3
+ },
+ {
+  "id": "F33",
+  "kind": "first-order",
+  "trap": "converse",
+  "text": "Ben works remotely. Everyone who mentors a trainee works remotely. Everyone who mentors a trainee is a manager. Everyone who is a manager has a company laptop. Therefore, someone has a company laptop.",
+  "premises": [
+   "(Remote Ben)",
+   "∀x ((Mentor x) → (Remote x))",
+   "∀x ((Mentor x) → (Manager x))",
+   "∀x ((Manager x) → (Laptop x))"
+  ],
+  "conclusion": "∃x (Laptop x)",
+  "premise_terms": [
+   [
+    "Remote",
+    "Ben"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Mentor",
+      "x"
+     ],
+     [
+      "Remote",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Mentor",
+      "x"
+     ],
+     [
+      "Manager",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Manager",
+      "x"
+     ],
+     [
+      "Laptop",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "exists",
+   [
+    "x"
+   ],
+   [
+    "Laptop",
+    "x"
+   ]
+  ],
+  "valid": false,
+  "steps": 4
+ },
+ {
+  "id": "F34",
+  "kind": "first-order",
+  "trap": null,
+  "text": "Eva is a manager. Farid reports to Eva. Everyone who reports to someone who is a manager can see the payroll. Everyone who can see the payroll has done the safety training. Everyone who has done the safety training has a badge. Everyone who has a badge works remotely. Therefore, Farid works remotely.",
+  "premises": [
+   "(Manager Eva)",
+   "(ReportsTo Farid Eva)",
+   "∀x y (((ReportsTo x y) ∧ (Manager y)) → (Payroll x))",
+   "∀x ((Payroll x) → (Training x))",
+   "∀x ((Training x) → (Badge x))",
+   "∀x ((Badge x) → (Remote x))"
+  ],
+  "conclusion": "(Remote Farid)",
+  "premise_terms": [
+   [
+    "Manager",
+    "Eva"
+   ],
+   [
+    "ReportsTo",
+    "Farid",
+    "Eva"
+   ],
+   [
+    "forall",
+    [
+     "x",
+     "y"
+    ],
+    [
+     "=>",
+     [
+      "and",
+      [
+       "ReportsTo",
+       "x",
+       "y"
+      ],
+      [
+       "Manager",
+       "y"
+      ]
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Payroll",
+      "x"
+     ],
+     [
+      "Training",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Training",
+      "x"
+     ],
+     [
+      "Badge",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Badge",
+      "x"
+     ],
+     [
+      "Remote",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "Remote",
+   "Farid"
+  ],
+  "valid": true,
+  "steps": 6
+ },
+ {
+  "id": "F35",
+  "kind": "first-order",
+  "trap": null,
+  "text": "Carla is an engineer. Everyone who is an engineer is on call this week. Everyone who is on call this week is a manager. Therefore, someone is a manager.",
+  "premises": [
+   "(Engineer Carla)",
+   "∀x ((Engineer x) → (Oncall x))",
+   "∀x ((Oncall x) → (Manager x))"
+  ],
+  "conclusion": "∃x (Manager x)",
+  "premise_terms": [
+   [
+    "Engineer",
+    "Carla"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Engineer",
+      "x"
+     ],
+     [
+      "Oncall",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Oncall",
+      "x"
+     ],
+     [
+      "Manager",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "exists",
+   [
+    "x"
+   ],
+   [
+    "Manager",
+    "x"
+   ]
+  ],
+  "valid": true,
+  "steps": 3
+ },
+ {
+  "id": "F36",
+  "kind": "first-order",
+  "trap": "converse",
+  "text": "David is an engineer. Everyone who is an engineer has a company laptop. Everyone who has a company laptop can see the payroll. Everyone who can see the payroll is a manager. Everyone who is on call this week is a manager. No one who is on call this week has done the safety training. Therefore, David has not done the safety training.",
+  "premises": [
+   "(Engineer David)",
+   "∀x ((Engineer x) → (Laptop x))",
+   "∀x ((Laptop x) → (Payroll x))",
+   "∀x ((Payroll x) → (Manager x))",
+   "∀x ((Oncall x) → (Manager x))",
+   "∀x ((Oncall x) → ¬(Training x))"
+  ],
+  "conclusion": "¬(Training David)",
+  "premise_terms": [
+   [
+    "Engineer",
+    "David"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Engineer",
+      "x"
+     ],
+     [
+      "Laptop",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Laptop",
+      "x"
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Payroll",
+      "x"
+     ],
+     [
+      "Manager",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Oncall",
+      "x"
+     ],
+     [
+      "Manager",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Oncall",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Training",
+       "x"
+      ]
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "not",
+   [
+    "Training",
+    "David"
+   ]
+  ],
+  "valid": false,
+  "steps": 6
+ },
+ {
+  "id": "F37",
+  "kind": "first-order",
+  "trap": null,
+  "text": "Eva is an engineer. Everyone who is an engineer is on call this week. Everyone who is on call this week can enter the lab. Therefore, Eva can enter the lab.",
+  "premises": [
+   "(Engineer Eva)",
+   "∀x ((Engineer x) → (Oncall x))",
+   "∀x ((Oncall x) → (Lab x))"
+  ],
+  "conclusion": "(Lab Eva)",
+  "premise_terms": [
+   [
+    "Engineer",
+    "Eva"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Engineer",
+      "x"
+     ],
+     [
+      "Oncall",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Oncall",
+      "x"
+     ],
+     [
+      "Lab",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "Lab",
+   "Eva"
+  ],
+  "valid": true,
+  "steps": 3
+ },
+ {
+  "id": "F38",
+  "kind": "first-order",
+  "trap": "converse",
+  "text": "Eva works remotely. Everyone who can enter the lab works remotely. Everyone who can enter the lab has a badge. Everyone who has a badge can see the payroll. Therefore, Eva can see the payroll.",
+  "premises": [
+   "(Remote Eva)",
+   "∀x ((Lab x) → (Remote x))",
+   "∀x ((Lab x) → (Badge x))",
+   "∀x ((Badge x) → (Payroll x))"
+  ],
+  "conclusion": "(Payroll Eva)",
+  "premise_terms": [
+   [
+    "Remote",
+    "Eva"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lab",
+      "x"
+     ],
+     [
+      "Remote",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lab",
+      "x"
+     ],
+     [
+      "Badge",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Badge",
+      "x"
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "Payroll",
+   "Eva"
+  ],
+  "valid": false,
+  "steps": 4
+ },
+ {
+  "id": "F39",
+  "kind": "first-order",
+  "trap": null,
+  "text": "Ben can enter the lab. Everyone who can enter the lab has a company laptop. Everyone who has a company laptop is on call this week. Everyone who is on call this week mentors a trainee. Everyone who mentors a trainee works remotely. Therefore, someone works remotely.",
+  "premises": [
+   "(Lab Ben)",
+   "∀x ((Lab x) → (Laptop x))",
+   "∀x ((Laptop x) → (Oncall x))",
+   "∀x ((Oncall x) → (Mentor x))",
+   "∀x ((Mentor x) → (Remote x))"
+  ],
+  "conclusion": "∃x (Remote x)",
+  "premise_terms": [
+   [
+    "Lab",
+    "Ben"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lab",
+      "x"
+     ],
+     [
+      "Laptop",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Laptop",
+      "x"
+     ],
+     [
+      "Oncall",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Oncall",
+      "x"
+     ],
+     [
+      "Mentor",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Mentor",
+      "x"
+     ],
+     [
+      "Remote",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "exists",
+   [
+    "x"
+   ],
+   [
+    "Remote",
+    "x"
+   ]
+  ],
+  "valid": true,
+  "steps": 5
+ },
+ {
+  "id": "F40",
+  "kind": "first-order",
+  "trap": "some",
+  "text": "Farid works remotely. Only someone who can see the payroll works remotely. Someone who can see the payroll has done the safety training. Everyone who has done the safety training can enter the lab. Therefore, Farid can enter the lab.",
+  "premises": [
+   "(Remote Farid)",
+   "∀x ((Remote x) → (Payroll x))",
+   "∃x ((Payroll x) ∧ (Training x))",
+   "∀x ((Training x) → (Lab x))"
+  ],
+  "conclusion": "(Lab Farid)",
+  "premise_terms": [
+   [
+    "Remote",
+    "Farid"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Remote",
+      "x"
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "exists",
+    [
+     "x"
+    ],
+    [
+     "and",
+     [
+      "Payroll",
+      "x"
+     ],
+     [
+      "Training",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Training",
+      "x"
+     ],
+     [
+      "Lab",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "Lab",
+   "Farid"
+  ],
+  "valid": false,
+  "steps": 4
+ }
+]

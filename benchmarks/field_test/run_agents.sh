@@ -16,6 +16,12 @@ PARALLEL="${PARALLEL:-6}"
 ITEMS_FILE="${ITEMS_FILE:-$HERE/items.json}"
 mkdir -p "$RUN"
 
+# first-order items (items_fo.json) are formalized with predicates and quantifiers
+if grep -q '"first-order"' "$ITEMS_FILE"; then
+  TOOL_HINT='You can check your answer with the check_argument tool: formalize each sentence with predicates and quantifiers, such as (forall [x] (=> (Manager x) (Badge x))) and (Badge Anna), and call it.'
+else
+  TOOL_HINT='You can check your answer with the check_argument tool: formalize each sentence with one letter per simple sentence and call it.'
+fi
 CONVENTIONS='Use the usual conventions of logic: "or" is inclusive, "unless" means "or", and "A only if B" means "if A, then B".'
 ITEMS="${ITEMS:-}"
 [ -n "$ITEMS" ] || ITEMS=$("$PYTHON" -c "import json,sys; [print(i['id']) for i in json.load(open('$ITEMS_FILE'))]")
@@ -32,7 +38,7 @@ $text"
   if [ "$condition" = tool ]; then
     prompt="$prompt
 
-You can check your answer with the check_argument tool: formalize each sentence with one letter per simple sentence and call it."
+$TOOL_HINT"
   fi
   prompt="$prompt
 
@@ -50,7 +56,7 @@ Answer on the last line with exactly VALID or INVALID."
   fi
 }
 export -f run_one
-export RUN HERE ROOT PYTHON CONVENTIONS ITEMS_FILE
+export RUN HERE ROOT PYTHON CONVENTIONS ITEMS_FILE TOOL_HINT
 
 for model in "${MODELS[@]}"; do
   for condition in ${CONDITIONS:-plain tool}; do

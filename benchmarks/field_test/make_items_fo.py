@@ -1,0 +1,232 @@
+"""Generate first-order arguments for the field test, with validity decided twice.
+
+The first field test used short arguments, mostly propositional, and the
+models judged them well without a checker. These are longer: chains of three
+to six steps with quantifiers and relations, about people in an office.
+
+A valid item needs every premise: HyLogic's proof uses all of them (see
+Argument.used). An invalid item is made from a valid chain by one change a
+hasty reader can miss, and records which:
+
+  converse    one rule turned around: "everyone who has a badge is a manager"
+              where the chain needs "every manager has a badge"
+  some        one "everyone who" weakened to "someone who"
+  scope       "everyone trusts someone" read as "someone is trusted by everyone"
+  other       the chain starts from a fact about another person
+
+Validity is decided by HyLogic and checked with Z3; an item where they
+disagree, or either cannot decide, is dropped. Half the items are valid.
+
+    TPTP-free; needs z3:  python make_items_fo.py [N] > items_fo.json
+"""
+import json
+import random
+import sys
+
+import hy  # noqa: F401
+import z3
+
+from hylogic.argument import Argument
+from hylogic.export import to_smtlib
+from hylogic.formulas import pretty
+
+PEOPLE = ["Anna", "Ben", "Carla", "David", "Eva", "Farid"]
+
+# a property: name, "x <phrase>" in the singular, and its negation
+PROPERTIES = [
+    ("Manager", "is a manager", "is not a manager"),
+    ("Engineer", "is an engineer", "is not an engineer"),
+    ("Badge", "has a badge", "does not have a badge"),
+    ("Lab", "can enter the lab", "cannot enter the lab"),
+    ("Remote", "works remotely", "does not work remotely"),
+    ("Laptop", "has a company laptop", "does not have a company laptop"),
+    ("Training", "has done the safety training", "has not done the safety training"),
+    ("Payroll", "can see the payroll", "cannot see the payroll"),
+    ("Oncall", "is on call this week", "is not on call this week"),
+    ("Mentor", "mentors a trainee", "does not mentor a trainee"),
+]
+# a relation: name, "x <phrase> y"
+RELATIONS = [("ReportsTo", "reports to"), ("Trusts", "trusts"), ("Mentors", "mentors")]
+
+
+def lower(s):
+    """A sentence continued after "Therefore,": lowercase unless it starts with a name."""
+    return s if s.split()[0] in PEOPLE else s[0].lower() + s[1:]
+
+
+def X(p):
+    return (p, "x")
+
+
+def every(p, q):  # everyone who p, q
+    return ("forall", ("x",), ("=>", X(p[0]), X(q[0]))), f"Everyone who {p[1]} {q[1]}."
+
+
+def no_one(p, q):  # no one who p, q
+    return ("forall", ("x",), ("=>", X(p[0]), ("not", X(q[0])))), f"No one who {p[1]} {q[1]}."
+
+
+def only(p, q):  # only someone who p, q   (q -> p)
+    return ("forall", ("x",), ("=>", X(q[0]), X(p[0]))), f"Only someone who {p[1]} {q[1]}."
+
+
+def some(p, q):
+    return ("exists", ("x",), ("and", X(p[0]), X(q[0]))), f"Someone who {p[1]} {q[1]}."
+
+
+def fact(name, p, positive=True):
+    atom = (p[0], name)
+    return (atom if positive else ("not", atom)), f"{name} {p[1] if positive else p[2]}."
+
+
+def rel_fact(r, a, b):
+    return (r[0], a, b), f"{a} {r[1]} {b}."
+
+
+def via(r, p, q):  # everyone who <r> someone who p, q
+    return (("forall", ("x", "y"), ("=>", ("and", (r[0], "x", "y"), (p[0], "y")), (q[0], "x"))),
+            f"Everyone who {r[1]} someone who {p[1]} {q[1]}.")
+
+
+def chain(rng):
+    """A valid argument: premises [(formula, text)], conclusion (formula, text), and the
+    places where a hasty change would break it."""
+    props = rng.sample(PROPERTIES, 6)
+    a, b = rng.sample(PEOPLE, 2)
+    r = rng.choice(RELATIONS)
+    premises, spots = [], []
+    shape = rng.choice(["plain", "relation", "negative", "only", "exists"])
+    k = rng.randint(2, 4)  # rules in the chain
+    if shape == "relation":
+        # b has p0; a <r> b; everyone who <r> someone who p0 has p1; chain from p1
+        premises += [fact(b, props[0]), rel_fact(r, a, b), via(r, props[0], props[1])]
+        spots.append(("other", 0))
+        start, subject = 1, a
+    else:
+        premises.append(fact(a, props[0]))
+        spots.append(("other", 0))
+        start, subject = 0, a
+    for i in range(start, start + k):
+        # "only someone who <p_i+1> <p_i>" says p_i -> p_i+1, the same step in words
+        # people often read the other way round
+        rule = only(props[i + 1], props[i]) if shape == "only" and i == start else every(props[i], props[i + 1])
+        premises.append(rule)
+        spots.append(("converse", len(premises) - 1))
+        spots.append(("some", len(premises) - 1))
+    last = props[start + k]
+    if shape == "negative":
+        extra = props[start + k + 1] if start + k + 1 < len(props) else props[-1]
+        premises.append(no_one(last, extra))
+        spots.append(("converse", len(premises) - 1))
+        conclusion = fact(subject, extra, positive=False)
+    elif shape == "exists":
+        conclusion = (("exists", ("x",), X(last[0])), f"Someone {last[1]}.")
+    else:
+        conclusion = fact(subject, last)
+    return premises, conclusion, spots, (a, b, r, props)
+
+
+def perturb(rng, premises, conclusion, spots, ctx):
+    a, b, r, props = ctx
+    # "another person" is the easiest change to spot, so it is drawn less often
+    kind, at = rng.choice([s for s in spots if s[0] != "other"] * 3 + [s for s in spots if s[0] == "other"])
+    ps = list(premises)
+    f, text = ps[at]
+    if kind == "other":
+        c = rng.choice([p for p in PEOPLE if p not in (a, b)])
+        if f[0] in [p[0] for p in PROPERTIES]:
+            prop = next(p for p in PROPERTIES if p[0] == f[0])
+            ps[at] = fact(c, prop)
+    elif kind == "converse" and f[0] == "forall":
+        body = f[2]
+        if body[0] == "=>" and body[2][0] != "not":
+            p = next(x for x in PROPERTIES if x[0] == body[1][0])
+            q = next(x for x in PROPERTIES if x[0] == body[2][0])
+            ps[at] = every(q, p)
+        elif body[0] == "=>":
+            p = next(x for x in PROPERTIES if x[0] == body[1][0])
+            q = next(x for x in PROPERTIES if x[0] == body[2][1][0])
+            ps[at] = only(q, p) if rng.random() < 0.5 else ps[at]
+    elif kind == "some" and f[0] == "forall" and f[2][0] == "=>" and f[2][2][0] != "not":
+        p = next(x for x in PROPERTIES if x[0] == f[2][1][0])
+        q = next(x for x in PROPERTIES if x[0] == f[2][2][0])
+        ps[at] = some(p, q)
+    return ps, kind
+
+
+def scope_item(rng):
+    """Everyone <r> someone who p; ... ⊬ someone who p is <r>-ed by everyone (and a valid twin)."""
+    r = rng.choice(RELATIONS)
+    p, q = rng.sample(PROPERTIES, 2)
+    a = rng.choice(PEOPLE)
+    every_some = (("forall", ("x",), ("exists", ("y",), ("and", (p[0], "y"), (r[0], "x", "y")))),
+                  f"Everyone {r[1]} someone who {p[1]}.")
+    rule = every(p, q)
+    invalid = rng.random() < 0.5
+    if invalid:
+        concl = (("exists", ("y",), ("and", (q[0], "y"), ("forall", ("x",), (r[0], "x", "y")))),
+                 f"Someone who {q[1]} is someone everyone {r[1]}.")
+        return [every_some, rule], concl, "scope"
+    concl = (("exists", ("y",), ("and", (q[0], "y"), (r[0], a, "y"))),
+             f"{a} {r[1]} someone who {q[1]}.")
+    return [every_some, rule], concl, None
+
+
+def z3_valid(premises, conclusion):
+    s = z3.Solver()
+    s.set("timeout", 10000)
+    s.from_string(to_smtlib(premises, conclusion, check_sat=False))
+    out = s.check()
+    if out == z3.unsat:
+        return True
+    if out == z3.sat:
+        return False
+    return None
+
+
+def main():
+    want = int(sys.argv[1]) if len(sys.argv) > 1 else 40
+    rng = random.Random(2026)
+    items, counts, seen = [], {True: 0, False: 0}, set()
+    while len(items) < want:
+        if rng.random() < 0.1:
+            ps, concl, kind = scope_item(rng)
+        else:
+            ps, concl, spots, ctx = chain(rng)
+            kind = None
+            if rng.random() < 0.5:
+                ps, kind = perturb(rng, ps, concl, spots, ctx)
+        pfs, cf = [p[0] for p in ps], concl[0]
+        key = (tuple(map(str, pfs)), str(cf))
+        if key in seen:
+            continue
+        arg = Argument(pfs, cf, timeout=5)
+        valid = arg.valid
+        if valid is None or z3_valid(pfs, cf) is not valid:
+            continue
+        if kind != "scope" and len(pfs) < 3:
+            continue  # chains are at least three premises long
+        if valid and kind is not None:
+            continue  # the change happened not to break the chain
+        if not valid and kind is None:
+            continue
+        if counts[valid] >= want // 2:
+            continue
+        # a valid item needs every premise; no item is decided by contradictory premises
+        if valid and arg.used != list(range(1, len(pfs) + 1)):
+            continue
+        if Argument(pfs, "false", timeout=5).valid is True:
+            continue
+        seen.add(key)
+        counts[valid] += 1
+        items.append({"id": f"F{len(items) + 1}", "kind": "first-order", "trap": kind,
+                      "text": " ".join(p[1] for p in ps) + " Therefore, " + lower(concl[1]),
+                      "premises": [pretty(f) for f in pfs], "conclusion": pretty(cf),
+                      "premise_terms": pfs, "conclusion_term": cf, "valid": valid,
+                      "steps": len(pfs)})
+    json.dump(items, sys.stdout, ensure_ascii=False, indent=1)
+    print()
+
+
+if __name__ == "__main__":
+    main()

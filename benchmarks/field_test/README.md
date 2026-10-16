@@ -102,3 +102,37 @@ adds 60 to 70 % to the cost. A checker would pay off only where the reasoning
 itself is the hard part, with longer or first-order arguments, and only if
 the model formalizes the sentences correctly, which is where Haiku's errors
 were.
+
+## Round two: first-order arguments
+
+The first round's arguments were short and mostly propositional, and the
+models judged them well without the tool. `items_fo.json` (made by
+`make_items_fo.py`) has 40 longer first-order arguments about people in an
+office: chains of three to seven premises with "everyone who", "no one who",
+"only someone who", "someone who" and relations such as "reports to". Half
+are valid, and a valid one needs every premise (HyLogic's proof uses all of
+them). An invalid one is a valid chain with one change a hasty reader can
+miss, recorded as its trap.
+
+| Trap | Change |
+|---|---|
+| `converse` | one rule turned around, "everyone who has a badge works remotely" where the chain needs the converse |
+| `some` | one "everyone who" weakened to "someone who" |
+| `scope` | "everyone trusts someone" taken as "someone is trusted by everyone" |
+| `other` | the chain starts from a fact about another person |
+
+Validity is decided by HyLogic and checked with Z3. With the tool the prompt
+asks for predicates and quantifiers. The tool answers with the verdict, the
+premises a valid argument needs and the length of the proof, and returns the
+proof itself only with `detail=true`, since the agent pays for every line.
+
+    ITEMS_FILE=items_fo.json run_agents.sh haiku
+
+### Hypotheses, written before running
+
+| | Hypothesis | Expected |
+|---|---|---|
+| H5 | Without the tool, longer chains and the traps cost the small model more than the first round did | Haiku below 90 % |
+| H6 | Most errors without the tool fall on `some` and `scope` | more than on `converse` and `other` |
+| H7 | With the tool, accuracy rises; the remaining errors are formalization mistakes | Haiku 95 % or more |
+| H8 | The tool costs less here than in the first round, relative to answering without it, because the model can stop reasoning once the tool decides | less than 1.6 times |
