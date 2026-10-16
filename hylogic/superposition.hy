@@ -135,6 +135,13 @@ Vampire use; this is a small version of it without literal selection."
   (setv [_ s t] unit)
   (cond (kbo> s t) #(s t) (kbo> t s) #(t s) True None))
 
+(defn rules-of [unit]
+  "The rewrite rules of a unit equation: its oriented form, or none. Ordered
+  rewriting, which would also use an unorientable equation on the instances
+  it can order, was measured and lost more problems than it won."
+  (setv rule (orient unit))
+  (if rule [rule] []))
+
 (defn _rewrite-term [t rules budget]
   "t rewritten innermost first with the rules, at most budget steps; #(term steps-used)."
   (setv used 0)
@@ -149,7 +156,8 @@ Vampire use; this is a small version of it without literal selection."
   (for [[l r] rules]
     (setv m (match-term l t))
     (when (is-not m None)
-      (setv [t2 n] (_rewrite-term (instantiate r m) rules (- budget used 1)))
+      (setv new (instantiate r m))
+      (setv [t2 n] (_rewrite-term new rules (- budget used 1)))
       (return #(t2 (+ used 1 n)))))
   #(t used))
 

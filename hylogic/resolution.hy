@@ -227,6 +227,7 @@ new clauses that are neither duplicates nor subsumed by older ones."
     (setv self.literals (frozenset literals)
           self.parents parents
           self.rule rule
+          self.rules-seen 0
           self.id None))
   (defn __str__ [self] (clause-text self.literals)))
 
@@ -373,7 +374,8 @@ new clauses that are neither duplicates nor subsumed by older ones."
         stats {"kept" 0 "generated" 0})
 
   (defn pick []
-    "The next unprocessed clause, by weight or, every (age-ratio + 1)th time, by age."
+    "The next unprocessed clause, by weight or, every (age-ratio + 1)th time, by age.
+    With superposition it is first rewritten with the rules found since it was kept."
     (nonlocal picks)
     (+= picks 1)
     (setv heap (if (and age-ratio (= (% picks (+ age-ratio 1)) 0)) by-age queue))
@@ -382,6 +384,15 @@ new clauses that are neither duplicates nor subsumed by older ones."
         (setv c (get (heapq.heappop h) 2))
         (when (not c.done)
           (setv c.done True)
+          (when (and superposition (< c.rules-seen (len rules)))
+            (setv [lits changed] (sp.demodulate c.literals rules))
+            (when changed
+              (setv lits (sp.drop-false-equations lits))
+              (when (sp.trivial? lits) (continue))
+              (setv c (Clause lits #(c) "demodulation")
+                    c.id (next ids) c.done True
+                    c.goal (getattr (get c.parents 0) "goal" False)
+                    c.features (features lits) c.symbols (symbols lits))))
           (return c))))
     None)
 
@@ -391,7 +402,8 @@ new clauses that are neither duplicates nor subsumed by older ones."
       (setv [lits changed] (sp.demodulate (sp.drop-false-equations clause.literals) rules))
       (when (sp.trivial? lits) (return None))
       (when changed (setv clause.rule (+ clause.rule "+demod")))
-      (setv clause.literals lits))
+      (setv clause.literals lits
+            clause.rules-seen (len rules)))
     (setv lits clause.literals)
     (when (tautology? lits) (return None))
     (setv key (canonical lits))
@@ -439,6 +451,7 @@ new clauses that are neither duplicates nor subsumed by older ones."
   (while True
     (setv given (pick))
     (when (is given None) (break))
+    (when (not given.literals) (return (Result "proved" given stats)))
     (when (any (gfor p processed (and (or (not index) (and (<= p.features given.features)
                                                            (<= p.symbols given.symbols)))
                                       (subsumes? p.literals given.literals))))
@@ -450,12 +463,24 @@ new clauses that are neither duplicates nor subsumed by older ones."
                                         (subsumes? given.literals p.literals)))
                           p))
     (.append processed given)
-    ;; a processed unit equation that can be oriented becomes a rewrite rule
+    ;; a processed unit equation becomes rewrite rules, which also rewrite the
+    ;; processed clauses (backward demodulation): a rewritten one is taken out
+    ;; and comes back as a new clause
     (when (and superposition (= (len given.literals) 1))
       (setv [lit] given.literals)
       (when (and (sp.equation? lit) (not (sp.negative? lit)))
-        (setv rule (sp.orient lit))
-        (when rule (.append rules rule))))
+        (setv new-rules (sp.rules-of lit))
+        (.extend rules new-rules)
+        (when new-rules
+          (setv kept [] rewritten [])
+          (for [p processed]
+            (setv [lits changed] (if (is p given) #(None False) (sp.demodulate p.literals new-rules)))
+            (if changed (.append rewritten #(p lits)) (.append kept p)))
+          (setv processed kept)
+          (for [[p lits] rewritten]
+            (setv new (add (Clause lits #(p given) "demodulation")))
+            (when (and new (not new.literals))
+              (return (Result "proved" new stats)))))))
     (for [[lits parents rule] (inferences given processed)]
       (+= (get stats "generated") 1)
       (when (and deadline (> (time.monotonic) deadline))
