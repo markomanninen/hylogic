@@ -233,9 +233,6 @@ new clauses that are neither duplicates nor subsumed by older ones."
           self.id None))
   (defn __str__ [self] (clause-text self.literals)))
 
-(defn _predicate [atom]
-  (if (compound? atom) #((get atom 0) (len atom)) atom))
-
 (defn weight [lits] (sum (gfor l lits (size l))))
 
 (defn _mask [t]

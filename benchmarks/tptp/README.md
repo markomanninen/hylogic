@@ -335,6 +335,8 @@ non-theorems. Four changes closed most of both, each measured on its own.
 | + backward demodulation (oriented rules only) | 31 | 6 | 3 | 34 | 32 | 9 | 31 | 146 | 0 |
 | + unit deletion | 32 | 10 | 5 | 34 | 33 | 10 | 31 | 155 | 0 |
 | + clause splitting before grounding EPR problems | 32 | 32 | 5 | 34 | 33 | 10 | 31 | 177 | 0 |
+| main search 50 % instead of 80 % (not kept) | 32 | 31 | 4 | 34 | 34 | 10 | 31 | 176 | 0 |
+| main search 65 % instead of 80 % (not kept) | 32 | 32 | 4 | 34 | 34 | 10 | 31 | 177 | 0 |
 
 **Ground equality decided exactly** (`hylogic.euf`). Equality with
 uninterpreted functions is decidable for ground clauses, with no bound on
