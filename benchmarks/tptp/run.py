@@ -30,6 +30,8 @@ def command(prover, path, limit):
         return ["eprover", "--auto", "--silent", "--tstp-format", "--proof-object", f"--cpu-limit={limit}", path]
     if prover == "vampire":
         return [VAMPIRE, "--mode", "casc", "-t", f"{limit}s", "--proof", "tptp", path]
+    if prover == "vampire-sat":
+        return [VAMPIRE, "--mode", "portfolio", "--schedule", "casc_sat", "-t", f"{limit}s", path]
     raise ValueError(prover)
 
 
@@ -54,12 +56,13 @@ def main():
     ap.add_argument("--time-limit", type=float, default=10)
     ap.add_argument("--label")
     ap.add_argument("--jobs", type=int, default=8)
+    ap.add_argument("--sample", default="sample.txt", help="problem list, such as holdout.txt")
     ap.add_argument("--set", action="append", default=[], help="HyLogic search option name=value")
     args = ap.parse_args()
     for option in args.set:
         OPTIONS.extend(["--set", option])
     label = args.label or args.prover
-    sample = [line.split() for line in (HERE / "sample.txt").read_text().splitlines()]
+    sample = [line.split() for line in (HERE / args.sample).read_text().splitlines()]
     out_path = HERE / "results" / f"{label}.jsonl"
     out_path.parent.mkdir(exist_ok=True)
     out_path.write_text("")

@@ -57,14 +57,19 @@ model up to k proves the clauses unsatisfiable: a theorem."
   A clause A ∨ B whose parts share only the variables I becomes A ∨ s(I) and
   ¬s(I) ∨ B, with s a new predicate (clause splitting, as in Paradox): grounding
   then costs n^|A| + n^|B| instead of n^|A ∪ B| for a domain of n elements."
-  (setv clause (list clause) all-vars (variables-of (tuple clause)))
-  (when (<= (len all-vars) keep) (return [clause]))
+  (setv clause (list clause)
+        lit-vars (lfor l clause (frozenset (variables-of l)))
+        all-vars (frozenset (gfor vs lit-vars  v vs v)))
+  ;; very long clauses are left whole: the search below is quadratic in them
+  (when (or (<= (len all-vars) keep) (> (len clause) 64)) (return [clause]))
   (setv best None)
-  (for [v all-vars]
-    (setv a (lfor l clause :if (in v (variables-of l)) l)
-          b (lfor l clause :if (not-in v (variables-of l)) l))
+  (for [v (sorted all-vars)]
+    (setv a [] b [] va #{} vb #{})
+    (for [[l vs] (zip clause lit-vars)]
+      (if (in v vs)
+          (do (.append a l) (.update va vs))
+          (do (.append b l) (.update vb vs))))
     (when (not b) (continue))
-    (setv va (set (variables-of (tuple a))) vb (set (variables-of (tuple b))))
     (when (and (< (len va) (len all-vars)) (< (len vb) (len all-vars)))
       (setv key #((max (len va) (len vb)) (+ (len va) (len vb))))
       (when (or (is best None) (< key (get best 0)))
@@ -162,7 +167,10 @@ model up to k proves the clauses unsatisfiable: a theorem."
   (for [c flat-clauses]
     (setv vs (variables-of (tuple c)))
     (when (and deadline (> (time.monotonic) deadline)) (raise (_TooBig)))
-    (for [values (product domain :repeat (len vs))]
+    (for [[i values] (enumerate (product domain :repeat (len vs)))]
+      ;; a clause whose instances are mostly true never reaches max-clauses,
+      ;; so the clock is checked inside the loop too
+      (when (and deadline (= (% i 4096) 4095) (> (time.monotonic) deadline)) (raise (_TooBig)))
       (setv s (dict (zip vs values)) row [] satisfied False)
       (for [l c]
         (setv neg (_negative? l) a (_atom l))

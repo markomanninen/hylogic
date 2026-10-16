@@ -248,18 +248,32 @@ new clauses that are neither duplicates nor subsumed by older ones."
     (setv (get mapping v) f"?v{(len mapping)}"))
   (frozenset (gfor l lits (substitute l mapping))))
 
-(defn subsumes? [c d]
+(defn subsumes? [c d [budget 2000]]
   "Does clause c subsume d, that is, does some substitution map every literal of c into d?
-  Then d says nothing that c does not, and d can be dropped."
-  (and (<= (len c) (len d))
-       (_subsumes (sorted c :key size :reverse True) d {})))
+  Then d says nothing that c does not, and d can be dropped.
 
-(defn _subsumes [lits d s]
-  (when (not lits) (return True))
-  (setv [head #* rest] lits)
-  (for [l d]
-    (setv s2 (match-term head l s))
-    (when (and (is-not s2 None) (_subsumes rest d s2))
+  Finding the substitution can take exponentially many tries on long clauses
+  of similar literals, so each literal first gets the literals of d it matches
+  on its own, the most constrained go first, and after budget tries the answer
+  is no: keeping a clause that could have been dropped is always safe."
+  (when (> (len c) (len d)) (return False))
+  (setv options [])
+  (for [l c]
+    (setv fits (lfor m d :if (is-not (match-term l m) None) m))
+    (when (not fits) (return False))
+    (.append options #(l fits)))
+  (.sort options :key (fn [o] (len (get o 1))))
+  (setv tries [budget])
+  (_subsumes options {} tries))
+
+(defn _subsumes [options s tries]
+  (when (not options) (return True))
+  (setv [[head fits] #* rest] options)
+  (for [m fits]
+    (-= (get tries 0) 1)
+    (when (< (get tries 0) 0) (return False))
+    (setv s2 (match-term head m s))
+    (when (and (is-not s2 None) (_subsumes rest s2 tries))
       (return True)))
   False)
 
@@ -283,6 +297,18 @@ new clauses that are neither duplicates nor subsumed by older ones."
   (frozenset found))
 
 (defn _predicate [atom] (if (compound? atom) (get atom 0) atom))
+
+(defn _unit-key [sign atom [pattern False]]
+  "Where unit deletion files a unit atom, or looks for units matching an atom:
+  sign, predicate and the head of the first argument. A unit whose first
+  argument is a variable can match anything, so it is filed under *."
+  (setv first (when (and (compound? atom) (> (len atom) 1)) (get atom 1)))
+  #(sign (_predicate atom)
+    (cond (is first None) "-"
+          (and pattern (variable? first)) "*"
+          (variable? first) "?"
+          (compound? first) #((get first 0) (len first))
+          True first)))
 
 (defn eligible [lits]
   "The literals of a clause that ordered resolution may resolve on.
@@ -331,18 +357,20 @@ new clauses that are neither duplicates nor subsumed by older ones."
   (defn proof [self]
     "The proof as numbered lines, from input clauses to the empty clause."
     (when (or (not self.proved) (is self.clause None)) (return []))
-    (setv order [] seen #{})
+    ;; numbered in the order a depth-first walk finishes the clauses, so every
+    ;; clause comes after the ones it was derived from
+    (setv order [] number {})
     (defn visit [c]
-      (when (not-in c.id seen)
-        (.add seen c.id)
+      (when (not-in (id c) number)
+        (setv (get number (id c)) None)
         (for [p [#* c.parents #* c.used]] (visit p))
-        (.append order c)))
+        (.append order c)
+        (setv (get number (id c)) (len order))))
     (visit self.clause)
-    ;; a parent always has a smaller number than its child, so this order is valid
-    (lfor c (sorted order :key (fn [c] c.id))
-      (+ (.rjust (str c.id) 4) ". " (.ljust (str c) 44) " "
+    (lfor c order
+      (+ (.rjust (str (get number (id c))) 4) ". " (.ljust (str c) 44) " "
          (if (or c.parents c.used)
-             (+ c.rule " " (.join ", " (gfor p [#* c.parents #* c.used] (str p.id))))
+             (+ c.rule " " (.join ", " (gfor p [#* c.parents #* c.used] (str (get number (id p))))))
              c.rule)))))
 
 (defn saturate [clauses [limit 5000] [timeout None] [age-ratio 0] [superposition 0]
@@ -372,7 +400,7 @@ new clauses that are neither duplicates nor subsumed by older ones."
         by-age []
         picks 0
         seen #{}
-        rules []
+        rules (sp.RuleIndex)
         rule-source {}
         units {}
         unit-count 0
@@ -385,8 +413,10 @@ new clauses that are neither duplicates nor subsumed by older ones."
     (when (not units) (return #(lits False [])))
     (setv out [] used [])
     (for [l lits]
-      (setv hit (next (gfor [u source] (.get units #((not (negative? l)) (_predicate (atom-of l))) [])
-                            :if (is-not (match-term u (atom-of l)) None) source)
+      (setv a (atom-of l) sign (not (negative? l))
+            hit (next (gfor key [(_unit-key sign a) #(sign (_predicate a) "*")]
+                            [u source] (.get units key [])
+                            :if (is-not (match-term u a) None) source)
                       None))
       (if (is hit None) (.append out l) (.append used hit)))
     #((frozenset out) (bool used) used))
@@ -494,7 +524,8 @@ new clauses that are neither duplicates nor subsumed by older ones."
     (.append processed given)
     (when (= (len given.literals) 1)
       (setv [lit] given.literals)
-      (.append (.setdefault units #((negative? lit) (_predicate (atom-of lit))) []) #((atom-of lit) given))
+      (.append (.setdefault units (_unit-key (negative? lit) (atom-of lit) True) [])
+               #((atom-of lit) given))
       (+= unit-count 1))
     ;; a processed unit equation becomes rewrite rules, which also rewrite the
     ;; processed clauses (backward demodulation): a rewritten one is taken out

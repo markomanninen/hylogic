@@ -109,9 +109,14 @@ which removes symmetric models."
     (for [i (range (len vs)) j (range (+ i 1) (len vs))]
       (.add self [(- (get vs i)) (- (get vs j))]))))
 
-(defn _encode [clauses terms n fixed]
+(defclass _Late [Exception])
+
+(defn _encode [clauses terms n fixed [deadline None]]
+  (defn check []
+    (when (and deadline (> (time.monotonic) deadline)) (raise (_Late))))
   (setv enc (_Encoder n) dom (list (range 1 (+ n 1))) funs {} preds {})
   (for [t terms]
+    (check)
     ;; every term has exactly one value; a fixed constant also has its own one
     (.exactly-one enc (lfor e dom #("val" t e)))
     (when (in t fixed)
@@ -151,6 +156,7 @@ which removes symmetric models."
       (= a "false") (if neg "true" "false")
       True (if neg (- v) v)))
   (for [c clauses]
+    (check)
     (setv row [] satisfied False)
     (for [l c]
       (setv x (literal l))
@@ -194,7 +200,7 @@ which removes symmetric models."
         top (min bound max-size))
   (for [n (range (max 1 (len clique)) (+ top 1))]
     (when (and deadline (> (time.monotonic) deadline)) (return None))
-    (setv enc (_encode clauses terms n fixed)
+    (setv enc (try (_encode clauses terms n fixed deadline) (except [_Late] (return None)))
           model (dpll enc.cnf :deadline deadline))
     (cond
       (= model "timeout") (return None)

@@ -142,6 +142,21 @@ Vampire use; this is a small version of it without literal selection."
   (setv rule (orient unit))
   (if rule [rule] []))
 
+(defn _head [t] (if (compound? t) #((get t 0) (len t)) t))
+
+(defclass RuleIndex []
+  "Rewrite rules grouped by the head symbol of their left side. A rule can only
+  match a term with the same head, so rewriting tries only those; the order
+  within a group is the order the rules were added, as in a plain list."
+  (defn __init__ [self] (setv self.rules [] self.groups {}))
+  (defn __len__ [self] (len self.rules))
+  (defn __iter__ [self] (iter self.rules))
+  (defn extend [self rules]
+    (for [r rules]
+      (.append self.rules r)
+      (.append (.setdefault self.groups (_head (get r 0)) []) r)))
+  (defn candidates [self t] (.get self.groups (_head t) [])))
+
 (defn _rewrite-term [t rules budget [fired None]]
   "t rewritten innermost first with the rules, at most budget steps; #(term steps-used)."
   (setv used 0)
@@ -153,7 +168,7 @@ Vampire use; this is a small version of it without literal selection."
       (.append args a2))
     (setv t #((get t 0) #* args)))
   (when (or (variable? t) (>= used budget)) (return #(t used)))
-  (for [[l r] rules]
+  (for [[l r] (if (isinstance rules RuleIndex) (.candidates rules t) rules)]
     (setv m (match-term l t))
     (when (is-not m None)
       (setv new (instantiate r m))
