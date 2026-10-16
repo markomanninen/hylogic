@@ -1,6 +1,11 @@
 """Draw the fixed TPTP sample for the prover benchmarks.
 
     TPTP=/path/to/TPTP-v9.3.1 python draw_sample.py > sample.txt
+    TPTP=... python draw_sample.py 2027 sample.txt > holdout.txt
+
+The optional arguments give another seed and a sample whose problems to leave
+out, which draws a held-out sample for checking that tuning on sample.txt
+did not overfit.
 
 FOF problems with at most 50 formulas: 40 theorems (or all, where fewer exist) per cell of
 {without equality, with equality} x {rating 0, 0.01-0.20, 0.21-0.50}, and 40
@@ -10,6 +15,7 @@ import glob
 import os
 import random
 import re
+import sys
 
 root = os.environ["TPTP"]
 rows = []
@@ -24,7 +30,11 @@ for path in sorted(glob.glob(f"{root}/Problems/*/*+*.p")):
     parts = spc.group(1).split("_")
     rows.append((os.path.relpath(path, root), status.group(1), float(rating.group(1)), parts[3] if len(parts) > 3 else ""))
 
-rng = random.Random(2026)
+seed = int(sys.argv[1]) if len(sys.argv) > 1 else 2026
+if len(sys.argv) > 2:
+    used = {line.split()[-1] for line in open(sys.argv[2])}
+    rows = [r for r in rows if r[0] not in used]
+rng = random.Random(seed)
 cells = []
 for eq_name, eq in [("neq", {"NEQ"}), ("eq", {"SEQ", "PEQ"})]:
     for band, lo, hi in [("r0", 0.0, 0.0), ("r1", 0.01, 0.20), ("r2", 0.21, 0.50)]:
