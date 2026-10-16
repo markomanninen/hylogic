@@ -47,6 +47,7 @@ and there are finitely many, so the loop ends."
           self.size (dfor t terms t 1)
           self.proof (dfor t terms t None)
           self.uses (dfor t terms t [])
+          self.memo {}
           self.table {})
     (for [t terms :if (compound? t)]
       (for [a (cut t 1 None)] (.append (get self.uses a) t))
@@ -104,17 +105,18 @@ and there are finitely many, so the loop ends."
       (.append reasons reason))
     reasons)
   (defn explain [self a b]
-    "The input equations that make a and b equal."
-    (setv out #{} done #{} todo [#(a b)])
-    (while todo
-      (setv [s t] (.pop todo))
-      (when (or (= s t) (in #(s t) done)) (continue))
-      (.add done #(s t))
-      (for [reason (._path self s t)]
-        (if (= (get reason 0) "$cong")
-            (for [[x y] (zip (cut (get reason 1) 1 None) (cut (get reason 2) 1 None))]
-              (.append todo #(x y)))
-            (.add out reason))))
+    "The input equations that make a and b equal. Explanations are remembered,
+    since the lemmas of one round share most of theirs."
+    (when (= a b) (return (frozenset)))
+    (setv key #(a b))
+    (when (in key self.memo) (return (get self.memo key)))
+    (setv out #{})
+    (for [reason (._path self a b)]
+      (if (= (get reason 0) "$cong")
+          (for [[x y] (zip (cut (get reason 1) 1 None) (cut (get reason 2) 1 None))]
+            (.update out (.explain self x y)))
+          (.add out reason)))
+    (setv out (frozenset out) (get self.memo key) out)
     out))
 
 (defn _subterms [t out]

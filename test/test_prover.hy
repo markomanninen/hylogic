@@ -150,3 +150,15 @@
                  :superposition 1))
   (assert r.proved)
   (assert (any (gfor l (.proof r) (in "(= e c)" l)))))
+
+(defn test-solve-keeps-its-time-limit []
+  ;; grounding once checked the clock only between clauses, and clause splitting
+  ;; was cubic on long clauses: ALG026+1 took 27 s with a 10 s limit
+  (import os time pathlib [Path] hylogic.tptp [solve])
+  (setv root (os.environ.get "TPTP"))
+  (when (or (not root) (not (.exists (/ (Path root) "Problems" "ALG" "ALG026+1.p"))))
+    (pytest.skip "set TPTP to a TPTP library to run this test"))
+  (setv start (time.monotonic))
+  (solve (str (/ (Path root) "Problems" "ALG" "ALG026+1.p")) :time-limit 4 :epr 1 :equality 2
+         :definitional 8 :finder_first 30 :portfolio 80 :ordered 1 :index 1)
+  (assert (< (- (time.monotonic) start) 5.5)))
