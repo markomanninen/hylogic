@@ -15,6 +15,7 @@ for small domains.
   (countermodel ['(∀ [x] (→ (Man x) (Mortal x))) '(Mortal fido)] '(Man fido))"
 
 (import itertools [product]
+        time
         hylogic.formulas [basic operator-of args-of QUANTIFIERS]
         hylogic.export [signature]
         hylogic.sat [satisfiable]
@@ -71,21 +72,28 @@ for small domains.
                           (_ground (get f 2) domain (| bound (dict (zip names values))) constants functions)))
         #((if (= op "forall") "and" "or") #* parts))
     op #(op #* (gfor a (args-of f) (_ground a domain bound constants functions)))
+    ;; equality is identity of elements, so models stay sound for =
+    (and (compound? f) (= (get f 0) "="))
+      (if (= (_term (get f 1) bound constants functions) (_term (get f 2) bound constants functions))
+          "true" "false")
     (compound? f)
       (+ (get f 0) "(" (.join "," (gfor a (cut f 1 None) (_term a bound constants functions))) ")")
     True f))
 
 (defn _tables [functions domain]
-  "Every way to interpret the functions over the domain."
+  "Every way to interpret the functions over the domain, one at a time.
+  There can be billions (4^16 for one binary function over four elements), so
+  nothing is built in advance."
   (setv names (sorted functions)
-        options [])
-  (for [name names]
-    (setv inputs (list (product domain :repeat (get functions name))))
-    (.append options (lfor outputs (product domain :repeat (len inputs))
-                           (dict (zip inputs outputs)))))
-  (gfor choice (product #* options) (dict (zip names choice))))
+        inputs (lfor name names (list (product domain :repeat (get functions name)))))
+  (defn tables [i chosen]
+    (if (= i (len names))
+        (yield (dict chosen))
+        (for [outputs (product domain :repeat (len (get inputs i)))]
+          (yield :from (tables (+ i 1) [#* chosen #((get names i) (dict (zip (get inputs i) outputs)))])))))
+  (tables 0 []))
 
-(defn find-model [formulas [max-size 4] [max-tries 20000]]
+(defn find-model [formulas [max-size 4] [max-tries 20000] [deadline None]]
   "A smallest finite model of the formulas, or None if none has at most max-size elements."
   (setv fs (lfor f formulas (basic f))
         sig (signature fs)
@@ -96,7 +104,7 @@ for small domains.
     (for [consts (product domain :repeat (len constants))
           functions (_tables (get sig "functions") domain)]
       (+= tries 1)
-      (when (> tries max-tries) (return None))
+      (when (or (> tries max-tries) (and deadline (> (time.monotonic) deadline))) (return None))
       (setv constant-map (dict (zip constants consts))
             grounded #("and" #* (gfor f fs (_ground f domain {} constant-map functions)))
             assignment (satisfiable grounded))

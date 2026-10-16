@@ -188,3 +188,8 @@
   (assert (∀ [x [1 2] y [-1 -2]] (!= (+ x y) 5)))
   (assert (forall [x []] False))           ; vacuously true
   (assert (not (exists [x []] True))))
+
+
+(defn test-quoted-forms-inside-tuples-are-converted []
+  ;; a tuple built in code can hold quoted Hy forms
+  (assert (= (formula #("not" '(∧ P Q))) #("not" #("and" "P" "Q")))))
