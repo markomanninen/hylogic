@@ -193,3 +193,10 @@
 (defn test-quoted-forms-inside-tuples-are-converted []
   ;; a tuple built in code can hold quoted Hy forms
   (assert (= (formula #("not" '(∧ P Q))) #("not" #("and" "P" "Q")))))
+
+(defn test-arguments-name-the-premises-they-need []
+  (setv a (Argument ['(→ P Q) 'R 'P] 'Q))
+  (assert (= a.used [1 3]))
+  (setv b (Argument ['(∀ [x] (→ (Man x) (Mortal x))) '(Greek socrates) '(Man socrates)] '(Mortal socrates)))
+  (assert (= b.used [1 3]))
+  (assert (is (. (Argument ['(→ P Q) 'Q] 'P) used) None)))

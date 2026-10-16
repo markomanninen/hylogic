@@ -7,7 +7,9 @@
 One tool, ``check_argument``. It takes premises and a conclusion as
 formulas, decides validity with a truth table, a SAT solver or the
 resolution prover, and returns the verdict with a counterexample or a small
-countermodel when the argument is invalid.
+countermodel when the argument is invalid. A valid argument comes with the
+premises it needs; the proof itself is returned only with detail=true,
+since it can be long and the agent pays for every line.
 
 HYLOGIC_MCP_LOG  file to append every call and its result to, as JSON lines
 """
@@ -82,18 +84,27 @@ def _log(entry):
 
 
 @mcp.tool()
-def check_argument(premises: list, conclusion: str | list, meanings: dict | None = None) -> str:
-    """Decide whether the premises entail the conclusion. Formulas are s-expressions like "(=> P Q)" or JSON arrays like ["=>", "P", "Q"]. meanings maps letters or predicate names to the sentences they stand for."""
+def check_argument(premises: list, conclusion: str | list, meanings: dict | None = None,
+                   detail: bool = False) -> str:
+    """Decide whether the premises entail the conclusion. Formulas are s-expressions like "(=> P Q)" or JSON arrays like ["=>", "P", "Q"]. meanings maps letters or predicate names to the sentences they stand for. A valid argument comes with the premises it needs; detail=true adds the full proof for arguments with quantifiers."""
     started = time.time()
-    entry = {"premises": premises, "conclusion": conclusion, "meanings": meanings}
+    entry = {"premises": premises, "conclusion": conclusion, "meanings": meanings, "detail": detail}
     try:
         ps = [_formula(p, f"premise {i + 1}") for i, p in enumerate(premises)]
         c = _formula(conclusion, "conclusion")
-        argument = Argument(ps, c, meanings=meanings, limit=3000)
+        argument = Argument(ps, c, meanings=meanings, limit=100000, timeout=5)
         argument.check()
         verdict = {True: "VALID", False: "INVALID", None: "UNDECIDED"}[argument.valid]
         lines = [f"{verdict} (checked by {argument.method})",
                  "Read as: " + "; ".join(pretty(p) for p in ps) + " ⊢ " + pretty(c)]
+        if argument.valid and argument.used is not None:
+            lines.append("Premises needed: " + (", ".join(map(str, argument.used)) or "none, the conclusion holds by itself")
+                         + f" (of {len(ps)})")
+        if argument.valid and argument.proof:
+            if detail:
+                lines.append("Proof:\n" + "\n".join(argument.proof))
+            else:
+                lines.append(f"Proof: {len(argument.proof)} steps, shown with detail=true")
         if argument.counterexample:
             lines.append("Counterexample: " + describe(argument.counterexample, meanings)
                          + ". Then every premise is true and the conclusion is false.")
