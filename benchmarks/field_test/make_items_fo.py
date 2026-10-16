@@ -30,7 +30,10 @@ nights, or both", both branches leading on) and a transitive relation through
 three people, among four to six distractors. Its traps add `branch` (one case
 leads elsewhere) and `direction` (a relation fact turned around).
 
-    TPTP-free; needs z3:  python make_items_fo.py [N] [--hard | --harder] > items_fo.json
+With --hardest the chain needs two contrapositive steps and two case splits,
+one of each before and after the relation step, about 25 to 30 premises.
+
+    TPTP-free; needs z3:  python make_items_fo.py [N] [--hard | --harder | --hardest] > items_fo.json
 """
 import json
 import random
@@ -318,11 +321,86 @@ def harder_chain(rng):
     return chain, distractors, conclusion, traps, r
 
 
-def harder_main(want):
-    rng = random.Random(2028)
+class _Chain:
+    """A chain under construction: premises, traps, the property reached so far,
+    and fresh properties to draw from."""
+    def __init__(self, rng, props):
+        self.rng, self.props, self.premises, self.traps = rng, iter(props), [], []
+
+    def fresh(self):
+        return next(self.props)
+
+    def add(self, premise, trap=None):
+        self.premises.append(premise)
+        if trap:
+            self.traps.append((trap[0], len(self.premises) - 1, trap[1]))
+
+    def forward(self, p, n):
+        for _ in range(n):
+            q = self.fresh()
+            self.add(every(p, q), ("converse", (p, q)))
+            self.traps.append(("some", len(self.premises) - 1, (p, q)))
+            p = q
+        return p
+
+    def tollens(self, p):
+        """From p: no one who p is <blocked>; everyone who <neg> is <blocked>;
+        so not <neg>; everyone who does not <neg> has <q>. Returns q."""
+        blocked, neg, q = self.fresh(), self.fresh(), self.fresh()
+        self.add(no_one(p, blocked))
+        self.add(every(neg, blocked), ("converse", (neg, blocked)))
+        self.add(unless_not(neg, q))
+        return q
+
+    def split(self, p):
+        """Everyone who p is q1 or q2; both lead to <joined>. Returns joined."""
+        q1, q2, joined = self.fresh(), self.fresh(), self.fresh()
+        self.add(either(p, q1, q2))
+        self.add(every(q1, joined), ("branch", (q1, joined)))
+        self.add(every(q2, joined), ("branch", (q2, joined)))
+        return joined
+
+
+def hardest_chain(rng):
+    """Two contrapositive steps and two case splits, one of each about c and
+    about a, joined by a transitive relation through b, among distractors."""
+    a, b, c = rng.sample(PEOPLE, 3)
+    r = ("ReportsTo", "reports to")
+    props = rng.sample(PROPERTIES, len(PROPERTIES))
+    ch = _Chain(rng, props)
+    p = ch.fresh()
+    ch.add(fact(c, p), ("other", (c, p)))
+    p = ch.forward(p, 1)
+    p = ch.tollens(p)
+    p = ch.split(p)
+    ch.add(rel_fact(r, a, b), ("direction", (b, a)))
+    ch.add(rel_fact(r, b, c))
+    ch.add(transitive(r))
+    q = ch.fresh()
+    ch.add(via(r, p, q))
+    p = ch.tollens(q)
+    p = ch.split(p)
+    p = ch.forward(p, 1)
+    conclusion = fact(a, p)
+    spare = list(ch.props)
+    distractors = []
+    x, y = rng.choice([t[2] for t in ch.traps if t[0] == "converse"])
+    distractors.append(every(y, x))
+    d = rng.choice([z for z in PEOPLE if z not in (a, b, c)])
+    distractors.append(fact(d, rng.choice(props[:8])))
+    distractors.append(rel_fact(r, d, a))
+    for _ in range(3):
+        if len(spare) >= 2:
+            u, v = rng.sample(spare, 2)
+            distractors.append(rng.choice([every, no_one, unless_not])(u, v))
+    return ch.premises, distractors, conclusion, ch.traps, r
+
+
+def harder_main(want, make=None, prefix="X", seed=2028):
+    rng = random.Random(seed)
     items, counts, seen = [], {True: 0, False: 0}, set()
     while len(items) < want:
-        chain, distractors, concl, traps, r = harder_chain(rng)
+        chain, distractors, concl, traps, r = (make or harder_chain)(rng)
         kind = None
         if rng.random() < 0.5:
             kind, at, (x, y) = rng.choice(traps)
@@ -336,6 +414,9 @@ def harder_main(want):
                 chain[at] = every(x, other)
             elif kind == "direction":
                 chain[at] = rel_fact(r, x, y)
+            elif kind == "other":
+                d = next(z for z in PEOPLE if z not in (x,) and z not in str(chain))
+                chain[at] = fact(d, y)
         premises = chain + distractors
         order = list(range(len(premises)))
         rng.shuffle(order)
@@ -357,7 +438,7 @@ def harder_main(want):
             continue
         seen.add(key)
         counts[valid] += 1
-        items.append({"id": f"X{len(items) + 1}", "kind": "first-order", "trap": kind,
+        items.append({"id": f"{prefix}{len(items) + 1}", "kind": "first-order", "trap": kind,
                       "text": " ".join(p[1] for p in ps) + " Therefore, " + lower(concl[1]),
                       "premises": [pretty(f) for f in pfs], "conclusion": pretty(cf),
                       "premise_terms": pfs, "conclusion_term": cf, "valid": valid,
@@ -413,8 +494,12 @@ def z3_valid(premises, conclusion):
 def main():
     args = [x for x in sys.argv[1:] if x != "--hard"]
     want = int(args[0]) if args else 40
-    args = [x for x in args if x != "--harder"]
+    args = [x for x in args if x not in ("--harder", "--hardest")]
     want = int(args[0]) if args else 40
+    if "--hardest" in sys.argv:
+        json.dump(harder_main(want, hardest_chain, "Z", 2029), sys.stdout, ensure_ascii=False, indent=1)
+        print()
+        return
     if "--harder" in sys.argv:
         json.dump(harder_main(want), sys.stdout, ensure_ascii=False, indent=1)
         print()
