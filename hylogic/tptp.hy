@@ -240,11 +240,14 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
   (when epr
     (import hylogic.resolution [clausify Result]
             hylogic.grounding [decide-epr])
-    (import hylogic.ground [decide-ground])
+    (import hylogic.ground [decide-ground]
+            hylogic.euf [decide-euf])
     (setv clauses (lfor f [#* problem.premises #("not" problem.goal)]
                           c (clausify f (.get options "definitional" False)) c)
           verdict (or (decide-epr clauses :deadline (+ started (* 0.25 time-limit)))
-                      ;; ground problems with functions, such as finite algebras
+                      ;; ground problems with functions: exactly by congruence closure,
+                      ;; then by a bounded search for finite models
+                      (decide-euf clauses :deadline (+ started (* 0.3 time-limit)))
                       (decide-ground clauses :deadline (+ started (* 0.4 time-limit)))))
     (when verdict
       (return #((szs-status problem verdict None True) (Result verdict None {"kept" 0 "generated" 0}) problem))))

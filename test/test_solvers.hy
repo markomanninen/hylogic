@@ -203,3 +203,51 @@
   (setv p (read-problem (/ (Path root) "Problems" "ALG" "ALG105+1.p"))
         cl (lfor f [#* p.premises #("not" p.goal)] c (clausify f 8) c))
   (assert (!= (decide-ground cl :max-size 10) "saturated")))
+
+(defn test-euf-congruence []
+  ;; a = b gives f(a) = f(b) and then g(f(a)) = g(f(b)), with no domain bound
+  (import hylogic.euf [decide-euf])
+  (setv cl [(frozenset [#("=" "a" "b")])
+            (frozenset [#("not" #("=" #("g" #("f" "a")) #("g" #("f" "b"))))])])
+  (assert (= (decide-euf cl) "proved")))
+
+(defn test-euf-non-theorem-and-predicates []
+  (import hylogic.euf [decide-euf])
+  ;; p(a), a = b, not p(b) is inconsistent; without a = b it has a model
+  (setv base [(frozenset [#("p" "a")]) (frozenset [#("not" #("p" "b"))])])
+  (assert (= (decide-euf [#* base (frozenset [#("=" "a" "b")])]) "proved"))
+  (assert (= (decide-euf base) "saturated"))
+  (assert (is (decide-euf [(frozenset [#("p" "?x")])]) None)))
+
+(defn test-euf-distinct-objects []
+  ;; TPTP distinct objects are different elements, so "x" = "y" is false
+  (import hylogic.euf [decide-euf])
+  (assert (= (decide-euf [(frozenset [#("=" "\"x\"" "\"y\"")])]) "proved"))
+  (assert (= (decide-euf [(frozenset [#("=" "x" "y")])]) "saturated")))
+
+(defn test-euf-agrees-with-the-bounded-ground-search []
+  (import hylogic.euf [decide-euf])
+  (setv rng (random.Random 5) agreed 0)
+  (defn term [depth]
+    (if (or (= depth 0) (< (.random rng) 0.4))
+        (.choice rng ["a" "b" "c"])
+        #("f" (term (- depth 1)))))
+  (for [_ (range 60)]
+    (setv cl (lfor _ (range (.randint rng 2 6))
+               (frozenset (lfor _ (range (.randint rng 1 2))
+                 :setv atom #("=" (term 2) (term 2))
+                 (if (< (.random rng) 0.5) atom #("not" atom)))))
+          exact (decide-euf cl) bounded (decide-ground cl))
+    (when (is-not bounded None)
+      (assert (= exact bounded))
+      (+= agreed 1)))
+  (assert (> agreed 30)))
+
+(defn test-euf-proves-the-alg105-isomorphism []
+  (import os pathlib [Path] hylogic.tptp [read-problem] hylogic.euf [decide-euf])
+  (setv root (os.environ.get "TPTP"))
+  (when (or (not root) (not (.exists (/ (Path root) "Problems" "ALG" "ALG105+1.p"))))
+    (pytest.skip "set TPTP to a TPTP library to run this test"))
+  (setv p (read-problem (/ (Path root) "Problems" "ALG" "ALG105+1.p"))
+        cl (lfor f [#* p.premises #("not" p.goal)] c (clausify f 8) c))
+  (assert (= (decide-euf cl) "proved")))

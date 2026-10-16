@@ -166,9 +166,27 @@ Clauses are lists of nonzero integers in DIMACS style, as in hylogic.sat."
       (when (= (get self.assign v) 0) (return (* v (get self.phase v)))))
     None)
 
+  (defn add [self c]
+    "Add a clause between calls to solve, keeping everything learned so far."
+    (.backtrack self 0)
+    (setv c (list (dict.fromkeys c)))
+    (for [v (range (+ self.nvars 1) (+ (max (gfor l c (abs l)) :default 0) 1))]
+      (.append self.assign 0) (.append self.level 0) (.append self.reason None)
+      (.append self.phase -1) (.append self.activity 0.0)
+      (heapq.heappush self.heap #(0.0 v))
+      (setv self.nvars v))
+    (when (or (any (gfor l c (in (- l) c))) (any (gfor l c (= (.value self l) 1))))
+      (return))
+    (setv c (lfor l c :if (= (.value self l) 0) l))
+    (cond
+      (not c) (setv self.unsat True)
+      (= (len c) 1) (.enqueue self (get c 0) None)
+      True (.attach self c)))
+
   (defn solve [self]
     "A model {variable: bool}, or None if the clauses are unsatisfiable."
     (when self.unsat (return None))
+    (.backtrack self 0)
     (setv conflicts 0 restart-at 100)
     (while True
       (setv confl (.propagate self))
