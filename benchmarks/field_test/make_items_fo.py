@@ -17,7 +17,13 @@ hasty reader can miss, and records which:
 Validity is decided by HyLogic and checked with Z3; an item where they
 disagree, or either cannot decide, is dropped. Half the items are valid.
 
-    TPTP-free; needs z3:  python make_items_fo.py [N] > items_fo.json
+With --hard the chains are 10 to 16 premises long and run through two
+people (facts about b, "a reports to b", "everyone who reports to someone
+who ... "), with two to four distractors that sound relevant, such as the
+converse of a chain rule, and the premises in random order. A valid hard item
+rests on exactly its chain: the proof uses no distractor.
+
+    TPTP-free; needs z3:  python make_items_fo.py [N] [--hard] > items_fo.json
 """
 import json
 import random
@@ -44,6 +50,14 @@ PROPERTIES = [
     ("Payroll", "can see the payroll", "cannot see the payroll"),
     ("Oncall", "is on call this week", "is not on call this week"),
     ("Mentor", "mentors a trainee", "does not mentor a trainee"),
+    ("Parking", "has a parking space", "does not have a parking space"),
+    ("Night", "works the night shift", "does not work the night shift"),
+    ("Union", "is in the union", "is not in the union"),
+    ("Archive", "has a key to the archive", "does not have a key to the archive"),
+    ("Lead", "is a team lead", "is not a team lead"),
+    ("Vpn", "uses the VPN", "does not use the VPN"),
+    ("Monday", "attends the Monday meeting", "does not attend the Monday meeting"),
+    ("Finnish", "speaks Finnish", "does not speak Finnish"),
 ]
 # a relation: name, "x <phrase> y"
 RELATIONS = [("ReportsTo", "reports to"), ("Trusts", "trusts"), ("Mentors", "mentors")]
@@ -174,6 +188,89 @@ def scope_item(rng):
     return [every_some, rule], concl, None
 
 
+def hard_chain(rng):
+    """A long valid chain through two people, with distractors, premises shuffled.
+    Returns premises, conclusion, the indices of the chain premises, the places
+    a trap may go, and the context."""
+    props = rng.sample(PROPERTIES, 16)
+    a, b = rng.sample(PEOPLE, 2)
+    r = rng.choice(RELATIONS)
+    m = rng.randint(3, 5)            # rules about b
+    n = rng.randint(4, 6)            # rules about a, after the relation step
+    chain = [fact(b, props[0])]
+    for i in range(m):
+        rule = only(props[i + 1], props[i]) if i == 1 else every(props[i], props[i + 1])
+        chain.append(rule)
+    chain += [rel_fact(r, a, b), via(r, props[m], props[m + 1])]
+    for i in range(m + 1, m + 1 + n):
+        chain.append(every(props[i], props[i + 1]))
+    last = props[m + 1 + n]
+    if rng.random() < 0.4:
+        extra = props[m + 2 + n]
+        chain.append(no_one(last, extra))
+        conclusion = fact(a, extra, positive=False)
+        used_props = m + 3 + n
+    else:
+        conclusion = fact(a, last)
+        used_props = m + 2 + n
+    # distractors: a converse of a chain rule, a fact about someone else, rules
+    # among properties the chain does not use
+    spare = props[used_props:]
+    distractors = []
+    i = rng.randint(1, m - 1)
+    distractors.append(every(props[i + 1], props[i]))
+    c = rng.choice([p for p in PEOPLE if p not in (a, b)])
+    distractors.append(fact(c, rng.choice(props[1:used_props])))
+    for _ in range(rng.randint(0, 2)):
+        if len(spare) >= 2:
+            p, q = rng.sample(spare, 2)
+            distractors.append(rng.choice([every, no_one])(p, q))
+    premises = chain + distractors
+    order = list(range(len(premises)))
+    rng.shuffle(order)
+    shuffled = [premises[k] for k in order]
+    chain_at = sorted(order.index(k) for k in range(len(chain)))
+    spots = [("other", order.index(0))]
+    for k in range(1, len(chain)):
+        f = chain[k][0]
+        if f[0] == "forall" and f[2][0] == "=>" and f[2][1][0] != "and":
+            spots += [("converse", order.index(k)), ("some", order.index(k))]
+    return shuffled, conclusion, chain_at, spots, (a, b, r, props)
+
+
+def hard_main(want):
+    rng = random.Random(2027)
+    items, counts, seen = [], {True: 0, False: 0}, set()
+    while len(items) < want:
+        ps, concl, chain_at, spots, ctx = hard_chain(rng)
+        kind = None
+        if rng.random() < 0.5:
+            ps, kind = perturb(rng, ps, concl, spots, ctx)
+        pfs, cf = [p[0] for p in ps], concl[0]
+        key = (tuple(map(str, pfs)), str(cf))
+        if key in seen:
+            continue
+        arg = Argument(pfs, cf, timeout=10)
+        valid = arg.valid
+        if valid is None or z3_valid(pfs, cf) is not valid:
+            continue
+        if valid == (kind is not None) or counts[valid] >= want // 2:
+            continue
+        # a valid item rests on exactly its chain: the proof uses no distractor
+        if valid and arg.used != [k + 1 for k in chain_at]:
+            continue
+        if Argument(pfs, "false", timeout=10).valid is True:
+            continue
+        seen.add(key)
+        counts[valid] += 1
+        items.append({"id": f"H{len(items) + 1}", "kind": "first-order", "trap": kind,
+                      "text": " ".join(p[1] for p in ps) + " Therefore, " + lower(concl[1]),
+                      "premises": [pretty(f) for f in pfs], "conclusion": pretty(cf),
+                      "premise_terms": pfs, "conclusion_term": cf, "valid": valid,
+                      "steps": len(pfs), "needed": [k + 1 for k in chain_at]})
+    return items
+
+
 def z3_valid(premises, conclusion):
     s = z3.Solver()
     s.set("timeout", 10000)
@@ -187,7 +284,12 @@ def z3_valid(premises, conclusion):
 
 
 def main():
-    want = int(sys.argv[1]) if len(sys.argv) > 1 else 40
+    args = [x for x in sys.argv[1:] if x != "--hard"]
+    want = int(args[0]) if args else 40
+    if "--hard" in sys.argv:
+        json.dump(hard_main(want), sys.stdout, ensure_ascii=False, indent=1)
+        print()
+        return
     rng = random.Random(2026)
     items, counts, seen = [], {True: 0, False: 0}, set()
     while len(items) < want:
