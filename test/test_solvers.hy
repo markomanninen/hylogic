@@ -309,12 +309,15 @@
     (.extend todo c.parents)
     (cond
       (= c.rule "resolve")
+        ;; a chain: resolve the parents left to right, one pair each time
         (do
-          (setv [a b] c.parents
-                pairs (lfor l a.literals :if (in (neg l) b.literals) l))
-          (assert (= (len pairs) 1))
-          (setv [l] pairs)
-          (assert (= c.literals (| (- a.literals #{l}) (- b.literals #{(neg l)}))))
+          (setv lits (. (get c.parents 0) literals))
+          (for [b (cut c.parents 1 None)]
+            (setv pairs (lfor l lits :if (in (neg l) b.literals) l))
+            (assert (= (len pairs) 1))
+            (setv [l] pairs
+                  lits (| (- lits #{l}) (- b.literals #{(neg l)}))))
+          (assert (= c.literals lits))
           (+= checked 1))
       (.startswith c.rule "instance")
         (for [l c.literals :if (not (.startswith (str (get (if (= (get l 0) "not") (get l 1) l) 0)) "$split"))]
@@ -344,5 +347,33 @@
       (setv r (epr-refutation cl))
       (assert r.proved)
       (_check-ground-proof r.clause)
+      (+= proved 1)))
+  (assert (> proved 10)))
+
+(defn test-euf-proofs-check-lemmas-and-chains []
+  ;; every equality lemma is valid (its negation is unsatisfiable on its own)
+  ;; and every resolve chain replays; on random ground problems and ALG105+1
+  (import hylogic.euf [decide-euf euf-refutation])
+  (setv rng (random.Random 13) proved 0)
+  (defn term [depth]
+    (if (or (= depth 0) (< (.random rng) 0.4)) (.choice rng ["a" "b" "c"]) #("f" (term (- depth 1)))))
+  (defn neg [l] (if (= (get l 0) "not") (get l 1) #("not" l)))
+  (for [_ (range 80)]
+    (setv cl (lfor _ (range (.randint rng 2 6))
+               (frozenset (lfor _ (range (.randint rng 1 2))
+                 :setv atom (if (< (.random rng) 0.8) #("=" (term 2) (term 2)) #("p" (term 1)))
+                 (if (< (.random rng) 0.5) atom #("not" atom))))))
+    (when (= (decide-euf cl) "proved")
+      (setv r (euf-refutation cl))
+      (assert r.proved)
+      (_check-ground-proof r.clause)
+      (setv seen #{} todo [r.clause])
+      (while todo
+        (setv c (.pop todo))
+        (when (in (id c) seen) (continue))
+        (.add seen (id c))
+        (.extend todo c.parents)
+        (when (= c.rule "equality lemma")
+          (assert (= (decide-euf (lfor l c.literals (frozenset [(neg l)]))) "proved"))))
       (+= proved 1)))
   (assert (> proved 10)))

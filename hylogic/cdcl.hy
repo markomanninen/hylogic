@@ -183,10 +183,12 @@ can replay them into a resolution proof of the empty clause."
       (when (= (get self.assign v) 0) (return (* v (get self.phase v)))))
     None)
 
-  (defn add [self c]
-    "Add a clause between calls to solve, keeping everything learned so far."
+  (defn add [self c [origin None]]
+    "Add a clause between calls to solve, keeping everything learned so far.
+    origin labels it for refutation, #(\"added\" None) by default."
     (.backtrack self 0)
-    (setv c (list (dict.fromkeys c)))
+    (setv c (list (dict.fromkeys c))
+          origin (or origin #("added" None)))
     (for [v (range (+ self.nvars 1) (+ (max (gfor l c (abs l)) :default 0) 1))]
       (.append self.assign 0) (.append self.level 0) (.append self.reason None)
       (.append self.phase -1) (.append self.activity 0.0) (.append self.pos 0)
@@ -194,11 +196,15 @@ can replay them into a resolution proof of the empty clause."
       (setv self.nvars v))
     (when (or (any (gfor l c (in (- l) c))) (any (gfor l c (= (.value self l) 1))))
       (return))
-    (setv c (lfor l c :if (= (.value self l) 0) l))
+    (setv reduced (lfor l c :if (= (.value self l) 0) l))
+    ;; literals false at level 0 are dropped; the full clause is kept for proofs
+    (when (< (len reduced) (len c))
+      (setv origin #("reduced" (.store self c origin))))
     (cond
-      (not c) (setv self.unsat True)
-      (= (len c) 1) (.enqueue self (get c 0) (.store self c #("added" None)))
-      True (.attach self c #("added" None))))
+      (not reduced) (do (setv self.unsat True)
+                        (when (is self.final None) (setv self.final (.store self reduced origin))))
+      (= (len reduced) 1) (.enqueue self (get reduced 0) (.store self reduced origin))
+      True (.attach self reduced origin)))
 
   (defn solve [self]
     "A model {variable: bool}, or None if the clauses are unsatisfiable."
@@ -239,37 +245,50 @@ can replay them into a resolution proof of the empty clause."
 
 (defn refutation [solver]
   "After solve found the clauses unsatisfiable: the resolution proof it made, as
-  #(steps root). steps maps a node to #(literals parents), where parents is
-  #(k) for input clause k, or the two nodes resolved; root is the empty clause.
-  A learned clause is replayed from the steps analyze recorded, and the
-  literals it dropped because they were false at level 0 are resolved away
-  with their (permanent) level-0 reasons, latest first."
+  #(steps root). steps maps a node to #(literals parents): parents is #(origin)
+  for a clause given to the solver, such as #(\"input\" k) for input clause k,
+  or the nodes whose clauses, resolved one after another from
+  left to right, give the literals (a chain, one per learned clause). root is
+  the empty clause. A learned clause is replayed from the steps analyze
+  recorded, and the literals it dropped because they were false at level 0
+  are resolved away with their (permanent) level-0 reasons, latest first."
   (setv steps {} done {} fresh (iter (range (len solver.clauses) 10000000000)))
-  (defn resolve [a b v]
-    "The resolvent of nodes a and b on variable v, as a new node."
-    (setv lits (frozenset (gfor l (| (get (get steps a) 0) (get (get steps b) 0)) :if (!= (abs l) v) l))
-          node (next fresh))
-    (setv (get steps node) #(lits #(a b)))
-    node)
-  (defn eliminate [node target]
-    "Resolve away the literals of node outside target with level-0 reasons."
+  (defn chain [start pivots target]
+    "A node for the chain from node start through #(node variable) pivots, then
+    level-0 reasons until only target is left."
+    (setv lits (set (get (get steps start) 0)) parents [start])
+    (defn step [node v]
+      (nonlocal lits)
+      (setv lits (| (sfor l lits :if (!= (abs l) v) l)
+                    (sfor l (get (get steps node) 0) :if (!= (abs l) v) l)))
+      (.append parents node))
+    (for [[node v] pivots] (step node v))
     (while True
-      (setv extra (lfor l (get (get steps node) 0) :if (not-in l target) l))
-      (when (not extra) (return node))
-      (setv v (max (gfor l extra (abs l)) :key (fn [v] (get solver.pos v)))
-            node (resolve node (build (get solver.reason v)) v))))
+      (setv extra (lfor l lits :if (not-in l target) l))
+      (when (not extra) (break))
+      (setv v (max (gfor l extra (abs l)) :key (fn [v] (get solver.pos v))))
+      (step (build (get solver.reason v)) v))
+    (if (= (len parents) 1)
+        start
+        (do
+          (setv node (next fresh) (get steps node) #((frozenset lits) (tuple parents)))
+          node)))
   (defn build [ci]
     (when (in ci done) (return (get done ci)))
     (setv origin (get solver.origin ci))
-    (if (= (get origin 0) "learned")
+    (cond
+      (= (get origin 0) "learned")
         (do
-          (setv [_ confl chain] origin node (build confl))
-          (for [[r v] chain] (setv node (resolve node (build r) v)))
-          (setv node (eliminate node (frozenset (get solver.clauses ci)))))
+          (setv [_ confl pivots] origin
+                node (chain (build confl) (lfor [r v] pivots #((build r) v))
+                            (frozenset (get solver.clauses ci)))))
+      (= (get origin 0) "reduced")
+        (setv node (chain (build (get origin 1)) [] (frozenset (get solver.clauses ci))))
+      True
         (do
           (setv node ci)
-          (setv (get steps ci) #((frozenset (get solver.clauses ci)) #((get origin 1))))))
+          (setv (get steps ci) #((frozenset (get solver.clauses ci)) #(origin)))))
     (setv (get done ci) node)
     node)
-  (setv root (eliminate (build solver.final) (frozenset)))
+  (setv root (chain (build solver.final) [] (frozenset)))
   #(steps root))

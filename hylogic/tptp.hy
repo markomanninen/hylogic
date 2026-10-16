@@ -254,21 +254,26 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
     (import hylogic.resolution [clausify Result]
             hylogic.grounding [decide-epr epr-refutation])
     (import hylogic.ground [decide-ground]
-            hylogic.euf [decide-euf])
+            hylogic.euf [decide-euf-with-proof])
     (setv definitional (.get options "definitional" False)
           goal-clauses (clausify #("not" problem.goal) definitional)
           clauses [#* (gfor f problem.premises  c (clausify f definitional) c) #* goal-clauses]
           epr-verdict (decide-epr clauses :deadline (+ started (* 0.25 time-limit)))
-          verdict (or epr-verdict
-                      ;; ground problems with functions: exactly by congruence closure,
-                      ;; then by a bounded search for finite models
-                      (decide-euf clauses :deadline (+ started (* 0.75 time-limit)))
+          ;; ground problems with functions: exactly by congruence closure,
+          ;; then by a bounded search for finite models
+          [euf-verdict euf-proof] (if epr-verdict
+                                      #(None None)
+                                      (decide-euf-with-proof clauses (set goal-clauses)
+                                                             :deadline (+ started (* 0.75 time-limit))))
+          verdict (or epr-verdict euf-verdict
                       (decide-ground clauses :deadline (+ started (* 0.8 time-limit)))))
     (when verdict
-      ;; a SAT answer comes with a readable proof when one fits in the time left:
-      ;; the ground instances of an unsatisfiable core, refuted by resolution
-      (setv result (when (= epr-verdict "proved")
-                     (epr-refutation clauses (set goal-clauses) :deadline (+ started (* 0.95 time-limit)))))
+      ;; a SAT answer comes with a readable proof: the solver's resolution steps
+      ;; over ground instances (EPR) or over equality lemmas (congruence closure)
+      (setv result (cond
+                     (= epr-verdict "proved")
+                       (epr-refutation clauses (set goal-clauses) :deadline (+ started (* 0.95 time-limit)))
+                     euf-proof euf-proof))
       (return #((szs-status problem verdict None True)
                 (or result (Result verdict None {"kept" 0 "generated" 0})) problem))))
   ;; a short model search first: small countermodels are cheap, and the search

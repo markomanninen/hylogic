@@ -121,10 +121,10 @@ and there are finitely many, so the loop ends."
   (when (compound? t) (for [a (cut t 1 None)] (_subterms a out)))
   (.add out t))
 
-(defn decide-euf [clauses [deadline None] [max-rounds 100000]]
-  "proved (unsatisfiable), saturated (a model exists) or None (not ground, or out of time)."
-  (when (any (gfor c clauses (variables-of (tuple c)))) (return None))
-  (setv var-of {} eq-of {} cnf [] terms #{TRUE})
+(defn _decide [clauses deadline max-rounds]
+  "#(verdict solver eq-of origins): the verdict of decide-euf, with what a proof needs."
+  (when (any (gfor c clauses (variables-of (tuple c)))) (return #(None None None None)))
+  (setv var-of {} eq-of {} cnf [] origins [] terms #{TRUE})
   (defn var [key]
     (when (not-in key var-of)
       (setv (get var-of key) (+ (len var-of) 1) (get eq-of (get var-of key)) key))
@@ -147,25 +147,80 @@ and there are finitely many, so the loop ends."
                       (_subterms (get e 0) terms) (_subterms (get e 1) terms)
                       (.append row (if neg (- (var e)) (var e)))))))))
     (when satisfied (continue))
-    (.append cnf row))
+    (.append cnf row)
+    (.append origins c))
   ;; TPTP distinct objects such as "abc" denote pairwise different elements
   (setv objects (sorted (gfor t terms :if (and (isinstance t str) (.startswith t "\"")) t)))
   (for [[i s] (enumerate objects)  t (cut objects (+ i 1) None)]
-    (.append cnf [(- (var (_equation #("=" s t))))]))
+    (.append cnf [(- (var (_equation #("=" s t))))])
+    (.append origins None))
   (setv terms (list terms))
   (setv solver (Solver cnf deadline))
   (for [_ (range max-rounds)]
-    (setv model (try (.solve solver) (except [_Timeout] (return None))))
-    (when (is model None) (return "proved"))
+    (setv model (try (.solve solver) (except [_Timeout] (return #(None None None None)))))
+    (when (is model None) (return #("proved" solver eq-of origins)))
     (setv trues [] falses [])
     (for [[v key] (.items eq-of)]
       (when (!= (get key 0) "prop")
         (.append (if (.get model v False) trues falses) key)))
     (setv cc (.close (_Closure terms) trues)
           violated (lfor d falses :if (= (.find cc (get d 0)) (.find cc (get d 1))) d))
-    (when (not violated) (return "saturated"))
-    (when (and deadline (> (time.monotonic) deadline)) (return None))
+    (when (not violated) (return #("saturated" None None None)))
+    (when (and deadline (> (time.monotonic) deadline)) (return #(None None None None)))
     ;; every violated equation gives a lemma: its explanation implies it
     (for [d (cut violated 0 LEMMAS)]
-      (.add solver [#* (gfor e (.explain cc #* d) (- (get var-of e))) (get var-of d)])))
-  None)
+      (.add solver [#* (gfor e (.explain cc #* d) (- (get var-of e))) (get var-of d)]
+            #("lemma" None))))
+  #(None None None None))
+
+(defn decide-euf [clauses [deadline None] [max-rounds 100000]]
+  "proved (unsatisfiable), saturated (a model exists) or None (not ground, or out of time)."
+  (get (_decide clauses deadline max-rounds) 0))
+
+(defn _literal [n eq-of]
+  "SAT literal n as a formula literal: an equation, a predicate atom or a proposition."
+  (setv key (get eq-of (abs n)))
+  (setv atom (cond
+               (= (get key 0) "prop") (get key 1)
+               (= (get key 1) TRUE) (tuple (cut (get key 0) 1 None))
+               True #("=" #* key)))
+  (if (< n 0) #("not" atom) atom))
+
+(defn decide-euf-with-proof [clauses [goal-clauses #()] [deadline None] [max-rounds 100000]]
+  "#(verdict result): decide-euf's verdict, and for proved the refutation below."
+  (setv decided (_decide clauses deadline max-rounds) verdict (get decided 0))
+  #(verdict (when (= verdict "proved") (_proof decided goal-clauses))))
+
+(defn euf-refutation [clauses [goal-clauses #()] [deadline None] [max-rounds 100000]]
+  "A readable refutation of unsatisfiable ground clauses, as a hylogic.resolution
+  Result: the SAT solver's resolution steps (see hylogic.cdcl.refutation) over
+  the input clauses and the equality lemmas congruence closure supplied. A lemma
+  ¬e1 ∨ ... ∨ ¬ek ∨ d says that the equations e1..ek imply d, which holds in
+  every interpretation of = and the functions. None if not proved in time."
+  (get (decide-euf-with-proof clauses goal-clauses deadline max-rounds) 1))
+
+(defn _proof [decided goal-clauses]
+  (import hylogic.resolution [Clause Result]
+          hylogic.cdcl [refutation])
+  (setv [verdict solver eq-of origins] decided
+        [steps root] (refutation solver) made {})
+  (defn node [k]
+    (when (in k made) (return (get made k)))
+    (setv [lits parents] (get steps k) atoms (lfor n lits (_literal n eq-of)))
+    (if (= (len parents) 1)
+        (do
+          (setv origin (get parents 0))
+          (setv c (cond
+                    (= (get origin 0) "lemma") (Clause atoms #() "equality lemma")
+                    (is (get origins (get origin 1)) None) (Clause atoms #() "distinct objects")
+                    True (do
+                           (setv source (get origins (get origin 1))
+                                 rule (if (in source goal-clauses) "negated goal" "axiom"))
+                           (if (= (frozenset atoms) (frozenset source))
+                               (Clause source #() rule)
+                               (Clause atoms #((Clause source #() rule)) "simplified"))))))
+        (setv c (Clause atoms (tuple (gfor p parents (node p))) "resolve")))
+    (setv (get made k) c)
+    c)
+  (for [k (sorted steps)] (node k))
+  (Result "proved" (node root) {"kept" 0 "generated" 0}))

@@ -118,7 +118,7 @@ behind instantiation-based provers such as iProver."
     (setv [lits parents] (get steps k) atoms (lfor n lits (literal n)))
     (if (= (len parents) 1)
         (do
-          (setv i (get parents 0) origin (get origins i))
+          (setv i (get (get parents 0) 1) origin (get origins i))
           (setv c (if (is origin None)
                       (Clause atoms #() "equality axiom")
                       (do
@@ -127,7 +127,8 @@ behind instantiation-based provers such as iProver."
                           (setv (get inputs source)
                                 (Clause source #() (if (in source goal-clauses) "negated goal" "axiom"))))
                         (Clause atoms #((get inputs source)) (if split "instance, split" "instance"))))))
-        (setv c (Clause atoms #((node (get parents 0)) (node (get parents 1))) "resolve")))
+        ;; a chain: the parents resolved one after another, left to right
+        (setv c (Clause atoms (tuple (gfor p parents (node p))) "resolve")))
     (setv (get made k) c)
     c)
   ;; deep proofs: build children before parents without recursion depth trouble
