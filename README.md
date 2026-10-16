@@ -291,7 +291,10 @@ numbered steps:
 
 `to-lean` writes a problem as a Lean 4 theorem, and `check-lean` runs Lean on
 it, with `sorry` to check the statement or `grind` to let Lean's automation
-prove it.
+prove it. `hylogic.certify` writes HyLogic's own proof as Lean theorems, one
+per inference with the instances it used, and `certify` has Lean check every
+step and the whole refutation from the input clauses. Lean accepted all 161
+TPTP proofs of the benchmark below, 13,180 steps, without an invalid one.
 
 On a fixed sample of 234 TPTP theorems within 10 seconds, HyLogic's own
 prover proves 161 (39 before its ordered resolution, superposition,

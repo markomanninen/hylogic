@@ -505,3 +505,79 @@ four not at all.
 | E 3.2.5 | 207 | 16 |
 | Vampire 5.1.0 (`casc`) | 231 | 20 |
 | Vampire 5.1.0 (`casc_sat`) | | 36 |
+
+## Lean checks HyLogic's own proofs
+
+Step 4 gave Lean HyLogic's problems, and Lean's `grind` searched for its own
+proofs. `hylogic.certify` gives Lean HyLogic's proofs instead. Every clause
+HyLogic derives becomes a Lean theorem saying that its premises imply it, over
+an arbitrary nonempty domain with every function and predicate symbol a
+variable, so the step holds in every interpretation. A last theorem chains the
+steps from the input clauses to False. A proof is then trusted because Lean's
+kernel checked every inference, not because HyLogic printed it.
+
+`grind` is good at ground reasoning with equality but weak at choosing
+instances of universally quantified premises. With only variables and no
+ground terms to match, it finds nothing. So HyLogic replays each inference to
+recover the instances it used (the unifier of a resolution or superposition
+step, the match of every rewrite rule and unit clause a simplification used)
+and writes them into the Lean proof. What is left for `grind` is ground
+logic with equality, which it decides.
+
+    theorem «$s7»
+        («$h1» : ∀ «?A87» : «$U», ((«multiplication» «zero» «?A87») = «zero»))
+        («$h2» : ∀ «?A96» : «$U», ((«strong_iteration» «?A96») = («addition» («multiplication» «?A96» («strong_iteration» «?A96»)) «one»)))
+        («$h3» : ∀ «?A128» : «$U», ((«addition» «zero» «?A128») = «?A128»))
+        («$h4» : ¬((«strong_iteration» «zero») = «one»)) :
+        False := by
+      have «$i1» := «$h1» («strong_iteration» «zero»)
+      have «$i2» := «$h2» «zero»
+      have «$i3» := «$h3» «one»
+      grind
+
+The input clauses are taken as given, so parsing, clausification and
+Skolemization are not checked. A clause with a Skolem function does not
+follow from its formula, it is only satisfiable when the formula is, so this
+part would need a different kind of certificate. Grounding's clause
+splitting is checked. A split instance does not follow from its clause alone,
+only together with the definition of the new predicate, s(I) ↔ ∀ y, B, so the
+step takes that definition as a premise, and a final theorem replaces each
+split predicate by its definition, which leaves the input clauses alone
+contradictory. Equality lemmas from congruence closure and the equality
+axioms of grounding are steps without premises, so Lean proves them too.
+TPTP's distinct objects are input clauses.
+
+`lean_proofs.py` found the proof of each of the 161 problems HyLogic proves in
+the final run again with the command line's defaults and 10 seconds, and ran
+Lean 4.35 on one file per proof. Lean accepted all 161 proofs, every one of
+their 13,180 steps and the chained refutations. No step was invalid, so this
+found no bug in HyLogic. A first run reported 23 proofs as failing, and the
+fault was in the export. A split definition that mentions another split
+predicate has to have it replaced by its definition as well.
+
+| Rule | Steps | Verified | Proved by `grind` without the instances |
+|---|---:|---:|---:|
+| resolve (also chains of SAT resolution) | 4,706 | 4,706 | 4,519 of 4,555 |
+| instance, split | 2,912 | 2,912 | 3,062 of 3,062 |
+| instance | 2,427 | 2,427 | 2,383 of 2,386 |
+| equality lemma | 1,732 | 1,732 | 1,760 of 1,760 |
+| simplified | 1,212 | 1,212 | 1,219 of 1,219 |
+| superposition | 70 | 70 | 65 of 70 |
+| simplification | 37 | 37 | 33 of 37 |
+| factor | 26 | 26 | 22 of 23 |
+| equality axiom | 21 | 21 | 22 of 22 |
+| equality resolution | 19 | 19 | 19 of 19 |
+| demodulation | 18 | 18 | 18 of 18 |
+| All | 13,180 | 13,180 | 13,122 of 13,171 |
+| Proofs | 161 | 161 | 131 of 160 |
+
+Rules with a suffix such as +demod or +unit deletion are counted under their
+first rule. The two runs found their proofs again separately, so the step
+counts differ a little. Without the instances `grind` fails on 49 steps, and
+29 proofs are incomplete; with them it fails on none. The split instances
+need no replayed instances, since `grind` instantiates the clause and the
+definitions itself.
+
+Lean took 5 seconds for the median proof, 13 at most (1,188 steps), and 849
+seconds in all, most of it starting Lean. One problem, SYO605+1, ran out of
+search time while four checks ran in parallel and was checked alone.
