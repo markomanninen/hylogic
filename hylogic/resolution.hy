@@ -248,18 +248,32 @@ new clauses that are neither duplicates nor subsumed by older ones."
     (setv (get mapping v) f"?v{(len mapping)}"))
   (frozenset (gfor l lits (substitute l mapping))))
 
-(defn subsumes? [c d]
+(defn subsumes? [c d [budget 2000]]
   "Does clause c subsume d, that is, does some substitution map every literal of c into d?
-  Then d says nothing that c does not, and d can be dropped."
-  (and (<= (len c) (len d))
-       (_subsumes (sorted c :key size :reverse True) d {})))
+  Then d says nothing that c does not, and d can be dropped.
 
-(defn _subsumes [lits d s]
-  (when (not lits) (return True))
-  (setv [head #* rest] lits)
-  (for [l d]
-    (setv s2 (match-term head l s))
-    (when (and (is-not s2 None) (_subsumes rest d s2))
+  Finding the substitution can take exponentially many tries on long clauses
+  of similar literals, so each literal first gets the literals of d it matches
+  on its own, the most constrained go first, and after budget tries the answer
+  is no: keeping a clause that could have been dropped is always safe."
+  (when (> (len c) (len d)) (return False))
+  (setv options [])
+  (for [l c]
+    (setv fits (lfor m d :if (is-not (match-term l m) None) m))
+    (when (not fits) (return False))
+    (.append options #(l fits)))
+  (.sort options :key (fn [o] (len (get o 1))))
+  (setv tries [budget])
+  (_subsumes options {} tries))
+
+(defn _subsumes [options s tries]
+  (when (not options) (return True))
+  (setv [[head fits] #* rest] options)
+  (for [m fits]
+    (-= (get tries 0) 1)
+    (when (< (get tries 0) 0) (return False))
+    (setv s2 (match-term head m s))
+    (when (and (is-not s2 None) (_subsumes rest s2 tries))
       (return True)))
   False)
 
