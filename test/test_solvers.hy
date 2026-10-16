@@ -192,3 +192,14 @@
 
 (defn test-ground-needs-ground-clauses []
   (assert (is (decide-ground [(frozenset [#("p" "?x")])]) None)))
+
+(defn test-ground-decision-never-claims-a-model-for-alg105 []
+  ;; fixed constants once lacked "no other value", so a size-9 search could give a
+  ;; constant two values and claim a model for this theorem (TPTP ALG105+1)
+  (import os pathlib [Path] hylogic.tptp [read-problem])
+  (setv root (os.environ.get "TPTP"))
+  (when (or (not root) (not (.exists (/ (Path root) "Problems" "ALG" "ALG105+1.p"))))
+    (pytest.skip "set TPTP to a TPTP library to run this test"))
+  (setv p (read-problem (/ (Path root) "Problems" "ALG" "ALG105+1.p"))
+        cl (lfor f [#* p.premises #("not" p.goal)] c (clausify f 8) c))
+  (assert (!= (decide-ground cl :max-size 10) "saturated")))

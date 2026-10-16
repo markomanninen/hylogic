@@ -112,9 +112,10 @@ which removes symmetric models."
 (defn _encode [clauses terms n fixed]
   (setv enc (_Encoder n) dom (list (range 1 (+ n 1))) funs {} preds {})
   (for [t terms]
-    (if (in t fixed)
-        (.add enc [(.var enc #("val" t (get fixed t)))])
-        (.exactly-one enc (lfor e dom #("val" t e))))
+    ;; every term has exactly one value; a fixed constant also has its own one
+    (.exactly-one enc (lfor e dom #("val" t e)))
+    (when (in t fixed)
+      (.add enc [(.var enc #("val" t (get fixed t)))]))
     (when (compound? t)
       (setv f (get t 0) args (cut t 1 None) (get funs f) (len args))
       (for [es (product dom :repeat (len args))  v dom]
@@ -159,6 +160,30 @@ which removes symmetric models."
     (when (not satisfied) (.add enc row)))
   enc)
 
+(defn _model-holds? [clauses enc model]
+  "Do the original clauses hold in the model the SAT solver found? A last check
+  that a model is real before it is reported."
+  (setv names (dfor [key v] (.items enc.vars) v key)
+        value {} props #{} preds #{})
+  (for [[v on] (.items model)]
+    (when on
+      (setv key (.get names v))
+      (cond
+        (is key None) None
+        (= (get key 0) "val") (setv (get value (get key 1)) (get key 2))
+        (= (get key 0) "prop") (.add props (get key 1))
+        (= (get key 0) "pred") (.add preds #((get key 1) (get key 2))))))
+  (defn holds [l]
+    (setv neg (_negative? l) a (_atom l))
+    (setv r (cond
+              (and (compound? a) (= (get a 0) "=")) (= (get value (get a 1)) (get value (get a 2)))
+              (= a "true") True
+              (= a "false") False
+              (compound? a) (in #((get a 0) (tuple (gfor x (cut a 1 None) (get value x)))) preds)
+              True (in a props)))
+    (!= r neg))
+  (all (gfor c clauses (any (gfor l c (holds l))))))
+
 (defn decide-ground [clauses [deadline None] [max-size 14]]
   "proved, saturated (a model exists) or None, for ground clauses with functions."
   (when (not (ground? clauses)) (return None))
@@ -173,6 +198,9 @@ which removes symmetric models."
           model (dpll enc.cnf :deadline deadline))
     (cond
       (= model "timeout") (return None)
-      (is-not model None) (return "saturated")))
+      (is-not model None)
+        (if (_model-holds? clauses enc model)
+            (return "saturated")
+            (raise (RuntimeError "ground encoding produced a model that violates the clauses")))))
   ;; no model up to the bound proves unsatisfiability; a bound beyond max-size proves nothing
   (if (<= bound max-size) "proved" None))
