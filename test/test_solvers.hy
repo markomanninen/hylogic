@@ -295,3 +295,54 @@
         refuted [(frozenset [#("not" #("p" "c5"))]) (frozenset [#("not" #("q" "c7"))])])
   (assert (= (decide-epr [#* facts wide #* refuted (frozenset [#("not" #("r" "c9"))])]) "proved"))
   (assert (= (decide-epr [#* facts wide #* refuted]) "saturated")))
+
+(defn _check-ground-proof [clause]
+  "Every resolve step is a resolvent of its parents on one complementary pair,
+  and every instance cites a clause whose literals it instantiates."
+  (import hylogic.unify [match-term])
+  (setv seen #{} todo [clause] checked 0)
+  (defn neg [l] (if (= (get l 0) "not") (get l 1) #("not" l)))
+  (while todo
+    (setv c (.pop todo))
+    (when (in (id c) seen) (continue))
+    (.add seen (id c))
+    (.extend todo c.parents)
+    (cond
+      (= c.rule "resolve")
+        (do
+          (setv [a b] c.parents
+                pairs (lfor l a.literals :if (in (neg l) b.literals) l))
+          (assert (= (len pairs) 1))
+          (setv [l] pairs)
+          (assert (= c.literals (| (- a.literals #{l}) (- b.literals #{(neg l)}))))
+          (+= checked 1))
+      (.startswith c.rule "instance")
+        (for [l c.literals :if (not (.startswith (str (get (if (= (get l 0) "not") (get l 1) l) 0)) "$split"))]
+          (assert (any (gfor m (. (get c.parents 0) literals) (is-not (match-term m l) None)))))))
+  checked)
+
+(defn test-epr-proofs-replay-the-sat-solver-and-check []
+  (import hylogic.grounding [epr-refutation])
+  ;; every one of 40 constants has p or q, none has p, so some has q; but q(c7) is denied
+  (setv facts (lfor i (range 40) (frozenset [#("s" f"c{i}")]))
+        cl [#* facts (frozenset [#("p" "?x") #("q" "?x") #("not" #("s" "?x"))])
+            (frozenset [#("not" #("p" "?y"))]) (frozenset [#("not" #("q" "c7"))])]
+        r (epr-refutation cl))
+  (assert r.proved)
+  (assert (> (_check-ground-proof r.clause) 0))
+  (assert (= (frozenset) r.clause.literals)))
+
+(defn test-epr-proofs-on-random-problems-all-check []
+  (import hylogic.grounding [decide-epr epr-refutation])
+  (setv rng (random.Random 9) proved 0)
+  (for [_ (range 120)]
+    (setv cl (lfor _ (range (.randint rng 4 9))
+               (frozenset (lfor _ (range (.randint rng 1 3))
+                 :setv atom #((.choice rng ["p" "q" "r"]) (.choice rng ["a" "b" "?x" "?y"]))
+                 (if (< (.random rng) 0.5) atom #("not" atom))))))
+    (when (= (decide-epr cl) "proved")
+      (setv r (epr-refutation cl))
+      (assert r.proved)
+      (_check-ground-proof r.clause)
+      (+= proved 1)))
+  (assert (> proved 10)))

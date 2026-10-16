@@ -331,18 +331,20 @@ new clauses that are neither duplicates nor subsumed by older ones."
   (defn proof [self]
     "The proof as numbered lines, from input clauses to the empty clause."
     (when (or (not self.proved) (is self.clause None)) (return []))
-    (setv order [] seen #{})
+    ;; numbered in the order a depth-first walk finishes the clauses, so every
+    ;; clause comes after the ones it was derived from
+    (setv order [] number {})
     (defn visit [c]
-      (when (not-in c.id seen)
-        (.add seen c.id)
+      (when (not-in (id c) number)
+        (setv (get number (id c)) None)
         (for [p [#* c.parents #* c.used]] (visit p))
-        (.append order c)))
+        (.append order c)
+        (setv (get number (id c)) (len order))))
     (visit self.clause)
-    ;; a parent always has a smaller number than its child, so this order is valid
-    (lfor c (sorted order :key (fn [c] c.id))
-      (+ (.rjust (str c.id) 4) ". " (.ljust (str c) 44) " "
+    (lfor c order
+      (+ (.rjust (str (get number (id c))) 4) ". " (.ljust (str c) 44) " "
          (if (or c.parents c.used)
-             (+ c.rule " " (.join ", " (gfor p [#* c.parents #* c.used] (str p.id))))
+             (+ c.rule " " (.join ", " (gfor p [#* c.parents #* c.used] (str (get number (id p))))))
              c.rule)))))
 
 (defn saturate [clauses [limit 5000] [timeout None] [age-ratio 0] [superposition 0]
