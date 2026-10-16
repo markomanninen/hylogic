@@ -581,3 +581,69 @@ definitions itself.
 Lean took 5 seconds for the median proof, 13 at most (1,188 steps), and 849
 seconds in all, most of it starting Lean. One problem, SYO605+1, ran out of
 search time while four checks ran in parallel and was checked alone.
+
+## A soundness sweep
+
+Three soundness bugs had been found so far, all by benchmarks and none by
+unit tests, so HyLogic was run on every problem the samples are drawn from
+that neither sample contains. These are the FOF problems with at most 50
+formulas whose status is Theorem, CounterSatisfiable, Unsatisfiable or
+Satisfiable, 3781 of them (sweep_list.py lists them). Each had 10 seconds
+with the default options, six at a time, and the whole run took an hour.
+
+| Status | Problems | Solved, 1.4.0 | Solved, after the fixes | Wrong, 1.4.0 | Wrong, after |
+|---|---:|---:|---:|---:|---:|
+| Theorem | 2723 | 1188 | 1188 | 0 | 0 |
+| CounterSatisfiable | 564 | 401 | 400 | 0 | 0 |
+| Unsatisfiable | 180 | 125 | 123 | 0 | 0 |
+| Satisfiable | 314 | 94 | 94 | 0 | 0 |
+| All | 3781 | 1808 | 1805 | 0 | 0 |
+
+**No answer was wrong.** The small differences in solved problems are
+timing. The six problems the second run lost all solve when run again,
+and NUM378+1.015.020 was one of them for another reason, given below.
+
+**A decider can hide behind another.** solve tries grounding, then
+congruence closure, then the bounded ground search, so a wrong verdict
+from a later method never shows when an earlier one answers first. Each
+decider was therefore run alone for 5 seconds on these problems and both
+samples, 4295 in all. The bounded ground search said proved for two
+CounterSatisfiable problems, LCL679+1.001 and SYN916+1. Their clauses
+have no terms, the bound on the model size came out as 0, no size was
+tried, and finding no model up to size 0 was taken as a proof. A domain
+has at least one element, and the bound is now at least 1. Reading the
+same code found two more of the kind that no problem reaches. The ground
+search intersected the constants of two clauses t = b | t = c and
+t = c | t = d about one term, which is wrong when t = b = d, and the
+bound came out too small. Each clause bounds t on its own, so the
+smallest one is kept. decide-finite, which nothing in the prover calls,
+searched up to 10 elements but took no model as a proof for larger bounds
+too. Each fix has a unit test that failed before it.
+
+**Fourteen errors, now none.** Four theorems (LCL450+1, LCL450+2, SYN917+1
+and SYN938+1) crashed in the Knuth-Bendix ordering. The rule index
+redefined the ordering's helper for head symbols under the same name, and
+the index's version compared a string with a tuple when a proposition met
+a definition atom without arguments. The ordering has its own helper
+again, which orders every other pair as before, and SYN917+1 and SYN938+1
+are now proved. Ten problems (LCL662+1.020 and kin, SYN986+1.004 to .006)
+nest formulas thousands of levels deep, past Python's recursion limit.
+They now end with GaveUp instead of a traceback; raising the limit only
+let them run far past the time limit.
+
+**A time limit kept.** The model finder that enumerates function tables
+checked the clock only between tries, and one try can ground a formula
+into millions of parts. NUM378+1.015.020 ran for minutes with a 10 second
+limit whenever resolution had not finished first. Grounding now checks the
+clock at every quantifier and connective.
+
+**The samples did not change.** With the fixes the first sample gave 191
+of 274 (192 before) and the held-out sample 168 of 240 (168), with no wrong
+answers. The one problem lost, SYO605+1, timed out while another program
+loaded the machine and is proved in 3.4 seconds when run again.
+
+**Known gaps.** TPTP numbers denote themselves, so 1 != 2 holds implicitly,
+but HyLogic reads them as uninterpreted constants; no eligible problem
+uses a number in a formula. The flattening model finder keys functions by
+name alone, so a symbol used with two arities would get the totality
+axioms of one only; no eligible problem does that either.

@@ -62,16 +62,25 @@ for small domains.
     (in t bound) (get bound t)
     True (get constants t)))
 
-(defn _ground [f domain bound constants functions]
+(defclass _Late [Exception])
+
+(defn _ground [f domain bound constants functions [deadline None]]
   (setv op (operator-of f))
   (cond
     (in op QUANTIFIERS)
       (do
+        ;; nested quantifiers multiply, and one formula can ground to millions
+        ;; of parts (NUM378+1.015.020 ran minutes past a 10 s limit), so the
+        ;; clock is checked at every quantifier and connective
+        (when (and deadline (> (time.monotonic) deadline)) (raise (_Late)))
         (setv names (get f 1)
               parts (lfor values (product domain :repeat (len names))
-                          (_ground (get f 2) domain (| bound (dict (zip names values))) constants functions)))
+                          (_ground (get f 2) domain (| bound (dict (zip names values))) constants functions
+                                   deadline)))
         #((if (= op "forall") "and" "or") #* parts))
-    op #(op #* (gfor a (args-of f) (_ground a domain bound constants functions)))
+    op (do
+         (when (and deadline (> (time.monotonic) deadline)) (raise (_Late)))
+         #(op #* (gfor a (args-of f) (_ground a domain bound constants functions deadline))))
     ;; equality is identity of elements, so models stay sound for =
     (and (compound? f) (= (get f 0) "="))
       (if (= (_term (get f 1) bound constants functions) (_term (get f 2) bound constants functions))
@@ -106,7 +115,8 @@ for small domains.
       (+= tries 1)
       (when (or (> tries max-tries) (and deadline (> (time.monotonic) deadline))) (return None))
       (setv constant-map (dict (zip constants consts))
-            grounded #("and" #* (gfor f fs (_ground f domain {} constant-map functions)))
+            grounded (try #("and" #* (gfor f fs (_ground f domain {} constant-map functions deadline)))
+                          (except [_Late] (return None)))
             assignment (satisfiable grounded))
       (when (is-not assignment None)
         (return (_model domain constant-map functions assignment sig)))))

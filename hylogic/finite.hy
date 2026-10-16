@@ -225,5 +225,6 @@ model up to k proves the clauses unsatisfiable: a theorem."
                                  :fixed-constants (distinct-constants clauses)))
   (cond
     (is found None) None
-    (= found "unsat") (if bound "proved" None)
+    ;; the search stops at 10 elements, so a larger bound proves nothing
+    (= found "unsat") (if (and bound (<= bound limit)) "proved" None)
     True "saturated"))

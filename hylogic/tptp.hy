@@ -369,6 +369,11 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
       (setv [status result _] (solve path :time-limit time-limit #** options))
       (except [e TPTPError]
         (print f"% SZS status Inappropriate for {name}: {e}")
+        (continue))
+      ;; formulas nested thousands deep (LCL662+1.020) are beyond the recursive
+      ;; parser and clausifier; that is giving up, not a crash
+      (except [RecursionError]
+        (print f"% SZS status GaveUp for {name}: formulas nested too deeply")
         (continue)))
     (print f"% SZS status {status} for {name}")
     (when result.proved
