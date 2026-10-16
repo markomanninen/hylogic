@@ -408,3 +408,100 @@ Nine non-theorems remain. GRA021+1 needs a model of about 12 elements,
 SWW897+1 and SWW919+1 still have clauses of 29 to 38 variables after
 splitting, and the other six have no finite model that Vampire's builder
 finds in 10 seconds either.
+
+## Round five: a held-out check, proofs for every answer, and a schedule
+
+Every change in four rounds was tuned on the same 274 problems, so the
+first step drew 240 new ones with another seed and no overlap (holdout.txt;
+the hardest equality-free theorems were all in the first sample already, so
+that cell is empty). Each prover was run on it as on the first sample.
+
+| On the held-out sample, 10 s | Theorems, of 200 | Non-theorems, of 40 |
+|---|---:|---:|
+| HyLogic 1.3.0 | 135 | 27 |
+| HyLogic after round five | 141 | 27 |
+| E 3.2.5 | 189 | 17 |
+| Vampire 5.1.0 (`casc`) | 197 | 18 |
+| Vampire 5.1.0 (`casc_sat`) | | 32 |
+
+The share of theorems HyLogic proves is about the same on both samples
+(62 % and 68 %), and so is its distance to E, so four rounds of tuning had
+not fitted the first sample. Single cells differ: description logic problems
+that grounding decides happened to fill a cell of the first sample.
+
+**A soundness bug, found by the new sample.** TPTP's double-quoted names
+are distinct objects, different elements by definition. Only the
+congruence closure knew it, so grounding found a model of
+"Apple" = "Microsoft" and reported SYO561+1, a theorem, as
+CounterSatisfiable. The reader now adds the pairwise inequalities as
+premises, so every method sees them. This bug is in 1.3.0.
+
+**Proofs for the SAT answers.** Grounding and congruence closure answered
+with a status and nothing to read. The CDCL solver now records how it learns
+each clause, and those steps are replayed into a resolution proof over the
+ground instances it used, each citing the clause it instantiates, or over
+the equality lemmas congruence closure supplied, each a valid fact about
+equality. A learned clause is one line whose parents are resolved left to
+right. Tests replay every step and check every lemma by deciding its
+negation.
+
+**Time limits kept.** Three places did not look at the clock often enough:
+the ground encoder, the model finder's grounding, and subsumption, which
+tried exponentially many literal mappings between long clauses of similar
+literals. ALG026+1 took 27 seconds with a 10 second limit and LCL657+1.020
+68 with 8. Grounding now checks the clock inside its loops, and subsumption
+tries the most constrained literal first and gives up after 2000 tries,
+which only means keeping a clause that could have been dropped.
+
+**A schedule of strategies.** strategies.py ran six strategies for 6 seconds
+each on the 87 theorems the default left open. Unordered superposition proved
+17, the others 1 to 6, and all together 27. The default had used its last
+fifth of the search time for plain resolution, which proved 5.
+
+| Step, on the first sample, 10 s | NEQ r0 | NEQ r1 | NEQ r2 | EQ r0 | EQ r1 | EQ r2 | Non-theorems | All | Wrong |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Round four's defaults, distinct objects fixed | 32 | 32 | 5 | 34 | 33 | 10 | 31 | 177 | 0 |
+| + time limits kept, proofs for SAT answers | 32 | 32 | 5 | 35 | 33 | 10 | 31 | 178 | 0 |
+| + rules and units indexed (about 15 % faster) | 32 | 32 | 5 | 34 | 33 | 10 | 31 | 177 | 0 |
+| + main search 40 %, then unordered superposition | 33 | 31 | 13 | 34 | 37 | 11 | 31 | 190 | 0 |
+| the same, run again | 33 | 32 | 13 | 34 | 37 | 10 | 31 | 190 | 0 |
+| main search 30 % instead (not kept) | 32 | 31 | 13 | 34 | 37 | 10 | 31 | 188 | 0 |
+| + bounded subsumption (the new default) | 33 | 32 | 14 | 34 | 37 | 11 | 31 | 192 | 0 |
+
+On the held-out sample the schedule added 3 (165 to 168). Most of its gain
+on the first sample came from one family of description logic theorems,
+which unordered superposition proves and the held-out sample does not have.
+
+**Measurements that need a quiet machine.** Runs made while another program
+kept the machine busy lost up to 40 problems, and two identical runs
+differed by 16. Every number above comes from a run started when the load
+was low, with nothing else heavy running, and the schedule was run twice.
+
+**Speed.** HyLogic with 20 seconds instead of 10 solved 182 where it solved
+177. PyPy runs the search 1.8 times faster but needs 2.3 seconds to load Hy,
+and solved 180. Indexing rewrite rules and units by their head symbol made
+the search about 15 % faster and changed no answer. Twice the speed is worth
+two to five problems here; the gains of the last two rounds came from
+methods, so compiling the hot loops is left for later.
+
+**Lean, at the same limit.** `grind` proved 103 of the 234 theorems with
+20 seconds each, and 53 with 10, the limit the other provers had. One large
+statement did not type-check within 10 seconds.
+
+**What is left among the non-theorems.** Nine remain. Vampire shows three of
+them by saturation, running out of inferences under an ordering by symbol
+arity, which HyLogic's ordered resolution does not reach in 40 seconds; two
+by finite models over clauses still too wide for HyLogic's grounding; and
+four not at all.
+
+## Where the gap stands after round five
+
+| First sample, 10 s | Theorems, of 234 | Non-theorems, of 40 |
+|---|---:|---:|
+| HyLogic, baseline | 39 | 18 |
+| HyLogic 1.3.0 | 146 | 31 |
+| HyLogic after round five | 161 | 31 |
+| Lean 4.35 `grind`, on HyLogic's export | 53 | |
+| E 3.2.5 | 207 | 16 |
+| Vampire 5.1.0 (`casc`) | 231 | 20 |
+| Vampire 5.1.0 (`casc_sat`) | | 36 |
