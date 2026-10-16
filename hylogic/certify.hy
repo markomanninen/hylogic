@@ -43,7 +43,8 @@ refutation takes the definitions as hypotheses as well, and «$closed»
 discharges them by instantiating each s with its definition, so the input
 clauses alone are shown contradictory."
 
-(import re
+(import os
+        re
         subprocess
         tempfile
         time
@@ -443,7 +444,7 @@ clauses alone are shown contradictory."
     (setv path (/ (Path d) "Proof.lean"))
     (.write-text path text)
     (try
-      (setv out (subprocess.run ["lean" (str path)] :capture-output True :text True :timeout timeout))
+      (setv out (subprocess.run [(os.environ.get "HYLOGIC_LEAN" "lean") (str path)] :capture-output True :text True :timeout timeout))
       (except [subprocess.TimeoutExpired] (return #("timeout" []))))
     (setv output (+ out.stdout out.stderr)
           messages (lfor m (.finditer _MESSAGE output)

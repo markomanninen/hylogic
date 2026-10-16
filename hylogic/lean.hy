@@ -14,7 +14,8 @@ Every name is written in «guillemets», so TPTP names cannot clash with Lean
 keywords. The proof is a tactic: sorry only checks that the statement is well
 formed, and grind asks Lean's own automation to find the proof."
 
-(import subprocess
+(import os
+        subprocess
         tempfile
         pathlib [Path]
         hylogic.formulas [basic operator-of args-of QUANTIFIERS]
@@ -77,7 +78,7 @@ formed, and grind asks Lean's own automation to find the proof."
     (setv path (/ (Path d) "Problem.lean"))
     (.write-text path text)
     (try
-      (setv out (subprocess.run ["lean" (str path)] :capture-output True :text True :timeout timeout))
+      (setv out (subprocess.run [(os.environ.get "HYLOGIC_LEAN" "lean") (str path)] :capture-output True :text True :timeout timeout))
       (except [subprocess.TimeoutExpired] (return #(False "timeout"))))
     (setv message (+ out.stdout out.stderr))
     #((and (= out.returncode 0) (not-in "error" message)) message)))

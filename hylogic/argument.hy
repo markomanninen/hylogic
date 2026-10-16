@@ -70,6 +70,7 @@ proof is found. Either way `used` names the premises a valid argument needs."
     "Decide validity once. Sets valid (True, False or None if undecided) and method."
     (when self._checked (return self))
     (setv self._checked True
+          self.result None
           self.counterexample None
           self.used None
           self.proof None)
@@ -85,6 +86,7 @@ proof is found. Either way `used` names the premises a valid argument needs."
                                 :timeout (* 0.4 self.timeout) #** (| SEARCH {"ordered" 0})))
             (when second.proved (setv result second)))
           (setv self.method "resolution"
+                self.result result
                 self.proof (.proof result))
           (if result.proved
               (setv self.valid True
@@ -122,7 +124,7 @@ proof is found. Either way `used` names the premises a valid argument needs."
     self)
 
   (defn __getattr__ [self name]
-    (when (in name #{"valid" "method" "counterexample" "countermodel" "proof" "used"})
+    (when (in name #{"valid" "method" "counterexample" "countermodel" "proof" "used" "result"})
       (.check self)
       (return (getattr self name)))
     (raise (AttributeError name)))

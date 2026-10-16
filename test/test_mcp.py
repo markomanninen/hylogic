@@ -78,3 +78,21 @@ def test_atoms_written_as_calls_and_unnested_quantifiers():
                           "(forall [x] forall [y] forall [z] (=> (and (ReportsTo x y) (ReportsTo y z)) (ReportsTo x z)))"],
                          "ReportsTo(Carla, Ben)")
     assert out.startswith("VALID")
+
+
+def test_certify_without_lean_says_how_to_install(monkeypatch):
+    monkeypatch.setenv("HYLOGIC_LEAN", "no-such-lean-command")
+    out = check_argument(["(=> P Q)", "P"], "Q", certify=True)
+    assert out.startswith("VALID")
+    assert "Lean check: not run, Lean 4 is not installed" in out
+
+
+def test_certify_with_lean():
+    from hylogic.mcp_server import lean_available
+    if not lean_available():
+        pytest.skip("lean is not installed")
+    out = check_argument(["(forall [x] (=> (Man x) (Mortal x)))", "(Man socrates)"], "(Mortal socrates)",
+                         certify=True)
+    assert "Lean check: verified" in out
+    # an invalid argument has no proof to certify, and says nothing about Lean
+    assert "Lean check" not in check_argument(["(=> P Q)", "Q"], "P", certify=True)

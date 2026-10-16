@@ -332,6 +332,22 @@ Read as: P → Q; Q ⊢ P
 Counterexample: “it rains” is false and “the street is wet” is true. Then every premise is true and the conclusion is false.
 ```
 
+A valid argument comes with the premises it needs. `detail=true` adds the
+proof, and `certify=true` has Lean 4 check every step of it in a few seconds,
+when the `lean` command is installed (or named by `HYLOGIC_LEAN`); without
+Lean the answer says how to install it.
+
+```
+check_argument(premises=["(forall [x] (=> (Man x) (Mortal x)))", "(Man socrates)", "(Greek socrates)"],
+               conclusion="(Mortal socrates)", certify=True)
+
+VALID (checked by resolution)
+Read as: ∀x ((Man x) → (Mortal x)); (Man socrates); (Greek socrates) ⊢ (Mortal socrates)
+Premises needed: 1, 2 (of 3)
+Proof: 4 steps, shown with detail=true
+Lean check: verified, Lean 4 accepted all 1 steps of the proof and how they chain from the premises to a contradiction (4.3 s). The clausal form of the premises is taken as given.
+```
+
 [benchmarks/field_test/](benchmarks/field_test/) measures whether the tool
 helps agents judge arguments, and what it costs.
 
