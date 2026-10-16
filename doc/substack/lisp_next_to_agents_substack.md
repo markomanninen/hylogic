@@ -128,6 +128,14 @@ Valid, by truth table.
 
 An invalid argument gets a counterexample instead, such as "P = ⊥, Q = ⊤" for concluding that it rains because the street is wet. None of this would be impossible in Python, but in Hy the formulas, the rules and the code are one notation, and the program stays short enough to read in an evening.
 
+How far does a prover that is meant to be read get against the real ones? I measured it on 234 theorems from TPTP, the standard problem library for provers, with ten seconds for each, next to E and Vampire, two of the strongest automated provers. The first version proved 39. After ten measured changes, among them ordered resolution, superposition for reasoning about equality and a search that stays close to the goal, it proves 98.
+
+![](article_images/table4_provers.png)
+
+*Theorems from the TPTP library proved within ten seconds each.*
+
+The rest of the distance is decades of tuned search strategy, which a study prover has no reason to copy. Doubling the time limit added a single theorem, so speed was not what held it back. HyLogic can instead hand a problem to Vampire, read the proof it prints and show it in the same numbered form, which worked for all 440 proofs E and Vampire produced, and it can write any problem as a Lean theorem for the cases that need real mathematics. The benchmark also paid for itself in another way. It caught a soundness bug, a valid theorem reported as unprovable because the prover's choice of literal depended on variable names, which no test of mine had found.
+
 ## Result 5. A logic checker added cost, not accuracy
 
 The last test turned the question around. If strict checking is what protects agents, perhaps agents also reason better with a checker at hand, in a domain where formulas are the natural notation. HyLogic got an MCP tool, `check_argument`. The agent writes the premises and the conclusion as formulas, and the tool decides whether the argument is valid and returns a counterexample when it is not.
@@ -156,7 +164,7 @@ The field test also tested the tool. Twice Haiku sent a formula in a shape I had
 
 ## Limits, and trying it yourself
 
-The CaMeL test used one model, Claude Haiku, and one of AgentDojo's four suites. I stopped the attacked runs at 39 of 144 task pairs to limit model calls, and those 39 came from the tasks that finished first, so they are not a random sample. A stronger model may close part of the gap. The token counts use OpenAI's tokenizers, because Claude's is not available offline, and pages change over time. The logic field test gave each argument once to each model, and its arguments are generated, short and propositional apart from the syllogisms, so a checker may still pay off on longer first-order reasoning. The prover is a study tool. Real provers such as Vampire and E handle millions of clauses with indexing and equality reasoning that HyLogic does not have, and for serious mathematics [Lean](https://lean-lang.org) is where the work happens.
+The CaMeL test used one model, Claude Haiku, and one of AgentDojo's four suites. I stopped the attacked runs at 39 of 144 task pairs to limit model calls, and those 39 came from the tasks that finished first, so they are not a random sample. A stronger model may close part of the gap. The token counts use OpenAI's tokenizers, because Claude's is not available offline, and pages change over time. The logic field test gave each argument once to each model, and its arguments are generated, short and propositional apart from the syllogisms, so a checker may still pay off on longer first-order reasoning. The prover is a study tool, and the TPTP sample is 234 theorems of at most 50 formulas, a small corner of what E and Vampire are built for. For serious mathematics [Lean](https://lean-lang.org) is where the work happens.
 
 Everything is on GitHub. The CaMeL experiment, its hypotheses written before the runs, and the token measurement are in the [hyml repository](https://github.com/markomanninen/hyml/tree/camel-plan-language/experiments). The logic field test, its arguments and its hypotheses are in [hylogic's benchmarks](https://github.com/markomanninen/hylogic/tree/master/benchmarks), next to a comparison of truth tables, resolution, a SAT solver and Z3. HyLogic installs with `pip install hylogic`, and `hy examples/tour.hy` walks through truth tables, arguments, rewriting and proofs, with a step-by-step guide to how the prover works.
 
