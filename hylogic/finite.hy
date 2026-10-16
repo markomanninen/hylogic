@@ -52,11 +52,13 @@ model up to k proves the clauses unsatisfiable: a theorem."
     (.append out (if (_negative? l) #("not" flat-atom) flat-atom)))
   [#* out #* extra])
 
-(defn split-clause [clause fresh [keep 3]]
+(defn split-clause [clause fresh [keep 3] [definitions None]]
   "Flat clauses equivalent to the clause on every domain, each with fewer variables.
   A clause A ∨ B whose parts share only the variables I becomes A ∨ s(I) and
   ¬s(I) ∨ B, with s a new predicate (clause splitting, as in Paradox): grounding
-  then costs n^|A| + n^|B| instead of n^|A ∪ B| for a domain of n elements."
+  then costs n^|A| + n^|B| instead of n^|A ∪ B| for a domain of n elements.
+  With a definitions dict, each new s is recorded there as #(I B): the parts
+  follow from the clause when s(I) means ∀ y, B, y the other variables of B."
   (setv clause (list clause)
         lit-vars (lfor l clause (frozenset (variables-of l)))
         all-vars (frozenset (gfor vs lit-vars  v vs v)))
@@ -77,7 +79,10 @@ model up to k proves the clauses unsatisfiable: a theorem."
   (when (is best None) (return [clause]))
   (setv [_ a b shared] best
         atom #(f"$split{(next fresh)}" #* shared))
-  [#* (split-clause [#* a atom] fresh keep) #* (split-clause [#("not" atom) #* b] fresh keep)])
+  (when (is-not definitions None)
+    (setv (get definitions (get atom 0)) #((tuple shared) (tuple b))))
+  [#* (split-clause [#* a atom] fresh keep definitions)
+   #* (split-clause [#("not" atom) #* b] fresh keep definitions)])
 
 (defn _signature [flat-clauses]
   "Predicates and functions (with constants as 0-ary functions) with arities."
