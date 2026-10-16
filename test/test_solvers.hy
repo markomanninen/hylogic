@@ -203,3 +203,95 @@
   (setv p (read-problem (/ (Path root) "Problems" "ALG" "ALG105+1.p"))
         cl (lfor f [#* p.premises #("not" p.goal)] c (clausify f 8) c))
   (assert (!= (decide-ground cl :max-size 10) "saturated")))
+
+(defn test-euf-congruence []
+  ;; a = b gives f(a) = f(b) and then g(f(a)) = g(f(b)), with no domain bound
+  (import hylogic.euf [decide-euf])
+  (setv cl [(frozenset [#("=" "a" "b")])
+            (frozenset [#("not" #("=" #("g" #("f" "a")) #("g" #("f" "b"))))])])
+  (assert (= (decide-euf cl) "proved")))
+
+(defn test-euf-non-theorem-and-predicates []
+  (import hylogic.euf [decide-euf])
+  ;; p(a), a = b, not p(b) is inconsistent; without a = b it has a model
+  (setv base [(frozenset [#("p" "a")]) (frozenset [#("not" #("p" "b"))])])
+  (assert (= (decide-euf [#* base (frozenset [#("=" "a" "b")])]) "proved"))
+  (assert (= (decide-euf base) "saturated"))
+  (assert (is (decide-euf [(frozenset [#("p" "?x")])]) None)))
+
+(defn test-euf-distinct-objects []
+  ;; TPTP distinct objects are different elements, so "x" = "y" is false
+  (import hylogic.euf [decide-euf])
+  (assert (= (decide-euf [(frozenset [#("=" "\"x\"" "\"y\"")])]) "proved"))
+  (assert (= (decide-euf [(frozenset [#("=" "x" "y")])]) "saturated")))
+
+(defn test-euf-agrees-with-the-bounded-ground-search []
+  (import hylogic.euf [decide-euf])
+  (setv rng (random.Random 5) agreed 0)
+  (defn term [depth]
+    (if (or (= depth 0) (< (.random rng) 0.4))
+        (.choice rng ["a" "b" "c"])
+        #("f" (term (- depth 1)))))
+  (for [_ (range 60)]
+    (setv cl (lfor _ (range (.randint rng 2 6))
+               (frozenset (lfor _ (range (.randint rng 1 2))
+                 :setv atom #("=" (term 2) (term 2))
+                 (if (< (.random rng) 0.5) atom #("not" atom)))))
+          exact (decide-euf cl) bounded (decide-ground cl))
+    (when (is-not bounded None)
+      (assert (= exact bounded))
+      (+= agreed 1)))
+  (assert (> agreed 30)))
+
+(defn test-euf-proves-the-alg105-isomorphism []
+  (import os pathlib [Path] hylogic.tptp [read-problem] hylogic.euf [decide-euf])
+  (setv root (os.environ.get "TPTP"))
+  (when (or (not root) (not (.exists (/ (Path root) "Problems" "ALG" "ALG105+1.p"))))
+    (pytest.skip "set TPTP to a TPTP library to run this test"))
+  (setv p (read-problem (/ (Path root) "Problems" "ALG" "ALG105+1.p"))
+        cl (lfor f [#* p.premises #("not" p.goal)] c (clausify f 8) c))
+  (assert (= (decide-euf cl) "proved")))
+
+(defn test-split-clause-keeps-models-and-cuts-variables []
+  (import itertools [count] hylogic.finite [split-clause] hylogic.terms [variables-of])
+  ;; p(x,y) | q(y,z) | r(z,w) | s(w,v) shares one variable between neighbours
+  (setv c [#("p" "?x" "?y") #("q" "?y" "?z") #("r" "?z" "?w") #("s" "?w" "?v")]
+        parts (split-clause c (count 1)))
+  (assert (> (len parts) 1))
+  (assert (all (gfor p parts (< (len (variables-of (tuple p))) 5))))
+  ;; a chain of 6 such clauses with a goal has the same answer either way
+  (setv cl [(frozenset c) (frozenset [#("not" #("p" "?a" "?b"))]) (frozenset [#("not" #("q" "?a" "?b"))])
+            (frozenset [#("not" #("r" "?a" "?b"))])])
+  (assert (isinstance (find-finite-model cl :max-size 3) tuple))
+  (assert (= (find-finite-model [#* cl (frozenset [#("not" #("s" "?a" "?b"))])] :max-size 3) "unsat")))
+
+(defn test-skolem-terms-take-only-the-universals-they-need []
+  (import hylogic.resolution [clausify] hylogic.terms [variables-of])
+  ;; ∀x∀y (p(x) ∨ ∃z q(y, z)): the Skolem function depends on y alone
+  (setv [c] (clausify #("forall" #("x" "y") #("or" #("p" "x") #("exists" #("z") #("q" "y" "z")))))
+        q (next (gfor l c :if (= (get l 0) "q") l)))
+  (assert (= (len (get q 2)) 2))
+  ;; through an outer Skolem term: z = y = x keeps x
+  (setv cl (clausify #("forall" #("x") #("exists" #("y") #("exists" #("z")
+                        #("and" #("=" "y" "x") #("=" "z" "y")))))))
+  (assert (all (gfor c cl l c (variables-of (tuple l))))))
+
+(defn test-definitions-take-only-free-variables []
+  (import hylogic.resolution [clausify])
+  ;; a closed disjunct is named by a 0-ary atom; its own variable stays universal
+  (setv inner #("forall" #("y") #("and" #("or" #("q" "y") #("r" "y")) #("or" #("s" "y") #("t" "y"))))
+        cl (clausify #("or" inner #("and" "a" "b") #("and" "c" "d")) 2)
+        defs (sfor c cl l c :setv a (if (= (get l 0) "not") (get l 1) l)
+                   :if (and (isinstance a tuple) (.startswith (get a 0) "$def")) a))
+  (assert defs)
+  (assert (all (gfor a defs (= (len a) 1)))))
+
+(defn test-epr-grounding-splits-unconnected-variables []
+  ;; p(x) | q(y) | r(z) over 40 constants is 64000 instances, over the cap;
+  ;; split into three one-variable parts it is 120 and decides at once
+  (import hylogic.grounding [decide-epr])
+  (setv facts (lfor i (range 40) (frozenset [#("s" f"c{i}")]))
+        wide (frozenset [#("p" "?x") #("q" "?y") #("r" "?z")])
+        refuted [(frozenset [#("not" #("p" "c5"))]) (frozenset [#("not" #("q" "c7"))])])
+  (assert (= (decide-epr [#* facts wide #* refuted (frozenset [#("not" #("r" "c9"))])]) "proved"))
+  (assert (= (decide-epr [#* facts wide #* refuted]) "saturated")))

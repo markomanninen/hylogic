@@ -135,13 +135,20 @@ Vampire use; this is a small version of it without literal selection."
   (setv [_ s t] unit)
   (cond (kbo> s t) #(s t) (kbo> t s) #(t s) True None))
 
-(defn _rewrite-term [t rules budget]
+(defn rules-of [unit]
+  "The rewrite rules of a unit equation: its oriented form, or none. Ordered
+  rewriting, which would also use an unorientable equation on the instances
+  it can order, was measured and lost more problems than it won."
+  (setv rule (orient unit))
+  (if rule [rule] []))
+
+(defn _rewrite-term [t rules budget [fired None]]
   "t rewritten innermost first with the rules, at most budget steps; #(term steps-used)."
   (setv used 0)
   (when (compound? t)
     (setv args [])
     (for [a (cut t 1 None)]
-      (setv [a2 n] (_rewrite-term a rules (- budget used)))
+      (setv [a2 n] (_rewrite-term a rules (- budget used) fired))
       (+= used n)
       (.append args a2))
     (setv t #((get t 0) #* args)))
@@ -149,12 +156,15 @@ Vampire use; this is a small version of it without literal selection."
   (for [[l r] rules]
     (setv m (match-term l t))
     (when (is-not m None)
-      (setv [t2 n] (_rewrite-term (instantiate r m) rules (- budget used 1)))
+      (setv new (instantiate r m))
+      (when (is-not fired None) (.append fired #(l r)))
+      (setv [t2 n] (_rewrite-term new rules (- budget used 1) fired))
       (return #(t2 (+ used 1 n)))))
   #(t used))
 
-(defn demodulate [literals rules [budget 50]]
-  "The literals with every argument rewritten by the rules; #(literals changed?)."
+(defn demodulate [literals rules [budget 50] [fired None]]
+  "The literals with every argument rewritten by the rules; #(literals changed?).
+  The rules used are appended to fired when it is a list."
   (when (not rules) (return #(literals False)))
   (setv out [] changed False)
   (for [lit literals]
@@ -163,7 +173,7 @@ Vampire use; this is a small version of it without literal selection."
         (do
           (setv args [])
           (for [a (cut atom 1 None)]
-            (setv [a2 n] (_rewrite-term a rules budget))
+            (setv [a2 n] (_rewrite-term a rules budget fired))
             (when n (setv changed True))
             (.append args a2))
           (.append out (with-sign lit #((get atom 0) #* args))))

@@ -133,3 +133,20 @@
   (setv p (read-problem (/ (Path root) "Problems" "SWB" "SWB020+2.p")))
   (for [opts [{"ordered" 1 "definitional" 8} {"age_ratio" 10 "superposition" 1 "ordered" 1 "index" 1 "definitional" 8}]]
     (assert (= (. (prove p.goal p.premises :limit 1000000 :timeout 60 #** opts) status) "proved") opts)))
+
+(defn test-unit-deletion-cuts-literals-and-cites-the-unit []
+  ;; ¬q(a) removes q(a) from p(x) | q(x) once processed; the proof names it
+  (setv r (prove #("p" "a") [#("forall" #("x") #("or" #("p" "x") #("q" "x"))) #("not" #("q" "a"))]))
+  (assert r.proved)
+  (setv lines (.proof r))
+  (assert (any (gfor l lines (in "unit deletion" l)))))
+
+(defn test-a-new-rule-rewrites-the-processed-goal []
+  ;; e = c arrives after the goal is processed; backward demodulation
+  ;; turns f(e) ≠ f(c) into f(c) ≠ f(c), and the proof cites the rule
+  (setv r (prove #("=" #("f" "e") #("f" "c"))
+                 [#("forall" #("x" "y") #("=" #("g" #("g" "e")) "c"))
+                  #("forall" #("x") #("=" #("g" "x") "x"))]
+                 :superposition 1))
+  (assert r.proved)
+  (assert (any (gfor l (.proof r) (in "(= e c)" l)))))

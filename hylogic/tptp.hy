@@ -240,19 +240,34 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
   (when epr
     (import hylogic.resolution [clausify Result]
             hylogic.grounding [decide-epr])
-    (import hylogic.ground [decide-ground])
+    (import hylogic.ground [decide-ground]
+            hylogic.euf [decide-euf])
     (setv clauses (lfor f [#* problem.premises #("not" problem.goal)]
                           c (clausify f (.get options "definitional" False)) c)
           verdict (or (decide-epr clauses :deadline (+ started (* 0.25 time-limit)))
-                      ;; ground problems with functions, such as finite algebras
-                      (decide-ground clauses :deadline (+ started (* 0.4 time-limit)))))
+                      ;; ground problems with functions: exactly by congruence closure,
+                      ;; then by a bounded search for finite models
+                      (decide-euf clauses :deadline (+ started (* 0.75 time-limit)))
+                      (decide-ground clauses :deadline (+ started (* 0.8 time-limit)))))
     (when verdict
       (return #((szs-status problem verdict None True) (Result verdict None {"kept" 0 "generated" 0}) problem))))
+  ;; a short model search first: small countermodels are cheap, and the search
+  ;; at the end gets only what resolution leaves
+  (when (.get options "finder_first" 0)
+    (import hylogic.resolution [clausify Result]
+            hylogic.finite [find-finite-model distinct-constants])
+    (setv clauses (lfor f [#* problem.premises #("not" problem.goal)]
+                        c (clausify f (.get options "definitional" False)) c)
+          found (find-finite-model clauses :max-size 4 :fixed-constants (distinct-constants clauses)
+                                   :deadline (+ (time.monotonic) (* (/ (get options "finder_first") 100) time-limit))))
+    (when (isinstance found tuple)
+      (return #((szs-status problem "saturated" True (= equality 1))
+                (Result "saturated" None {"kept" 0 "generated" 0}) problem))))
   (setv problem problem
         axioms (if (and (= equality 1) problem.has-equality)
                    [#* problem.premises #* (equality-axioms [#* problem.premises problem.goal])]
                    problem.premises)
-        search-options (dfor [k v] (.items options) :if (not-in k #{"superposition" "portfolio"}) k v)
+        search-options (dfor [k v] (.items options) :if (not-in k #{"superposition" "portfolio" "finder_first"}) k v)
         budget (- (* 0.8 time-limit) (- (time.monotonic) started))
         main-share (if (.get options "portfolio" 0) (/ (get options "portfolio") 100) 1)
         result (prove problem.goal axioms :limit limit
@@ -291,7 +306,7 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
   (setv args (list (or argv (cut sys.argv 1 None)))
         time-limit 10.0
         options {"age_ratio" 10 "equality" 2 "ordered" 1 "index" 1 "definitional" 8 "epr" 1
-                 "goal_bias" 6 "portfolio" 80})
+                 "goal_bias" 6 "portfolio" 80 "finder_first" 30})
   ;; --set name=value passes a search option to prove, for experiments
   (while (in "--set" args)
     (setv i (.index args "--set")
