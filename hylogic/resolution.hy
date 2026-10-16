@@ -228,8 +228,13 @@ new clauses that are neither duplicates nor subsumed by older ones."
           self.parents parents
           self.rule rule
           self.rules-seen 0
+          self.units-seen 0
+          self.used []
           self.id None))
   (defn __str__ [self] (clause-text self.literals)))
+
+(defn _predicate [atom]
+  (if (compound? atom) #((get atom 0) (len atom)) atom))
 
 (defn weight [lits] (sum (gfor l lits (size l))))
 
@@ -333,14 +338,14 @@ new clauses that are neither duplicates nor subsumed by older ones."
     (defn visit [c]
       (when (not-in c.id seen)
         (.add seen c.id)
-        (for [p c.parents] (visit p))
+        (for [p [#* c.parents #* c.used]] (visit p))
         (.append order c)))
     (visit self.clause)
     ;; a parent always has a smaller number than its child, so this order is valid
     (lfor c (sorted order :key (fn [c] c.id))
       (+ (.rjust (str c.id) 4) ". " (.ljust (str c) 44) " "
-         (if c.parents
-             (+ c.rule " " (.join ", " (gfor p c.parents (str p.id))))
+         (if (or c.parents c.used)
+             (+ c.rule " " (.join ", " (gfor p [#* c.parents #* c.used] (str p.id))))
              c.rule)))))
 
 (defn saturate [clauses [limit 5000] [timeout None] [age-ratio 0] [superposition 0]
@@ -371,7 +376,28 @@ new clauses that are neither duplicates nor subsumed by older ones."
         picks 0
         seen #{}
         rules []
+        rule-source {}
+        units {}
+        unit-count 0
         stats {"kept" 0 "generated" 0})
+
+  (defn cut-units [lits]
+    "The literals without those a processed unit clause refutes (unit deletion):
+    a unit ¬A removes every literal that is an instance of A, and a unit A every
+    instance of ¬A. #(literals changed?)."
+    (when (not units) (return #(lits False [])))
+    (setv out [] used [])
+    (for [l lits]
+      (setv hit (next (gfor [u source] (.get units #((not (negative? l)) (_predicate (atom-of l))) [])
+                            :if (is-not (match-term u (atom-of l)) None) source)
+                      None))
+      (if (is hit None) (.append out l) (.append used hit)))
+    #((frozenset out) (bool used) used))
+
+  (defn rewrite [lits]
+    "The literals rewritten with the rules: #(literals changed? clauses used)."
+    (setv fired [] [lits changed] (sp.demodulate lits rules :fired fired))
+    #(lits changed (lfor r (dict.fromkeys fired) (get rule-source r))))
 
   (defn pick []
     "The next unprocessed clause, by weight or, every (age-ratio + 1)th time, by age.
@@ -384,12 +410,15 @@ new clauses that are neither duplicates nor subsumed by older ones."
         (setv c (get (heapq.heappop h) 2))
         (when (not c.done)
           (setv c.done True)
-          (when (and superposition (< c.rules-seen (len rules)))
-            (setv [lits changed] (sp.demodulate c.literals rules))
+          (when (or (and superposition (< c.rules-seen (len rules))) (< c.units-seen unit-count))
+            (setv [lits changed used] (if superposition (rewrite c.literals) #(c.literals False []))
+                  [lits cut used2] (cut-units lits)
+                  changed (or changed cut))
             (when changed
               (setv lits (sp.drop-false-equations lits))
               (when (sp.trivial? lits) (continue))
-              (setv c (Clause lits #(c) "demodulation")
+              (setv c (Clause lits #(c) "simplification")
+                    c.used [#* used #* used2]
                     c.id (next ids) c.done True
                     c.goal (getattr (get c.parents 0) "goal" False)
                     c.features (features lits) c.symbols (symbols lits))))
@@ -399,12 +428,15 @@ new clauses that are neither duplicates nor subsumed by older ones."
   (defn add [clause]
     "Keep a new clause unless it is a tautology, a duplicate or subsumed."
     (when superposition
-      (setv [lits changed] (sp.demodulate (sp.drop-false-equations clause.literals) rules))
+      (setv [lits changed used] (rewrite (sp.drop-false-equations clause.literals)))
       (when (sp.trivial? lits) (return None))
-      (when changed (setv clause.rule (+ clause.rule "+demod")))
+      (when changed (setv clause.rule (+ clause.rule "+demod") clause.used [#* clause.used #* used]))
       (setv clause.literals lits
             clause.rules-seen (len rules)))
-    (setv lits clause.literals)
+    (setv [lits cut used] (cut-units clause.literals)
+          clause.units-seen unit-count)
+    (when cut (setv clause.literals lits clause.rule (+ clause.rule "+unit deletion")
+                    clause.used [#* clause.used #* used]))
     (when (tautology? lits) (return None))
     (setv key (canonical lits))
     (when (in key seen) (return None))
@@ -463,6 +495,10 @@ new clauses that are neither duplicates nor subsumed by older ones."
                                         (subsumes? given.literals p.literals)))
                           p))
     (.append processed given)
+    (when (= (len given.literals) 1)
+      (setv [lit] given.literals)
+      (.append (.setdefault units #((negative? lit) (_predicate (atom-of lit))) []) #((atom-of lit) given))
+      (+= unit-count 1))
     ;; a processed unit equation becomes rewrite rules, which also rewrite the
     ;; processed clauses (backward demodulation): a rewritten one is taken out
     ;; and comes back as a new clause
@@ -471,6 +507,7 @@ new clauses that are neither duplicates nor subsumed by older ones."
       (when (and (sp.equation? lit) (not (sp.negative? lit)))
         (setv new-rules (sp.rules-of lit))
         (.extend rules new-rules)
+        (for [r new-rules] (.setdefault rule-source r given))
         (when new-rules
           (setv kept [] rewritten [])
           (for [p processed]

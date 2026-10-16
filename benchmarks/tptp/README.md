@@ -331,6 +331,9 @@ non-theorems. Four changes closed most of both, each measured on its own.
 | + model search first, 15 % of the time | 31 | 6 | 3 | 32 | 32 | 9 | 30 | 143 | 0 |
 | + model search first, 30 % (the new default) | 31 | 6 | 3 | 32 | 32 | 9 | 31 | 144 | 0 |
 | + model search first, 50 % | 31 | 4 | 3 | 32 | 32 | 9 | 31 | 142 | 0 |
+| + backward demodulation (with ordered rewriting) | 31 | 6 | 3 | 34 | 32 | 8 | 31 | 145 | 0 |
+| + backward demodulation (oriented rules only) | 31 | 6 | 3 | 34 | 32 | 9 | 31 | 146 | 0 |
+| + unit deletion | 32 | 10 | 5 | 34 | 33 | 10 | 31 | 155 | 0 |
 
 **Ground equality decided exactly** (`hylogic.euf`). Equality with
 uninterpreted functions is decidable for ground clauses, with no bound on
@@ -360,12 +363,27 @@ problem.
 models that take half a second were missed. A short search before resolution
 found them. At 30 % of the time no theorem was lost; at 50 % two were.
 
+**Simplification, as E does it.** Many theorems E proves in a hundredth of
+a second ran out of time here, with thousands of clauses kept. Two
+simplifications were missing. A unit equation that becomes a rewrite rule now
+also rewrites the clauses already processed, the negated goal among them,
+and a clause waiting in the queue is rewritten when it is picked. GRP703+1
+went from a timeout to 0.1 seconds. Ordered rewriting, which also uses
+equations such as x * y = y * x on instances it can order, was tried with it
+and lost a Kleene algebra problem, so it is not used. The larger gain came
+from unit deletion. A processed unit clause ¬A removes from every new clause
+the literals that are instances of A, and A removes those of ¬A, which
+cuts the clauses the geometry axioms generate down to the few that matter.
+It added nine theorems, most of them in the hard rows. A proof now cites
+the units and equations each simplification used, so it reads from the axioms
+to the empty clause without gaps.
+
 ## Where the gap stands after round four
 
 | | Theorems, of 234 | Non-theorems, of 40 |
 |---|---:|---:|
 | HyLogic after round three | 105 | 23 |
-| HyLogic after round four | 113 | 31 |
+| HyLogic after round four | 124 | 31 |
 | E 3.2.5 | 207 | 16 |
 | Vampire 5.1.0 (`casc`) | 231 | 20 |
 | Vampire 5.1.0, satisfiability schedule (`casc_sat`) | | 36 |

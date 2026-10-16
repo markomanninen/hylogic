@@ -294,9 +294,9 @@ it, with `sorry` to check the statement or `grind` to let Lean's automation
 prove it.
 
 On a fixed sample of 234 TPTP theorems within 10 seconds, HyLogic's own
-prover proves 113 (39 before its ordered resolution, superposition,
-goal-directed selection, SAT-based ground decision with congruence closure
-and other improvements), Lean's `grind` 103 of the exported problems, E 207
+prover proves 124 (39 before its ordered resolution, superposition,
+goal-directed selection, unit deletion, SAT-based ground decision with
+congruence closure and other improvements), Lean's `grind` 103 of the exported problems, E 207
 and Vampire 231. Of 40 non-theorems HyLogic shows 31 with countermodels, E 16,
 and Vampire 20 in its theorem-proving mode but 36 with its satisfiability
 schedule. Through the bridge HyLogic presented
