@@ -31,7 +31,7 @@ is_equivalent = getattr(_truth, hy.mangle("equivalent?"))
 entails = getattr(_truth, hy.mangle("entails?"))
 is_valid = getattr(_sat, hy.mangle("valid?"))
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 
 __all__ = [
     "formula", "pretty", "basic", "evaluate", "truth_table", "propositions",
