@@ -103,7 +103,7 @@ Macros are the other place a Lisp earns its keep. A rewrite rule such as "the de
   (d ?x (* ?u ?v)) -> (+ (* (d ?x ?u) ?v) (* ?u (d ?x ?v))))
 ```
 
-The whole prover is about 400 lines. It proves the standard first test set for provers, Pelletier's problems 1 to 24, in milliseconds each, and problem 34, known as Andrews' challenge, in about five seconds after its clauses blow up to 1,296. The Z3 solver agreed on every problem, and on 300 random formulas the prover agrees with truth tables every time.
+The first version of the prover was about 400 lines. It proved the standard first test set for provers, Pelletier's problems 1 to 24, in milliseconds each, and problem 34, known as Andrews' challenge, in about five seconds after its clauses blew up to 1,296. A clause form that names subformulas now keeps that problem to 47 clauses, and ordered resolution proves it in under a tenth of a second. The Z3 solver agreed on every problem, and on 300 random formulas the prover agrees with truth tables every time.
 
 HyLogic 1.0 wraps this into a library with truth tables, models and arguments that are checked and explained.
 
@@ -126,19 +126,41 @@ HyLogic 1.0 wraps this into a library with truth tables, models and arguments th
 Valid, by truth table.
 ```
 
-An invalid argument gets a counterexample instead, such as "P = ⊥, Q = ⊤" for concluding that it rains because the street is wet. None of this would be impossible in Python, but in Hy the formulas, the rules and the code are one notation, and the program stays short enough to read in an evening.
+An invalid argument gets a counterexample instead, such as "P = ⊥, Q = ⊤" for concluding that it rains because the street is wet. None of this would be impossible in Python, but in Hy the formulas, the rules and the code are one notation, and the core of the prover stays short enough to read in an evening.
 
-How far does a prover that is meant to be read get against the real ones? I measured it on 234 theorems from TPTP, the standard problem library for provers, with ten seconds for each, next to E and Vampire, two of the strongest automated provers. The first version proved 39. After a series of measured changes, among them ordered resolution, superposition for reasoning about equality, simplification as E does it, and SAT solving for the problems that grounding or congruence closure can settle, it proves 146, and it shows 31 of 40 non-theorems with a counterexample, where Vampire, set up for finding models, shows 36.
+How far does a prover that is meant to be read get against the real ones? I measured it on 234 theorems from TPTP, the standard problem library for provers, with ten seconds for each, next to E and Vampire, two of the strongest automated provers. The first version proved 39. After a series of measured changes, among them ordered resolution, superposition for reasoning about equality, simplification as E does it, SAT solving for the problems that grounding or congruence closure can settle, and a schedule of search strategies, it proves 161, and it shows 31 of 40 non-theorems with a counterexample, where Vampire, set up for finding models, shows 36. Since every change was tuned on these problems, I drew 240 new ones as a check. There HyLogic proves 141 of 200 theorems, E 189 and Vampire 197, so the tuning had not fitted the sample.
 
 ![](article_images/table4_provers.png)
 
 *Theorems from the TPTP library proved within ten seconds each.*
 
-The rest of the distance is decades of tuned search strategy, which a study prover has no reason to copy. HyLogic can instead hand a problem to Vampire, read the proof it prints and show it in the same numbered form, which worked for all 440 proofs E and Vampire produced, and it can write any problem as a Lean theorem for the cases that need real mathematics. The benchmark also paid for itself in another way. It caught two soundness bugs that no test of mine had found. One reported a valid theorem as unprovable, because the prover's choice of literal depended on variable names. The other let the SAT encoding give one constant two values, so five theorems got false counterexamples.
+Most of the remaining distance lies in reasoning with equality. This is what superposition does with a small problem from group theory, GRP703+1, where the goal says that a constant op_e associates with everything. Line 1, the three goal equations negated, is left out, and the variable names are shortened.
+
+```
+   2. (= op_e (mult (mult (rd op_c (mult ?A ?B)) ?B) ?A))  axiom
+   3. (= (mult ?A unit) ?A)                                axiom
+   4. (= (mult unit ?A) ?A)                                axiom
+   5. (= (mult (rd ?A ?B) ?B) ?A)                          axiom
+   6. (= op_e op_c)                                        superposition+demod 2, 3, 4, 5
+  10. □                                                    simplification 1, 6, 7, 8, 9
+```
+
+Line 6 is the step a person would look for. Putting unit for both variables of axiom 2 and simplifying with axioms 3 to 5 shows that op_e is the element op_c, and lines 7 to 9 say that op_c associates, which settles all three goals at once. E finds this in a hundredth of a second. HyLogic timed out on it until it learned to rewrite the clauses it had already used with every new equation.
+
+The rest of the distance is decades of tuned search strategy, which a study prover has no reason to copy. Lean's `grind` is a general tactic rather than a search built for such problems, and with twenty seconds it proves 103. HyLogic can instead hand a problem to Vampire, read the proof it prints and show it in the same numbered form, which worked for all 440 proofs E and Vampire produced, and it can write any problem as a Lean theorem for the cases that need real mathematics. The benchmark also paid for itself in another way. It caught three soundness bugs that no test of mine had found. One reported a valid theorem as unprovable, because the prover's choice of literal depended on variable names. Another let the SAT encoding give one constant two values, so five theorems got false counterexamples. The third came from the check sample. TPTP writes names in double quotes for objects that are different by definition, only one of HyLogic's methods knew it, and "Apple" = "Microsoft" got a model. Answers found by SAT now come with proofs as well, replayed from the solver's own steps.
 
 ## Result 5. A logic checker added cost, not accuracy
 
 The last test turned the question around. If strict checking is what protects agents, perhaps agents also reason better with a checker at hand, in a domain where formulas are the natural notation. HyLogic got an MCP tool, `check_argument`. The agent writes the premises and the conclusion as formulas, and the tool decides whether the argument is valid and returns a counterexample when it is not.
+
+```
+check_argument(premises=["(=> P Q)", "Q"], conclusion="P",
+               meanings={"P": "it rains", "Q": "the street is wet"})
+
+INVALID (checked by truth table)
+Read as: P → Q; Q ⊢ P
+Counterexample: “it rains” is false and “the street is wet” is true. Then every premise is true and the conclusion is false.
+```
 
 To measure it, I generated 70 arguments in everyday English, each checked by both HyLogic and Z3. A valid argument needs every one of its premises. An invalid one is tempting, because its conclusion holds in most of the situations the premises allow. The wording includes "only if" and "unless", which people often get wrong, and eight syllogisms test belief bias, such as "All roses are flowers. Some flowers fade quickly. Therefore, some roses fade quickly", which sounds right and does not follow. Each argument went once to each model, with and without the tool.
 
