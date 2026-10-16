@@ -10,8 +10,12 @@ from pathlib import Path
 CELLS = ["neq-r0", "neq-r1", "neq-r2", "eq-r0", "eq-r1", "eq-r2", "csat"]
 SOLVED = {"Theorem", "Unsatisfiable", "CounterSatisfiable", "Satisfiable"}
 WRONG = {("Theorem", "CounterSatisfiable"), ("Theorem", "Satisfiable"),
-         ("CounterSatisfiable", "Theorem"), ("CounterSatisfiable", "Unsatisfiable")}
+         ("CounterSatisfiable", "Theorem"), ("CounterSatisfiable", "Unsatisfiable"),
+         ("Unsatisfiable", "Satisfiable"), ("Unsatisfiable", "CounterSatisfiable"),
+         ("Satisfiable", "Unsatisfiable"), ("Satisfiable", "Theorem")}
 
+# other cells, such as sweep_list.py's, get columns of their own
+CELLS += sorted({json.loads(l)["cell"] for path in sys.argv[1:] for l in open(path)} - set(CELLS))
 print("| Prover | " + " | ".join(CELLS) + " | All | Wrong | Errors |")
 print("|---|" + "---:|" * (len(CELLS) + 3))
 for path in sys.argv[1:]:
