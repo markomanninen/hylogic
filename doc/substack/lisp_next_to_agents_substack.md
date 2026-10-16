@@ -128,7 +128,7 @@ Valid, by truth table.
 
 An invalid argument gets a counterexample instead, such as "P = ⊥, Q = ⊤" for concluding that it rains because the street is wet. None of this would be impossible in Python, but in Hy the formulas, the rules and the code are one notation, and the program stays short enough to read in an evening.
 
-How far does a prover that is meant to be read get against the real ones? I measured it on 234 theorems from TPTP, the standard problem library for provers, with ten seconds for each, next to E and Vampire, two of the strongest automated provers. The first version proved 39. After a series of measured changes, among them ordered resolution, superposition for reasoning about equality, a search that stays close to the goal and a SAT solver for finite algebra problems, it proves 105, and it shows 23 of 40 non-theorems with a counterexample, three more than Vampire.
+How far does a prover that is meant to be read get against the real ones? I measured it on 234 theorems from TPTP, the standard problem library for provers, with ten seconds for each, next to E and Vampire, two of the strongest automated provers. The first version proved 39. After a series of measured changes, among them ordered resolution, superposition for reasoning about equality, a search that stays close to the goal and a SAT solver for finite algebra problems, it proves 105, and it shows 23 of 40 non-theorems with a counterexample, where Vampire, set up for finding models, shows 36.
 
 ![](article_images/table4_provers.png)
 
