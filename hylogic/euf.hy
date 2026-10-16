@@ -28,7 +28,8 @@ and there are finitely many, so the loop ends."
 (defn _negative? [l] (and (compound? l) (= (get l 0) "not")))
 (defn _atom [l] (if (_negative? l) (get l 1) l))
 
-(setv TRUE "$⊤")
+(setv TRUE "$⊤"
+      LEMMAS 256)  ; lemmas learned per round (measured on ALG: 256 beats 16, 64 and all)
 
 (defn _equation [a]
   "An atom as a canonical equation #(s t), or None for a propositional atom."
@@ -165,6 +166,6 @@ and there are finitely many, so the loop ends."
     (when (not violated) (return "saturated"))
     (when (and deadline (> (time.monotonic) deadline)) (return None))
     ;; every violated equation gives a lemma: its explanation implies it
-    (for [d violated]
+    (for [d (cut violated 0 LEMMAS)]
       (.add solver [#* (gfor e (.explain cc #* d) (- (get var-of e))) (get var-of d)])))
   None)

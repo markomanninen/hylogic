@@ -247,8 +247,8 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
           verdict (or (decide-epr clauses :deadline (+ started (* 0.25 time-limit)))
                       ;; ground problems with functions: exactly by congruence closure,
                       ;; then by a bounded search for finite models
-                      (decide-euf clauses :deadline (+ started (* 0.3 time-limit)))
-                      (decide-ground clauses :deadline (+ started (* 0.4 time-limit)))))
+                      (decide-euf clauses :deadline (+ started (* 0.75 time-limit)))
+                      (decide-ground clauses :deadline (+ started (* 0.8 time-limit)))))
     (when verdict
       (return #((szs-status problem verdict None True) (Result verdict None {"kept" 0 "generated" 0}) problem))))
   (setv problem problem
