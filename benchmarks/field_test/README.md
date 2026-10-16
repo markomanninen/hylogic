@@ -136,3 +136,43 @@ proof itself only with `detail=true`, since the agent pays for every line.
 | H6 | Most errors without the tool fall on `some` and `scope` | more than on `converse` and `other` |
 | H7 | With the tool, accuracy rises; the remaining errors are formalization mistakes | Haiku 95 % or more |
 | H8 | The tool costs less here than in the first round, relative to answering without it, because the model can stop reasoning once the tool decides | less than 1.6 times |
+
+### Pilots and the hardest set
+
+Three ten-item pilots with Haiku decided how hard the items had to be. On
+`items_fo.json` it judged everything correctly once one wording was fixed:
+"someone who has a laptop can enter the lab" also reads as a rule in English,
+so the generator now writes "at least one person who". On the hard set
+(13 to 19 premises, two people, distractors, shuffled) it got 9 of 10 without
+the tool and 10 with it, so the generator gained `--harder` and `--hardest`.
+`items_fo_hardest.json` has 25 premises per argument, and each valid chain
+needs two contrapositive steps and two case splits. The hardest pilot also
+showed Haiku writing atoms as calls, `ReportsTo(Carla, Eva)`, and quantifiers
+without their own parentheses; the tool now reads both.
+
+### Results on the hardest set
+
+Each of the 40 items once per condition, Haiku only.
+
+| Haiku, 40 items of 25 premises | Correct | Output tokens per item | Median time | Cost |
+|---|---:|---:|---:|---:|
+| Without the tool | 38 | 11,800 | 71 s | $2.55 |
+| With the tool | 40 | 14,100 | 85 s | $4.28 |
+
+Both errors without the tool fell on invalid items with a rule turned
+around. In Z24 Haiku used the reversed rule as if it were the one the chain
+needed. In Z18 it decided that the premises contradict each other, which they
+do not (HyLogic finds a model of them), and called the argument valid by
+explosion. With the tool every one of the 41 calls was read correctly and
+every final answer followed the tool.
+
+| | Hypothesis | Result |
+|---|---|---|
+| H5 | Without the tool Haiku stays below 90 % | Rejected. 95 %, at about 12,000 output tokens an argument. |
+| H6 | Most errors fall on `some` and `scope` | Rejected. Both fell on `converse`. |
+| H7 | With the tool 95 % or more | Held. 40 of 40. |
+| H8 | The tool costs less than 1.6 times | Rejected. 1.68 times. |
+
+At this length the tool turned two wrong answers into right ones, at two
+thirds more cost. Haiku reasoned through each chain at length either way and
+then checked it, so the tool served as a final check, not a shortcut.
