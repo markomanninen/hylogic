@@ -423,3 +423,15 @@
           (assert (= (decide-euf (lfor l c.literals (frozenset [(neg l)]))) "proved"))))
       (+= proved 1)))
   (assert (> proved 10)))
+
+(defn test-find-model-keeps-its-deadline-inside-one-grounding []
+  ;; ten nested quantifiers over four elements ground to a million atoms in one
+  ;; try; the clock was checked only between tries (NUM378+1.015.020 overran
+  ;; a 10 s limit by minutes)
+  (setv xs (lfor i (range 10) f"x{i}")
+        cs ["a" "b" "c" "d" "e"]
+        fs [#("forall" (tuple xs) #("p" #* xs))
+            #* (lfor [i a] (enumerate cs) b (cut cs (+ i 1) None) #("not" #("=" a b)))]
+        start (time.monotonic))
+  (assert (is (find-model fs :max-size 4 :deadline (+ start 0.3)) None))
+  (assert (< (- (time.monotonic) start) 1.5)))
