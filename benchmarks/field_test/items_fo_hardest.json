@@ -957,1443 +957,6 @@
  {
   "id": "Z3",
   "kind": "first-order",
-  "trap": null,
-  "text": "Everyone who is a team lead has a key to the archive. Everyone who does not attend the Monday meeting mentors a trainee. Carla speaks Finnish. Everyone who works remotely is a manager. Everyone who uses the VPN has a badge or is a team lead, or both. Everyone who attends the Monday meeting can enter the lab. No one who has done the safety training is an engineer. Everyone who speaks Finnish is in the union. Everyone who is not an engineer has done the safety training. Everyone who can see the payroll has a parking space. Everyone who mentors a trainee can see the payroll or has a company laptop, or both. Everyone who is not an engineer has done the safety training. Eva can enter the lab. Everyone who is not a manager uses the VPN. Eva reports to Ben. Everyone who has a key to the archive works the night shift. Anyone who reports to someone who reports to a third person also reports to that third person. Ben reports to Farid. Everyone who is a manager works remotely. No one who is on call this week works remotely. Everyone who has a badge has a key to the archive. No one who is in the union can enter the lab. Everyone who has a company laptop has a parking space. Everyone who reports to someone who has a parking space is on call this week. Farid reports to Carla. Therefore, Ben works the night shift.",
-  "premises": [
-   "∀x ((Lead x) → (Archive x))",
-   "∀x (¬(Monday x) → (Mentor x))",
-   "(Finnish Carla)",
-   "∀x ((Remote x) → (Manager x))",
-   "∀x ((Vpn x) → ((Badge x) ∨ (Lead x)))",
-   "∀x ((Monday x) → (Lab x))",
-   "∀x ((Training x) → ¬(Engineer x))",
-   "∀x ((Finnish x) → (Union x))",
-   "∀x (¬(Engineer x) → (Training x))",
-   "∀x ((Payroll x) → (Parking x))",
-   "∀x ((Mentor x) → ((Payroll x) ∨ (Laptop x)))",
-   "∀x (¬(Engineer x) → (Training x))",
-   "(Lab Eva)",
-   "∀x (¬(Manager x) → (Vpn x))",
-   "(ReportsTo Eva Ben)",
-   "∀x ((Archive x) → (Night x))",
-   "∀x y z (((ReportsTo x y) ∧ (ReportsTo y z)) → (ReportsTo x z))",
-   "(ReportsTo Ben Farid)",
-   "∀x ((Manager x) → (Remote x))",
-   "∀x ((Oncall x) → ¬(Remote x))",
-   "∀x ((Badge x) → (Archive x))",
-   "∀x ((Union x) → ¬(Lab x))",
-   "∀x ((Laptop x) → (Parking x))",
-   "∀x y (((ReportsTo x y) ∧ (Parking y)) → (Oncall x))",
-   "(ReportsTo Farid Carla)"
-  ],
-  "conclusion": "(Night Ben)",
-  "premise_terms": [
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Lead",
-      "x"
-     ],
-     [
-      "Archive",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Monday",
-       "x"
-      ]
-     ],
-     [
-      "Mentor",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "Finnish",
-    "Carla"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Remote",
-      "x"
-     ],
-     [
-      "Manager",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Vpn",
-      "x"
-     ],
-     [
-      "or",
-      [
-       "Badge",
-       "x"
-      ],
-      [
-       "Lead",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Monday",
-      "x"
-     ],
-     [
-      "Lab",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Training",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Engineer",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Finnish",
-      "x"
-     ],
-     [
-      "Union",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Engineer",
-       "x"
-      ]
-     ],
-     [
-      "Training",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Payroll",
-      "x"
-     ],
-     [
-      "Parking",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Mentor",
-      "x"
-     ],
-     [
-      "or",
-      [
-       "Payroll",
-       "x"
-      ],
-      [
-       "Laptop",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Engineer",
-       "x"
-      ]
-     ],
-     [
-      "Training",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "Lab",
-    "Eva"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Manager",
-       "x"
-      ]
-     ],
-     [
-      "Vpn",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "ReportsTo",
-    "Eva",
-    "Ben"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Archive",
-      "x"
-     ],
-     [
-      "Night",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x",
-     "y",
-     "z"
-    ],
-    [
-     "=>",
-     [
-      "and",
-      [
-       "ReportsTo",
-       "x",
-       "y"
-      ],
-      [
-       "ReportsTo",
-       "y",
-       "z"
-      ]
-     ],
-     [
-      "ReportsTo",
-      "x",
-      "z"
-     ]
-    ]
-   ],
-   [
-    "ReportsTo",
-    "Ben",
-    "Farid"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Manager",
-      "x"
-     ],
-     [
-      "Remote",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Oncall",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Remote",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Badge",
-      "x"
-     ],
-     [
-      "Archive",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Union",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Lab",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Laptop",
-      "x"
-     ],
-     [
-      "Parking",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x",
-     "y"
-    ],
-    [
-     "=>",
-     [
-      "and",
-      [
-       "ReportsTo",
-       "x",
-       "y"
-      ],
-      [
-       "Parking",
-       "y"
-      ]
-     ],
-     [
-      "Oncall",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "ReportsTo",
-    "Farid",
-    "Carla"
-   ]
-  ],
-  "conclusion_term": [
-   "Night",
-   "Ben"
-  ],
-  "valid": true,
-  "steps": 25,
-  "needed": [
-   1,
-   2,
-   3,
-   5,
-   6,
-   8,
-   10,
-   11,
-   14,
-   16,
-   17,
-   18,
-   19,
-   20,
-   21,
-   22,
-   23,
-   24,
-   25
-  ]
- },
- {
-  "id": "Z4",
-  "kind": "first-order",
-  "trap": "other",
-  "text": "Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who uses the VPN has a badge. Everyone who is an engineer is a team lead. Everyone who works remotely mentors a trainee or can see the payroll, or both. Everyone who has done the safety training attends the Monday meeting. Ben works the night shift. Everyone who has a badge can enter the lab. Everyone who has not done the safety training works remotely. Everyone who reports to someone who is a manager is in the union. Everyone who has a company laptop uses the VPN or has a key to the archive, or both. No one who is in the union speaks Finnish. No one who has a parking space attends the Monday meeting. Everyone who has a parking space works the night shift. Eva reports to Anna. Anna reports to Farid. David reports to Eva. Everyone who works the night shift has a parking space. Everyone who mentors a trainee is a manager. Everyone who can see the payroll is a manager. Everyone who has a key to the archive has a badge. Everyone who is not on call this week has a company laptop. David works the night shift. Everyone who is on call this week speaks Finnish. Everyone who is an engineer is a team lead. No one who is a team lead is an engineer. Therefore, Eva can enter the lab.",
-  "premises": [
-   "∀x y z (((ReportsTo x y) ∧ (ReportsTo y z)) → (ReportsTo x z))",
-   "∀x ((Vpn x) → (Badge x))",
-   "∀x ((Engineer x) → (Lead x))",
-   "∀x ((Remote x) → ((Mentor x) ∨ (Payroll x)))",
-   "∀x ((Training x) → (Monday x))",
-   "(Night Ben)",
-   "∀x ((Badge x) → (Lab x))",
-   "∀x (¬(Training x) → (Remote x))",
-   "∀x y (((ReportsTo x y) ∧ (Manager y)) → (Union x))",
-   "∀x ((Laptop x) → ((Vpn x) ∨ (Archive x)))",
-   "∀x ((Union x) → ¬(Finnish x))",
-   "∀x ((Parking x) → ¬(Monday x))",
-   "∀x ((Parking x) → (Night x))",
-   "(ReportsTo Eva Anna)",
-   "(ReportsTo Anna Farid)",
-   "(ReportsTo David Eva)",
-   "∀x ((Night x) → (Parking x))",
-   "∀x ((Mentor x) → (Manager x))",
-   "∀x ((Payroll x) → (Manager x))",
-   "∀x ((Archive x) → (Badge x))",
-   "∀x (¬(Oncall x) → (Laptop x))",
-   "(Night David)",
-   "∀x ((Oncall x) → (Finnish x))",
-   "∀x ((Engineer x) → (Lead x))",
-   "∀x ((Lead x) → ¬(Engineer x))"
-  ],
-  "conclusion": "(Lab Eva)",
-  "premise_terms": [
-   [
-    "forall",
-    [
-     "x",
-     "y",
-     "z"
-    ],
-    [
-     "=>",
-     [
-      "and",
-      [
-       "ReportsTo",
-       "x",
-       "y"
-      ],
-      [
-       "ReportsTo",
-       "y",
-       "z"
-      ]
-     ],
-     [
-      "ReportsTo",
-      "x",
-      "z"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Vpn",
-      "x"
-     ],
-     [
-      "Badge",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Engineer",
-      "x"
-     ],
-     [
-      "Lead",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Remote",
-      "x"
-     ],
-     [
-      "or",
-      [
-       "Mentor",
-       "x"
-      ],
-      [
-       "Payroll",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Training",
-      "x"
-     ],
-     [
-      "Monday",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "Night",
-    "Ben"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Badge",
-      "x"
-     ],
-     [
-      "Lab",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Training",
-       "x"
-      ]
-     ],
-     [
-      "Remote",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x",
-     "y"
-    ],
-    [
-     "=>",
-     [
-      "and",
-      [
-       "ReportsTo",
-       "x",
-       "y"
-      ],
-      [
-       "Manager",
-       "y"
-      ]
-     ],
-     [
-      "Union",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Laptop",
-      "x"
-     ],
-     [
-      "or",
-      [
-       "Vpn",
-       "x"
-      ],
-      [
-       "Archive",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Union",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Finnish",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Parking",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Monday",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Parking",
-      "x"
-     ],
-     [
-      "Night",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "ReportsTo",
-    "Eva",
-    "Anna"
-   ],
-   [
-    "ReportsTo",
-    "Anna",
-    "Farid"
-   ],
-   [
-    "ReportsTo",
-    "David",
-    "Eva"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Night",
-      "x"
-     ],
-     [
-      "Parking",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Mentor",
-      "x"
-     ],
-     [
-      "Manager",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Payroll",
-      "x"
-     ],
-     [
-      "Manager",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Archive",
-      "x"
-     ],
-     [
-      "Badge",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Oncall",
-       "x"
-      ]
-     ],
-     [
-      "Laptop",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "Night",
-    "David"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Oncall",
-      "x"
-     ],
-     [
-      "Finnish",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Engineer",
-      "x"
-     ],
-     [
-      "Lead",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Lead",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Engineer",
-       "x"
-      ]
-     ]
-    ]
-   ]
-  ],
-  "conclusion_term": [
-   "Lab",
-   "Eva"
-  ],
-  "valid": false,
-  "steps": 25,
-  "needed": [
-   1,
-   2,
-   4,
-   5,
-   6,
-   7,
-   8,
-   9,
-   10,
-   11,
-   12,
-   14,
-   15,
-   17,
-   18,
-   19,
-   20,
-   21,
-   23
-  ]
- },
- {
-  "id": "Z5",
-  "kind": "first-order",
-  "trap": null,
-  "text": "Everyone who does not work the night shift has a key to the archive. Eva is a manager. David reports to Ben. Everyone who is not an engineer has a badge. Everyone who is on call this week has a company laptop. Everyone who can enter the lab is a team lead. Everyone who reports to someone who uses the VPN attends the Monday meeting. Everyone who has a badge works remotely or can see the payroll, or both. Everyone who is an engineer has a parking space. Everyone who is a team lead can enter the lab. Anyone who reports to someone who reports to a third person also reports to that third person. David can see the payroll. Everyone who cannot enter the lab has done the safety training. Ben reports to Carla. Everyone who is a manager is in the union. Everyone who can see the payroll uses the VPN. No one who is in the union has a parking space. Carla reports to Eva. Everyone who has done the safety training is on call this week or speaks Finnish, or both. Everyone who has a key to the archive works the night shift. No one who attends the Monday meeting is a team lead. Everyone who does not work the night shift has a key to the archive. Everyone who speaks Finnish has a company laptop. Everyone who works remotely uses the VPN. Everyone who has a company laptop mentors a trainee. Therefore, Ben mentors a trainee.",
-  "premises": [
-   "∀x (¬(Night x) → (Archive x))",
-   "(Manager Eva)",
-   "(ReportsTo David Ben)",
-   "∀x (¬(Engineer x) → (Badge x))",
-   "∀x ((Oncall x) → (Laptop x))",
-   "∀x ((Lab x) → (Lead x))",
-   "∀x y (((ReportsTo x y) ∧ (Vpn y)) → (Monday x))",
-   "∀x ((Badge x) → ((Remote x) ∨ (Payroll x)))",
-   "∀x ((Engineer x) → (Parking x))",
-   "∀x ((Lead x) → (Lab x))",
-   "∀x y z (((ReportsTo x y) ∧ (ReportsTo y z)) → (ReportsTo x z))",
-   "(Payroll David)",
-   "∀x (¬(Lab x) → (Training x))",
-   "(ReportsTo Ben Carla)",
-   "∀x ((Manager x) → (Union x))",
-   "∀x ((Payroll x) → (Vpn x))",
-   "∀x ((Union x) → ¬(Parking x))",
-   "(ReportsTo Carla Eva)",
-   "∀x ((Training x) → ((Oncall x) ∨ (Finnish x)))",
-   "∀x ((Archive x) → (Night x))",
-   "∀x ((Monday x) → ¬(Lead x))",
-   "∀x (¬(Night x) → (Archive x))",
-   "∀x ((Finnish x) → (Laptop x))",
-   "∀x ((Remote x) → (Vpn x))",
-   "∀x ((Laptop x) → (Mentor x))"
-  ],
-  "conclusion": "(Mentor Ben)",
-  "premise_terms": [
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Night",
-       "x"
-      ]
-     ],
-     [
-      "Archive",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "Manager",
-    "Eva"
-   ],
-   [
-    "ReportsTo",
-    "David",
-    "Ben"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Engineer",
-       "x"
-      ]
-     ],
-     [
-      "Badge",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Oncall",
-      "x"
-     ],
-     [
-      "Laptop",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Lab",
-      "x"
-     ],
-     [
-      "Lead",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x",
-     "y"
-    ],
-    [
-     "=>",
-     [
-      "and",
-      [
-       "ReportsTo",
-       "x",
-       "y"
-      ],
-      [
-       "Vpn",
-       "y"
-      ]
-     ],
-     [
-      "Monday",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Badge",
-      "x"
-     ],
-     [
-      "or",
-      [
-       "Remote",
-       "x"
-      ],
-      [
-       "Payroll",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Engineer",
-      "x"
-     ],
-     [
-      "Parking",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Lead",
-      "x"
-     ],
-     [
-      "Lab",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x",
-     "y",
-     "z"
-    ],
-    [
-     "=>",
-     [
-      "and",
-      [
-       "ReportsTo",
-       "x",
-       "y"
-      ],
-      [
-       "ReportsTo",
-       "y",
-       "z"
-      ]
-     ],
-     [
-      "ReportsTo",
-      "x",
-      "z"
-     ]
-    ]
-   ],
-   [
-    "Payroll",
-    "David"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Lab",
-       "x"
-      ]
-     ],
-     [
-      "Training",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "ReportsTo",
-    "Ben",
-    "Carla"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Manager",
-      "x"
-     ],
-     [
-      "Union",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Payroll",
-      "x"
-     ],
-     [
-      "Vpn",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Union",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Parking",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "ReportsTo",
-    "Carla",
-    "Eva"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Training",
-      "x"
-     ],
-     [
-      "or",
-      [
-       "Oncall",
-       "x"
-      ],
-      [
-       "Finnish",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Archive",
-      "x"
-     ],
-     [
-      "Night",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Monday",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Lead",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Night",
-       "x"
-      ]
-     ],
-     [
-      "Archive",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Finnish",
-      "x"
-     ],
-     [
-      "Laptop",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Remote",
-      "x"
-     ],
-     [
-      "Vpn",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Laptop",
-      "x"
-     ],
-     [
-      "Mentor",
-      "x"
-     ]
-    ]
-   ]
-  ],
-  "conclusion_term": [
-   "Mentor",
-   "Ben"
-  ],
-  "valid": true,
-  "steps": 25,
-  "needed": [
-   2,
-   4,
-   5,
-   6,
-   7,
-   8,
-   9,
-   11,
-   13,
-   14,
-   15,
-   16,
-   17,
-   18,
-   19,
-   21,
-   23,
-   24,
-   25
-  ]
- },
- {
-  "id": "Z6",
-  "kind": "first-order",
   "trap": "direction",
   "text": "Everyone who attends the Monday meeting works remotely. No one who has a company laptop can enter the lab. Everyone who speaks Finnish is a manager. David can see the payroll. David reports to Carla. Everyone who works remotely attends the Monday meeting. Everyone who uses the VPN has a company laptop. No one who is an engineer mentors a trainee. Anna uses the VPN. Everyone who reports to someone who has a badge is an engineer. Everyone who is a team lead can enter the lab. Everyone who is a manager is in the union. Everyone who is on call this week is a manager. Everyone who works the night shift mentors a trainee. Everyone who is in the union is a manager. Everyone who has a key to the archive has a badge. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who is not a team lead has a parking space. Everyone who has done the safety training speaks Finnish or is on call this week, or both. No one who attends the Monday meeting works remotely. Everyone who does not work the night shift has done the safety training. Ben reports to Anna. Ben reports to Carla. Everyone who can see the payroll has a badge. Everyone who has a parking space can see the payroll or has a key to the archive, or both. Therefore, Carla is in the union.",
   "premises": [
@@ -2868,7 +1431,7 @@
   ]
  },
  {
-  "id": "Z7",
+  "id": "Z4",
   "kind": "first-order",
   "trap": "converse",
   "text": "Ben is a team lead. Everyone who can enter the lab works the night shift. Everyone who has a company laptop is a team lead. Everyone who does not work remotely has a key to the archive. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who reports to someone who has done the safety training has a parking space. Everyone who attends the Monday meeting has done the safety training. Farid can enter the lab. Everyone who has a badge is an engineer or attends the Monday meeting, or both. No one who speaks Finnish can see the payroll. Everyone who is in the union is on call this week. Everyone who is on call this week uses the VPN. Everyone who can see the payroll speaks Finnish. Everyone who speaks Finnish can see the payroll. Everyone who mentors a trainee is on call this week. Everyone who is an engineer has done the safety training. No one who has a parking space is a manager. Everyone who has a key to the archive is in the union or mentors a trainee, or both. Anna reports to David. Everyone who works the night shift can enter the lab. David reports to Farid. No one who works the night shift has a company laptop. Everyone who is not a team lead has a badge. Everyone who works remotely is a manager. Ben reports to Anna. Therefore, Anna uses the VPN.",
@@ -3344,7 +1907,7 @@
   ]
  },
  {
-  "id": "Z8",
+  "id": "Z5",
   "kind": "first-order",
   "trap": "converse",
   "text": "Anna reports to Ben. Everyone who is in the union has a key to the archive or has a badge, or both. Everyone who has a badge has a parking space. No one who is a team lead works the night shift. Everyone who is a team lead can enter the lab. Everyone who mentors a trainee is on call this week. Everyone who is a manager is an engineer. Everyone who does not have a company laptop can see the payroll. Everyone who has a key to the archive has a parking space. Everyone who has a company laptop works the night shift. Farid has done the safety training. Everyone who is an engineer is a manager. Eva can enter the lab. No one who attends the Monday meeting mentors a trainee. Ben reports to Eva. Everyone who can enter the lab is a team lead. Everyone who reports to someone who has done the safety training attends the Monday meeting. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who speaks Finnish has done the safety training. Everyone who has a parking space uses the VPN. Everyone who is not on call this week is in the union. Farid reports to Anna. Everyone who works remotely has done the safety training. Everyone who can see the payroll works remotely or speaks Finnish, or both. Everyone who is not an engineer is a manager. Therefore, Anna uses the VPN.",
@@ -3820,486 +2383,7 @@
   ]
  },
  {
-  "id": "Z9",
-  "kind": "first-order",
-  "trap": null,
-  "text": "Carla reports to Eva. Everyone who uses the VPN mentors a trainee. Eva speaks Finnish. No one who uses the VPN mentors a trainee. Everyone who can enter the lab has done the safety training. Everyone who has a key to the archive works remotely. Everyone who reports to someone who works remotely attends the Monday meeting. Everyone who is not a manager has a parking space. Everyone who has done the safety training is in the union. Everyone who is not on call this week has a badge. Everyone who is a manager can see the payroll. Everyone who is on call this week is an engineer. Everyone who has a parking space can enter the lab or is a team lead, or both. Everyone who has a company laptop works remotely. Ben reports to Anna. Anna reports to Carla. No one who attends the Monday meeting can see the payroll. No one who uses the VPN mentors a trainee. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who has a badge has a company laptop or has a key to the archive, or both. Everyone who can see the payroll is a manager. Ben works remotely. Everyone who is a team lead has done the safety training. Everyone who speaks Finnish works the night shift. No one who works the night shift is an engineer. Therefore, Anna is in the union.",
-  "premises": [
-   "(ReportsTo Carla Eva)",
-   "∀x ((Vpn x) → (Mentor x))",
-   "(Finnish Eva)",
-   "∀x ((Vpn x) → ¬(Mentor x))",
-   "∀x ((Lab x) → (Training x))",
-   "∀x ((Archive x) → (Remote x))",
-   "∀x y (((ReportsTo x y) ∧ (Remote y)) → (Monday x))",
-   "∀x (¬(Manager x) → (Parking x))",
-   "∀x ((Training x) → (Union x))",
-   "∀x (¬(Oncall x) → (Badge x))",
-   "∀x ((Manager x) → (Payroll x))",
-   "∀x ((Oncall x) → (Engineer x))",
-   "∀x ((Parking x) → ((Lab x) ∨ (Lead x)))",
-   "∀x ((Laptop x) → (Remote x))",
-   "(ReportsTo Ben Anna)",
-   "(ReportsTo Anna Carla)",
-   "∀x ((Monday x) → ¬(Payroll x))",
-   "∀x ((Vpn x) → ¬(Mentor x))",
-   "∀x y z (((ReportsTo x y) ∧ (ReportsTo y z)) → (ReportsTo x z))",
-   "∀x ((Badge x) → ((Laptop x) ∨ (Archive x)))",
-   "∀x ((Payroll x) → (Manager x))",
-   "(Remote Ben)",
-   "∀x ((Lead x) → (Training x))",
-   "∀x ((Finnish x) → (Night x))",
-   "∀x ((Night x) → ¬(Engineer x))"
-  ],
-  "conclusion": "(Union Anna)",
-  "premise_terms": [
-   [
-    "ReportsTo",
-    "Carla",
-    "Eva"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Vpn",
-      "x"
-     ],
-     [
-      "Mentor",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "Finnish",
-    "Eva"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Vpn",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Mentor",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Lab",
-      "x"
-     ],
-     [
-      "Training",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Archive",
-      "x"
-     ],
-     [
-      "Remote",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x",
-     "y"
-    ],
-    [
-     "=>",
-     [
-      "and",
-      [
-       "ReportsTo",
-       "x",
-       "y"
-      ],
-      [
-       "Remote",
-       "y"
-      ]
-     ],
-     [
-      "Monday",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Manager",
-       "x"
-      ]
-     ],
-     [
-      "Parking",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Training",
-      "x"
-     ],
-     [
-      "Union",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Oncall",
-       "x"
-      ]
-     ],
-     [
-      "Badge",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Manager",
-      "x"
-     ],
-     [
-      "Payroll",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Oncall",
-      "x"
-     ],
-     [
-      "Engineer",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Parking",
-      "x"
-     ],
-     [
-      "or",
-      [
-       "Lab",
-       "x"
-      ],
-      [
-       "Lead",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Laptop",
-      "x"
-     ],
-     [
-      "Remote",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "ReportsTo",
-    "Ben",
-    "Anna"
-   ],
-   [
-    "ReportsTo",
-    "Anna",
-    "Carla"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Monday",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Payroll",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Vpn",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Mentor",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x",
-     "y",
-     "z"
-    ],
-    [
-     "=>",
-     [
-      "and",
-      [
-       "ReportsTo",
-       "x",
-       "y"
-      ],
-      [
-       "ReportsTo",
-       "y",
-       "z"
-      ]
-     ],
-     [
-      "ReportsTo",
-      "x",
-      "z"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Badge",
-      "x"
-     ],
-     [
-      "or",
-      [
-       "Laptop",
-       "x"
-      ],
-      [
-       "Archive",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Payroll",
-      "x"
-     ],
-     [
-      "Manager",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "Remote",
-    "Ben"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Lead",
-      "x"
-     ],
-     [
-      "Training",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Finnish",
-      "x"
-     ],
-     [
-      "Night",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Night",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Engineer",
-       "x"
-      ]
-     ]
-    ]
-   ]
-  ],
-  "conclusion_term": [
-   "Union",
-   "Anna"
-  ],
-  "valid": true,
-  "steps": 25,
-  "needed": [
-   1,
-   3,
-   5,
-   6,
-   7,
-   8,
-   9,
-   10,
-   11,
-   12,
-   13,
-   14,
-   16,
-   17,
-   19,
-   20,
-   23,
-   24,
-   25
-  ]
- },
- {
-  "id": "Z10",
+  "id": "Z6",
   "kind": "first-order",
   "trap": null,
   "text": "Everyone who reports to someone who works remotely works the night shift. Everyone who is a manager can see the payroll or mentors a trainee, or both. Everyone who has a company laptop has a parking space. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who is a team lead speaks Finnish. Everyone who can see the payroll works remotely. Everyone who mentors a trainee works remotely. Everyone who can enter the lab is an engineer or is on call this week, or both. Everyone who is not in the union is a manager. No one who works the night shift has a parking space. Everyone who has done the safety training has a badge. Carla reports to David. Eva reports to Anna. Everyone who speaks Finnish is a team lead. Everyone who is in the union attends the Monday meeting. Everyone who is an engineer has done the safety training. Everyone who has a badge has done the safety training. Anna reports to Carla. Everyone who has a key to the archive uses the VPN. David has a key to the archive. No one who speaks Finnish is a team lead. Eva uses the VPN. Everyone who is on call this week has done the safety training. No one who uses the VPN attends the Monday meeting. Everyone who does not have a company laptop can enter the lab. Therefore, Anna has a badge.",
@@ -4775,7 +2859,7 @@
   ]
  },
  {
-  "id": "Z11",
+  "id": "Z7",
   "kind": "first-order",
   "trap": "converse",
   "text": "Everyone who reports to someone who is in the union mentors a trainee. Everyone who has a badge has a parking space. Everyone who attends the Monday meeting can see the payroll. Everyone who is not a manager is a team lead. Everyone who has done the safety training speaks Finnish. Carla attends the Monday meeting. No one who is a manager is a team lead. Anyone who reports to someone who reports to a third person also reports to that third person. No one who mentors a trainee has a parking space. Everyone who is on call this week works the night shift. Everyone who uses the VPN has a company laptop or works remotely, or both. Everyone who is an engineer speaks Finnish. Everyone who has a company laptop is in the union. Everyone who does not have a badge has a key to the archive. Everyone who can see the payroll attends the Monday meeting. Farid reports to Eva. David is on call this week. Everyone who can enter the lab speaks Finnish. Everyone who is not on call this week uses the VPN. Eva reports to Carla. Everyone who works remotely is in the union. No one who can see the payroll works the night shift. David reports to Farid. Everyone who is a manager is a team lead. Everyone who has a key to the archive has done the safety training or can enter the lab, or both. Therefore, Farid is an engineer.",
@@ -5254,7 +3338,7 @@
   ]
  },
  {
-  "id": "Z12",
+  "id": "Z8",
   "kind": "first-order",
   "trap": null,
   "text": "Everyone who is not a manager is on call this week. Ben reports to David. Everyone who does not work remotely can see the payroll. Everyone who works the night shift is an engineer. No one who can enter the lab has a parking space. Everyone who is not on call this week is a manager. No one who is in the union attends the Monday meeting. Anna reports to Ben. Everyone who has a key to the archive has a parking space. Everyone who has a badge uses the VPN or has done the safety training, or both. Everyone who mentors a trainee is an engineer. Everyone who has a parking space has a key to the archive. Eva can enter the lab. Everyone who can see the payroll mentors a trainee or works the night shift, or both. Everyone who works remotely attends the Monday meeting. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who has done the safety training has a company laptop. Everyone who does not have a key to the archive has a badge. David is a team lead. Everyone who is an engineer speaks Finnish. Everyone who reports to someone who has a company laptop is in the union. Everyone who uses the VPN has a company laptop. No one who is on call this week is a manager. Eva reports to Anna. Everyone who is a team lead can enter the lab. Therefore, Anna speaks Finnish.",
@@ -5736,7 +3820,7 @@
   ]
  },
  {
-  "id": "Z13",
+  "id": "Z9",
   "kind": "first-order",
   "trap": null,
   "text": "Eva reports to Carla. Anna mentors a trainee. Everyone who has done the safety training has a key to the archive. Everyone who is a manager has a company laptop or has a badge, or both. Everyone who has a company laptop attends the Monday meeting. Anna reports to Eva. Everyone who works remotely uses the VPN. Everyone who reports to someone who is in the union speaks Finnish. Everyone who is on call this week is in the union. Everyone who mentors a trainee is on call this week or has a parking space, or both. Carla reports to Farid. Farid is a team lead. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who cannot see the payroll mentors a trainee. Everyone who has a badge attends the Monday meeting. Everyone who uses the VPN works remotely. Everyone who does not use the VPN is a manager. No one who speaks Finnish works remotely. Everyone who can see the payroll can enter the lab. Everyone who has a key to the archive has done the safety training. Everyone who is a team lead works the night shift. Everyone who has a parking space is in the union. Everyone who attends the Monday meeting is an engineer. Everyone who has not done the safety training has a key to the archive. No one who works the night shift can enter the lab. Therefore, Eva is an engineer.",
@@ -6212,7 +4296,7 @@
   ]
  },
  {
-  "id": "Z14",
+  "id": "Z10",
   "kind": "first-order",
   "trap": null,
   "text": "No one who can enter the lab is in the union. No one who attends the Monday meeting is an engineer. Everyone who works remotely has a parking space or mentors a trainee, or both. Everyone who has not done the safety training has a company laptop. Everyone who is an engineer attends the Monday meeting. Farid speaks Finnish. Everyone who has a parking space has a badge. Carla reports to Ben. Everyone who has a badge is a team lead. David speaks Finnish. Everyone who attends the Monday meeting is an engineer. Everyone who mentors a trainee has a badge. Everyone who works the night shift is on call this week. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who speaks Finnish uses the VPN. Everyone who reports to someone who is on call this week can enter the lab. Everyone who has a company laptop works the night shift or is a manager, or both. Everyone who cannot see the payroll works remotely. Everyone who is in the union can see the payroll. Everyone who can see the payroll is in the union. Everyone who has done the safety training has a key to the archive. Everyone who is a manager is on call this week. Ben reports to David. Farid reports to Carla. No one who uses the VPN has a key to the archive. Therefore, Carla is a team lead.",
@@ -6688,7 +4772,7 @@
   ]
  },
  {
-  "id": "Z15",
+  "id": "Z11",
   "kind": "first-order",
   "trap": null,
   "text": "Everyone who has a badge uses the VPN or has a key to the archive, or both. Everyone who works remotely is on call this week. Everyone who has a parking space can enter the lab. Everyone who does not have a parking space has a company laptop. Everyone who speaks Finnish is on call this week. Everyone who has a key to the archive can see the payroll. No one who works the night shift is in the union. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who reports to someone who is on call this week works the night shift. Eva reports to Carla. No one who has done the safety training is a team lead. Everyone who uses the VPN can see the payroll. Everyone who is a manager is in the union. David mentors a trainee. Everyone who is a team lead has done the safety training. Carla reports to Ben. Everyone who has a company laptop speaks Finnish or works remotely, or both. Everyone who has not done the safety training is a team lead. Ben reports to David. Everyone who can see the payroll attends the Monday meeting. Everyone who is an engineer mentors a trainee. Everyone who mentors a trainee is an engineer. Eva works remotely. No one who is an engineer can enter the lab. Everyone who is not a manager has a badge. Therefore, Carla attends the Monday meeting.",
@@ -7167,7 +5251,7 @@
   ]
  },
  {
-  "id": "Z16",
+  "id": "Z12",
   "kind": "first-order",
   "trap": "direction",
   "text": "Everyone who has a parking space is a team lead. David reports to Farid. Everyone who works the night shift can see the payroll. Carla reports to Farid. Everyone who has a badge attends the Monday meeting or is an engineer, or both. Everyone who does not have a company laptop speaks Finnish. David is a manager. Everyone who is a team lead has a parking space. Everyone who does not have a parking space has a badge. Anna can enter the lab. Everyone who has a key to the archive is in the union or works the night shift, or both. Everyone who works remotely mentors a trainee. Everyone who is in the union can see the payroll. Carla reports to Anna. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who speaks Finnish has a company laptop. Everyone who is on call this week uses the VPN. No one who has done the safety training is a team lead. Everyone who attends the Monday meeting is on call this week. Everyone who is an engineer is on call this week. No one who is a manager mentors a trainee. Everyone who can enter the lab is a manager. Everyone who reports to someone who can see the payroll has done the safety training. Everyone who does not work remotely has a key to the archive. No one who has a company laptop speaks Finnish. Therefore, Farid uses the VPN.",
@@ -7646,7 +5730,7 @@
   ]
  },
  {
-  "id": "Z17",
+  "id": "Z13",
   "kind": "first-order",
   "trap": "other",
   "text": "Anyone who reports to someone who reports to a third person also reports to that third person. No one who is on call this week is an engineer. No one who has a key to the archive attends the Monday meeting. Everyone who works remotely uses the VPN. Everyone who reports to someone who is a team lead has a key to the archive. Anna reports to Carla. Everyone who has a badge is a team lead. Everyone who speaks Finnish has a parking space. Everyone who mentors a trainee speaks Finnish. Ben reports to Farid. Everyone who can see the payroll attends the Monday meeting. Everyone who cannot see the payroll has done the safety training. Anna is a manager. Everyone who has done the safety training mentors a trainee or has a company laptop, or both. Everyone who can enter the lab is in the union or has a badge, or both. No one who is an engineer is on call this week. Anna works the night shift. Everyone who is an engineer is on call this week. Everyone who is a manager works the night shift. Everyone who is in the union is a team lead. Everyone who does not work remotely can enter the lab. No one who works the night shift uses the VPN. Carla reports to Ben. Everyone who has a company laptop speaks Finnish. Everyone who attends the Monday meeting can see the payroll. Therefore, Carla has a parking space.",
@@ -8125,7 +6209,7 @@
   ]
  },
  {
-  "id": "Z18",
+  "id": "Z14",
   "kind": "first-order",
   "trap": null,
   "text": "No one who uses the VPN is on call this week. No one who has a parking space mentors a trainee. Everyone who has a parking space has a badge. Everyone who is a team lead has a key to the archive or speaks Finnish, or both. Everyone who is in the union mentors a trainee. Everyone who is on call this week uses the VPN. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who can see the payroll has done the safety training. Ben has a parking space. Everyone who attends the Monday meeting can see the payroll. Carla reports to Eva. Everyone who reports to someone who works the night shift has a company laptop. Everyone who has a key to the archive works the night shift. Eva reports to Farid. Everyone who is not in the union is a team lead. No one who has a company laptop works remotely. Everyone who speaks Finnish works the night shift. Everyone who is an engineer works remotely. Everyone who is a manager can enter the lab or attends the Monday meeting, or both. Everyone who can enter the lab can see the payroll. Farid has a badge. No one who is on call this week uses the VPN. Everyone who is not an engineer is a manager. Ben reports to Carla. Everyone who has a badge has a parking space. Therefore, Carla has done the safety training.",
@@ -8604,7 +6688,7 @@
   ]
  },
  {
-  "id": "Z19",
+  "id": "Z15",
   "kind": "first-order",
   "trap": null,
   "text": "Everyone who works remotely has done the safety training. Everyone who is not in the union is an engineer. Everyone who has a parking space attends the Monday meeting. Carla has a parking space. Farid reports to Carla. Everyone who is a manager has done the safety training. David is a team lead. Everyone who is a team lead has a badge or has a company laptop, or both. Everyone who is not on call this week is a team lead. David reports to Anna. Everyone who uses the VPN works the night shift. Everyone who has a company laptop mentors a trainee. Everyone who has a key to the archive works remotely or is a manager, or both. Everyone who is not an engineer is in the union. Everyone who does not use the VPN has a key to the archive. Everyone who can see the payroll is on call this week. Everyone who has done the safety training can enter the lab. Everyone who is on call this week can see the payroll. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who reports to someone who mentors a trainee speaks Finnish. No one who is an engineer is in the union. Anna reports to Farid. No one who speaks Finnish works the night shift. Everyone who has a badge mentors a trainee. No one who attends the Monday meeting can see the payroll. Therefore, Anna can enter the lab.",
@@ -9086,7 +7170,7 @@
   ]
  },
  {
-  "id": "Z20",
+  "id": "Z16",
   "kind": "first-order",
   "trap": "converse",
   "text": "Everyone who is in the union mentors a trainee or can enter the lab, or both. Everyone who is on call this week is a team lead. Everyone who reports to someone who speaks Finnish can see the payroll. Everyone who has a parking space works remotely. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who mentors a trainee speaks Finnish. Everyone who uses the VPN has done the safety training. Everyone who has a key to the archive attends the Monday meeting. Everyone who is an engineer attends the Monday meeting. Everyone who does not work remotely has a parking space. Anna reports to Eva. Ben reports to Anna. Everyone who has a company laptop works the night shift. Everyone who does not use the VPN has a badge. No one who works the night shift is a team lead. No one who works remotely has a parking space. Everyone who has a badge is an engineer or has a key to the archive, or both. Eva reports to David. Everyone who is not on call this week is in the union. Everyone who is a team lead is on call this week. Everyone who can enter the lab speaks Finnish. Everyone who is a manager attends the Monday meeting. Ben mentors a trainee. David has a company laptop. No one who can see the payroll has done the safety training. Therefore, Anna is a manager.",
@@ -9565,7 +7649,7 @@
   ]
  },
  {
-  "id": "Z21",
+  "id": "Z17",
   "kind": "first-order",
   "trap": null,
   "text": "Everyone who mentors a trainee is an engineer. Everyone who has a company laptop is a team lead. No one who has a badge speaks Finnish. Everyone who does not work remotely is on call this week. David can enter the lab. Everyone who does not have a key to the archive attends the Monday meeting. Ben reports to Eva. No one who has a key to the archive attends the Monday meeting. Everyone who does not have a parking space is in the union. Everyone who has done the safety training is an engineer. Everyone who is an engineer has done the safety training. Anna reports to Ben. Everyone who works remotely uses the VPN. Everyone who is on call this week works the night shift or mentors a trainee, or both. Eva reports to David. Everyone who can enter the lab has a badge. Everyone who works the night shift is an engineer. Anyone who reports to someone who reports to a third person also reports to that third person. No one who can see the payroll uses the VPN. Everyone who is a manager is a team lead. Everyone who is in the union is a manager or has a company laptop, or both. Everyone who attends the Monday meeting has a key to the archive. Everyone who reports to someone who is a team lead can see the payroll. Anna is a team lead. Everyone who has a parking space speaks Finnish. Therefore, Ben has done the safety training.",
@@ -10044,7 +8128,7 @@
   ]
  },
  {
-  "id": "Z22",
+  "id": "Z18",
   "kind": "first-order",
   "trap": "converse",
   "text": "Everyone who is an engineer works remotely. Everyone who does not have a key to the archive is a team lead. Everyone who has a company laptop works the night shift or can see the payroll, or both. Everyone who has a parking space is in the union. No one who attends the Monday meeting works remotely. Eva reports to Ben. Everyone who can see the payroll is a manager. Everyone who mentors a trainee is on call this week. David reports to Carla. Everyone who works remotely is an engineer. Everyone who has a badge has done the safety training or mentors a trainee, or both. Everyone who can enter the lab is a manager. Eva has a badge. Ben reports to David. Carla uses the VPN. No one who has a key to the archive is a team lead. Everyone who reports to someone who is on call this week speaks Finnish. Everyone who works the night shift is a manager. Everyone who does not have a parking space has a company laptop. Everyone who has done the safety training is on call this week. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who is not an engineer has a badge. Everyone who uses the VPN attends the Monday meeting. No one who speaks Finnish is in the union. Everyone who has a key to the archive is a team lead. Therefore, Ben can enter the lab.",
@@ -10523,959 +8607,7 @@
   ]
  },
  {
-  "id": "Z23",
-  "kind": "first-order",
-  "trap": null,
-  "text": "Everyone who mentors a trainee has a key to the archive. Everyone who can see the payroll has done the safety training. Everyone who has a key to the archive has a badge. David works the night shift. No one who is on call this week has done the safety training. Ben reports to Farid. Everyone who is on call this week works the night shift. Everyone who speaks Finnish uses the VPN. Everyone who is a manager has a company laptop. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who does not have a parking space is a team lead. Everyone who is a team lead mentors a trainee or attends the Monday meeting, or both. Everyone who does not use the VPN speaks Finnish. Everyone who speaks Finnish uses the VPN. Everyone who is in the union is a manager or is an engineer, or both. No one who works remotely can enter the lab. Everyone who attends the Monday meeting has a key to the archive. Everyone who reports to someone who has a company laptop works remotely. Farid reports to David. Everyone who is an engineer has a company laptop. Everyone who cannot see the payroll is in the union. Carla reports to Ben. Carla works the night shift. Everyone who has a parking space can enter the lab. Everyone who works the night shift is on call this week. Therefore, Ben has a badge.",
-  "premises": [
-   "∀x ((Mentor x) → (Archive x))",
-   "∀x ((Payroll x) → (Training x))",
-   "∀x ((Archive x) → (Badge x))",
-   "(Night David)",
-   "∀x ((Oncall x) → ¬(Training x))",
-   "(ReportsTo Ben Farid)",
-   "∀x ((Oncall x) → (Night x))",
-   "∀x ((Finnish x) → (Vpn x))",
-   "∀x ((Manager x) → (Laptop x))",
-   "∀x y z (((ReportsTo x y) ∧ (ReportsTo y z)) → (ReportsTo x z))",
-   "∀x (¬(Parking x) → (Lead x))",
-   "∀x ((Lead x) → ((Mentor x) ∨ (Monday x)))",
-   "∀x (¬(Vpn x) → (Finnish x))",
-   "∀x ((Finnish x) → (Vpn x))",
-   "∀x ((Union x) → ((Manager x) ∨ (Engineer x)))",
-   "∀x ((Remote x) → ¬(Lab x))",
-   "∀x ((Monday x) → (Archive x))",
-   "∀x y (((ReportsTo x y) ∧ (Laptop y)) → (Remote x))",
-   "(ReportsTo Farid David)",
-   "∀x ((Engineer x) → (Laptop x))",
-   "∀x (¬(Payroll x) → (Union x))",
-   "(ReportsTo Carla Ben)",
-   "(Night Carla)",
-   "∀x ((Parking x) → (Lab x))",
-   "∀x ((Night x) → (Oncall x))"
-  ],
-  "conclusion": "(Badge Ben)",
-  "premise_terms": [
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Mentor",
-      "x"
-     ],
-     [
-      "Archive",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Payroll",
-      "x"
-     ],
-     [
-      "Training",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Archive",
-      "x"
-     ],
-     [
-      "Badge",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "Night",
-    "David"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Oncall",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Training",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "ReportsTo",
-    "Ben",
-    "Farid"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Oncall",
-      "x"
-     ],
-     [
-      "Night",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Finnish",
-      "x"
-     ],
-     [
-      "Vpn",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Manager",
-      "x"
-     ],
-     [
-      "Laptop",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x",
-     "y",
-     "z"
-    ],
-    [
-     "=>",
-     [
-      "and",
-      [
-       "ReportsTo",
-       "x",
-       "y"
-      ],
-      [
-       "ReportsTo",
-       "y",
-       "z"
-      ]
-     ],
-     [
-      "ReportsTo",
-      "x",
-      "z"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Parking",
-       "x"
-      ]
-     ],
-     [
-      "Lead",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Lead",
-      "x"
-     ],
-     [
-      "or",
-      [
-       "Mentor",
-       "x"
-      ],
-      [
-       "Monday",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Vpn",
-       "x"
-      ]
-     ],
-     [
-      "Finnish",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Finnish",
-      "x"
-     ],
-     [
-      "Vpn",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Union",
-      "x"
-     ],
-     [
-      "or",
-      [
-       "Manager",
-       "x"
-      ],
-      [
-       "Engineer",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Remote",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Lab",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Monday",
-      "x"
-     ],
-     [
-      "Archive",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x",
-     "y"
-    ],
-    [
-     "=>",
-     [
-      "and",
-      [
-       "ReportsTo",
-       "x",
-       "y"
-      ],
-      [
-       "Laptop",
-       "y"
-      ]
-     ],
-     [
-      "Remote",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "ReportsTo",
-    "Farid",
-    "David"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Engineer",
-      "x"
-     ],
-     [
-      "Laptop",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Payroll",
-       "x"
-      ]
-     ],
-     [
-      "Union",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "ReportsTo",
-    "Carla",
-    "Ben"
-   ],
-   [
-    "Night",
-    "Carla"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Parking",
-      "x"
-     ],
-     [
-      "Lab",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Night",
-      "x"
-     ],
-     [
-      "Oncall",
-      "x"
-     ]
-    ]
-   ]
-  ],
-  "conclusion_term": [
-   "Badge",
-   "Ben"
-  ],
-  "valid": true,
-  "steps": 25,
-  "needed": [
-   1,
-   2,
-   3,
-   4,
-   5,
-   6,
-   9,
-   10,
-   11,
-   12,
-   15,
-   16,
-   17,
-   18,
-   19,
-   20,
-   21,
-   24,
-   25
-  ]
- },
- {
-  "id": "Z24",
-  "kind": "first-order",
-  "trap": null,
-  "text": "Eva reports to David. Everyone who uses the VPN is a manager. Ben reports to Anna. Everyone who has a parking space is an engineer. Everyone who works remotely can enter the lab. Everyone who works remotely can enter the lab. Everyone who is on call this week has a badge. Everyone who has done the safety training works the night shift. Ben has done the safety training. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who does not have a company laptop is in the union. Everyone who is in the union has a key to the archive or has a parking space, or both. Everyone who speaks Finnish has a badge. Everyone who attends the Monday meeting is on call this week or speaks Finnish, or both. No one who has done the safety training can see the payroll. No one who mentors a trainee is a manager. Everyone who has a company laptop can see the payroll. Everyone who has a key to the archive is an engineer. Everyone who works the night shift has done the safety training. Everyone who has a badge is a team lead. Everyone who reports to someone who is an engineer mentors a trainee. Everyone who does not use the VPN attends the Monday meeting. Anna reports to Eva. David works the night shift. Everyone who cannot enter the lab works remotely. Therefore, Anna is a team lead.",
-  "premises": [
-   "(ReportsTo Eva David)",
-   "∀x ((Vpn x) → (Manager x))",
-   "(ReportsTo Ben Anna)",
-   "∀x ((Parking x) → (Engineer x))",
-   "∀x ((Remote x) → (Lab x))",
-   "∀x ((Remote x) → (Lab x))",
-   "∀x ((Oncall x) → (Badge x))",
-   "∀x ((Training x) → (Night x))",
-   "(Training Ben)",
-   "∀x y z (((ReportsTo x y) ∧ (ReportsTo y z)) → (ReportsTo x z))",
-   "∀x (¬(Laptop x) → (Union x))",
-   "∀x ((Union x) → ((Archive x) ∨ (Parking x)))",
-   "∀x ((Finnish x) → (Badge x))",
-   "∀x ((Monday x) → ((Oncall x) ∨ (Finnish x)))",
-   "∀x ((Training x) → ¬(Payroll x))",
-   "∀x ((Mentor x) → ¬(Manager x))",
-   "∀x ((Laptop x) → (Payroll x))",
-   "∀x ((Archive x) → (Engineer x))",
-   "∀x ((Night x) → (Training x))",
-   "∀x ((Badge x) → (Lead x))",
-   "∀x y (((ReportsTo x y) ∧ (Engineer y)) → (Mentor x))",
-   "∀x (¬(Vpn x) → (Monday x))",
-   "(ReportsTo Anna Eva)",
-   "(Night David)",
-   "∀x (¬(Lab x) → (Remote x))"
-  ],
-  "conclusion": "(Lead Anna)",
-  "premise_terms": [
-   [
-    "ReportsTo",
-    "Eva",
-    "David"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Vpn",
-      "x"
-     ],
-     [
-      "Manager",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "ReportsTo",
-    "Ben",
-    "Anna"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Parking",
-      "x"
-     ],
-     [
-      "Engineer",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Remote",
-      "x"
-     ],
-     [
-      "Lab",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Remote",
-      "x"
-     ],
-     [
-      "Lab",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Oncall",
-      "x"
-     ],
-     [
-      "Badge",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Training",
-      "x"
-     ],
-     [
-      "Night",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "Training",
-    "Ben"
-   ],
-   [
-    "forall",
-    [
-     "x",
-     "y",
-     "z"
-    ],
-    [
-     "=>",
-     [
-      "and",
-      [
-       "ReportsTo",
-       "x",
-       "y"
-      ],
-      [
-       "ReportsTo",
-       "y",
-       "z"
-      ]
-     ],
-     [
-      "ReportsTo",
-      "x",
-      "z"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Laptop",
-       "x"
-      ]
-     ],
-     [
-      "Union",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Union",
-      "x"
-     ],
-     [
-      "or",
-      [
-       "Archive",
-       "x"
-      ],
-      [
-       "Parking",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Finnish",
-      "x"
-     ],
-     [
-      "Badge",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Monday",
-      "x"
-     ],
-     [
-      "or",
-      [
-       "Oncall",
-       "x"
-      ],
-      [
-       "Finnish",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Training",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Payroll",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Mentor",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Manager",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Laptop",
-      "x"
-     ],
-     [
-      "Payroll",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Archive",
-      "x"
-     ],
-     [
-      "Engineer",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Night",
-      "x"
-     ],
-     [
-      "Training",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Badge",
-      "x"
-     ],
-     [
-      "Lead",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x",
-     "y"
-    ],
-    [
-     "=>",
-     [
-      "and",
-      [
-       "ReportsTo",
-       "x",
-       "y"
-      ],
-      [
-       "Engineer",
-       "y"
-      ]
-     ],
-     [
-      "Mentor",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Vpn",
-       "x"
-      ]
-     ],
-     [
-      "Monday",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "ReportsTo",
-    "Anna",
-    "Eva"
-   ],
-   [
-    "Night",
-    "David"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Lab",
-       "x"
-      ]
-     ],
-     [
-      "Remote",
-      "x"
-     ]
-    ]
-   ]
-  ],
-  "conclusion_term": [
-   "Lead",
-   "Anna"
-  ],
-  "valid": true,
-  "steps": 25,
-  "needed": [
-   1,
-   2,
-   4,
-   7,
-   10,
-   11,
-   12,
-   13,
-   14,
-   15,
-   16,
-   17,
-   18,
-   19,
-   20,
-   21,
-   22,
-   23,
-   24
-  ]
- },
- {
-  "id": "Z25",
+  "id": "Z19",
   "kind": "first-order",
   "trap": null,
   "text": "Everyone who is not a team lead attends the Monday meeting. No one who works remotely has a badge. Everyone who works the night shift uses the VPN. Everyone who is a manager has a badge. Everyone who attends the Monday meeting has a key to the archive or speaks Finnish, or both. David can see the payroll. No one who is on call this week has done the safety training. Farid reports to Eva. Anyone who reports to someone who reports to a third person also reports to that third person. No one who has done the safety training is on call this week. Everyone who reports to someone who is an engineer works remotely. Everyone who uses the VPN is in the union. Everyone who has a parking space mentors a trainee or works the night shift, or both. Everyone who is a team lead has a company laptop. No one who can enter the lab has a company laptop. Eva reports to Anna. Everyone who is on call this week has done the safety training. Everyone who has a key to the archive is an engineer. Everyone who is in the union uses the VPN. Everyone who can see the payroll can enter the lab. Everyone who speaks Finnish is an engineer. Farid can see the payroll. Everyone who mentors a trainee uses the VPN. Everyone who is not a manager has a parking space. Anna reports to David. Therefore, Eva is in the union.",
@@ -11954,7 +9086,7 @@
   ]
  },
  {
-  "id": "Z26",
+  "id": "Z20",
   "kind": "first-order",
   "trap": "branch",
   "text": "Everyone who attends the Monday meeting has a key to the archive. Farid works remotely. No one who speaks Finnish has a key to the archive. Everyone who has a parking space is a team lead. Everyone who can enter the lab uses the VPN. Everyone who can see the payroll speaks Finnish. Everyone who is an engineer works remotely. Everyone who does not attend the Monday meeting is a manager. Ben reports to Eva. No one who is on call this week has a badge. Carla can see the payroll. Everyone who has a company laptop is in the union or mentors a trainee, or both. Everyone who works the night shift works remotely. Everyone who cannot enter the lab has a company laptop. No one who has done the safety training uses the VPN. Everyone who speaks Finnish can see the payroll. Everyone who has a badge is on call this week. Farid reports to Ben. Everyone who is not on call this week has a badge. Everyone who is a manager is an engineer or works the night shift, or both. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who is in the union is a manager. Everyone who mentors a trainee has a parking space. Everyone who reports to someone who works remotely has done the safety training. Eva reports to Carla. Therefore, Ben is a team lead.",
@@ -12433,7 +9565,7 @@
   ]
  },
  {
-  "id": "Z27",
+  "id": "Z21",
   "kind": "first-order",
   "trap": null,
   "text": "Everyone who is not a team lead has a key to the archive. No one who is a manager has a parking space. Everyone who is an engineer is on call this week. Everyone who can enter the lab uses the VPN or has a company laptop, or both. Everyone who is a team lead has done the safety training. Anna speaks Finnish. No one who works the night shift mentors a trainee. David reports to Carla. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who is not a manager has a parking space. Carla reports to Anna. Eva reports to David. Everyone who is a manager has a parking space. Everyone who has a key to the archive can see the payroll or is an engineer, or both. Everyone who reports to someone who has a badge is in the union. Everyone who has a company laptop has a badge. Everyone who is on call this week works remotely. Everyone who has done the safety training is a team lead. Everyone who attends the Monday meeting mentors a trainee. Everyone who speaks Finnish works the night shift. No one who is in the union has done the safety training. Eva can enter the lab. Everyone who uses the VPN has a badge. Everyone who can see the payroll is on call this week. Everyone who does not attend the Monday meeting can enter the lab. Therefore, David works remotely.",
@@ -12912,486 +10044,7 @@
   ]
  },
  {
-  "id": "Z28",
-  "kind": "first-order",
-  "trap": null,
-  "text": "No one who is on call this week is a team lead. Everyone who attends the Monday meeting has a key to the archive. Anna is an engineer. Everyone who can see the payroll is a manager. Everyone who is an engineer can see the payroll or has a company laptop, or both. Everyone who reports to someone who is a manager has a parking space. Everyone who is in the union attends the Monday meeting. David reports to Eva. Eva works the night shift. Everyone who has done the safety training is a team lead. Everyone who does not mentor a trainee speaks Finnish. Everyone who does not mentor a trainee speaks Finnish. Everyone who does not work remotely can enter the lab. Ben reports to David. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who has not done the safety training is an engineer. Everyone who can enter the lab is in the union or uses the VPN, or both. Everyone who has a key to the archive attends the Monday meeting. Everyone who works remotely has a badge. Everyone who has a company laptop is a manager. Everyone who mentors a trainee speaks Finnish. Anna reports to Ben. Everyone who works the night shift is on call this week. Everyone who uses the VPN attends the Monday meeting. No one who has a parking space has a badge. Therefore, Ben has a key to the archive.",
-  "premises": [
-   "∀x ((Oncall x) → ¬(Lead x))",
-   "∀x ((Monday x) → (Archive x))",
-   "(Engineer Anna)",
-   "∀x ((Payroll x) → (Manager x))",
-   "∀x ((Engineer x) → ((Payroll x) ∨ (Laptop x)))",
-   "∀x y (((ReportsTo x y) ∧ (Manager y)) → (Parking x))",
-   "∀x ((Union x) → (Monday x))",
-   "(ReportsTo David Eva)",
-   "(Night Eva)",
-   "∀x ((Training x) → (Lead x))",
-   "∀x (¬(Mentor x) → (Finnish x))",
-   "∀x (¬(Mentor x) → (Finnish x))",
-   "∀x (¬(Remote x) → (Lab x))",
-   "(ReportsTo Ben David)",
-   "∀x y z (((ReportsTo x y) ∧ (ReportsTo y z)) → (ReportsTo x z))",
-   "∀x (¬(Training x) → (Engineer x))",
-   "∀x ((Lab x) → ((Union x) ∨ (Vpn x)))",
-   "∀x ((Archive x) → (Monday x))",
-   "∀x ((Remote x) → (Badge x))",
-   "∀x ((Laptop x) → (Manager x))",
-   "∀x ((Mentor x) → (Finnish x))",
-   "(ReportsTo Anna Ben)",
-   "∀x ((Night x) → (Oncall x))",
-   "∀x ((Vpn x) → (Monday x))",
-   "∀x ((Parking x) → ¬(Badge x))"
-  ],
-  "conclusion": "(Archive Ben)",
-  "premise_terms": [
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Oncall",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Lead",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Monday",
-      "x"
-     ],
-     [
-      "Archive",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "Engineer",
-    "Anna"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Payroll",
-      "x"
-     ],
-     [
-      "Manager",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Engineer",
-      "x"
-     ],
-     [
-      "or",
-      [
-       "Payroll",
-       "x"
-      ],
-      [
-       "Laptop",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x",
-     "y"
-    ],
-    [
-     "=>",
-     [
-      "and",
-      [
-       "ReportsTo",
-       "x",
-       "y"
-      ],
-      [
-       "Manager",
-       "y"
-      ]
-     ],
-     [
-      "Parking",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Union",
-      "x"
-     ],
-     [
-      "Monday",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "ReportsTo",
-    "David",
-    "Eva"
-   ],
-   [
-    "Night",
-    "Eva"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Training",
-      "x"
-     ],
-     [
-      "Lead",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Mentor",
-       "x"
-      ]
-     ],
-     [
-      "Finnish",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Mentor",
-       "x"
-      ]
-     ],
-     [
-      "Finnish",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Remote",
-       "x"
-      ]
-     ],
-     [
-      "Lab",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "ReportsTo",
-    "Ben",
-    "David"
-   ],
-   [
-    "forall",
-    [
-     "x",
-     "y",
-     "z"
-    ],
-    [
-     "=>",
-     [
-      "and",
-      [
-       "ReportsTo",
-       "x",
-       "y"
-      ],
-      [
-       "ReportsTo",
-       "y",
-       "z"
-      ]
-     ],
-     [
-      "ReportsTo",
-      "x",
-      "z"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Training",
-       "x"
-      ]
-     ],
-     [
-      "Engineer",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Lab",
-      "x"
-     ],
-     [
-      "or",
-      [
-       "Union",
-       "x"
-      ],
-      [
-       "Vpn",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Archive",
-      "x"
-     ],
-     [
-      "Monday",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Remote",
-      "x"
-     ],
-     [
-      "Badge",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Laptop",
-      "x"
-     ],
-     [
-      "Manager",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Mentor",
-      "x"
-     ],
-     [
-      "Finnish",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "ReportsTo",
-    "Anna",
-    "Ben"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Night",
-      "x"
-     ],
-     [
-      "Oncall",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Vpn",
-      "x"
-     ],
-     [
-      "Monday",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Parking",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Badge",
-       "x"
-      ]
-     ]
-    ]
-   ]
-  ],
-  "conclusion_term": [
-   "Archive",
-   "Ben"
-  ],
-  "valid": true,
-  "steps": 25,
-  "needed": [
-   1,
-   2,
-   4,
-   5,
-   6,
-   7,
-   8,
-   9,
-   10,
-   13,
-   14,
-   15,
-   16,
-   17,
-   19,
-   20,
-   23,
-   24,
-   25
-  ]
- },
- {
-  "id": "Z29",
+  "id": "Z22",
   "kind": "first-order",
   "trap": null,
   "text": "Everyone who has a company laptop uses the VPN. Anna can enter the lab. Everyone who works the night shift has done the safety training. Anyone who reports to someone who reports to a third person also reports to that third person. No one who is a manager has a parking space. David reports to Eva. Everyone who does not have a key to the archive speaks Finnish. Everyone who attends the Monday meeting has a parking space. Everyone who can see the payroll is in the union. Everyone who is an engineer has done the safety training. Everyone who is a manager is on call this week. No one who works remotely is a team lead. No one who uses the VPN has a company laptop. Farid reports to David. Anna reports to Farid. Everyone who can enter the lab is an engineer or works the night shift, or both. Eva is on call this week. Everyone who has a badge is in the union. Everyone who does not attend the Monday meeting can enter the lab. No one who has a company laptop uses the VPN. Everyone who speaks Finnish can see the payroll or has a badge, or both. Everyone who reports to someone who has done the safety training works remotely. Everyone who is on call this week is a manager. Everyone who is in the union mentors a trainee. Everyone who has a key to the archive is a team lead. Therefore, Farid mentors a trainee.",
@@ -13870,483 +10523,7 @@
   ]
  },
  {
-  "id": "Z30",
-  "kind": "first-order",
-  "trap": "converse",
-  "text": "Everyone who is not a manager can see the payroll. Everyone who has a parking space speaks Finnish. Farid is on call this week. Everyone who has done the safety training works the night shift or has a parking space, or both. Everyone who is in the union is an engineer. No one who attends the Monday meeting is an engineer. Anna uses the VPN. Everyone who can see the payroll has a company laptop or works remotely, or both. Carla reports to David. Everyone who has a key to the archive has a badge. Everyone who is not in the union has done the safety training. Everyone who is on call this week uses the VPN. Everyone who works the night shift speaks Finnish. Everyone who reports to someone who can enter the lab attends the Monday meeting. Anna reports to Carla. Everyone who is a manager is a team lead. No one who uses the VPN is a team lead. Everyone who mentors a trainee speaks Finnish. David reports to Farid. Everyone who works remotely can enter the lab. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who has a key to the archive has a badge. Everyone who has a company laptop can enter the lab. Everyone who mentors a trainee speaks Finnish. No one who has a badge has a key to the archive. Therefore, Carla mentors a trainee.",
-  "premises": [
-   "∀x (¬(Manager x) → (Payroll x))",
-   "∀x ((Parking x) → (Finnish x))",
-   "(Oncall Farid)",
-   "∀x ((Training x) → ((Night x) ∨ (Parking x)))",
-   "∀x ((Union x) → (Engineer x))",
-   "∀x ((Monday x) → ¬(Engineer x))",
-   "(Vpn Anna)",
-   "∀x ((Payroll x) → ((Laptop x) ∨ (Remote x)))",
-   "(ReportsTo Carla David)",
-   "∀x ((Archive x) → (Badge x))",
-   "∀x (¬(Union x) → (Training x))",
-   "∀x ((Oncall x) → (Vpn x))",
-   "∀x ((Night x) → (Finnish x))",
-   "∀x y (((ReportsTo x y) ∧ (Lab y)) → (Monday x))",
-   "(ReportsTo Anna Carla)",
-   "∀x ((Manager x) → (Lead x))",
-   "∀x ((Vpn x) → ¬(Lead x))",
-   "∀x ((Mentor x) → (Finnish x))",
-   "(ReportsTo David Farid)",
-   "∀x ((Remote x) → (Lab x))",
-   "∀x y z (((ReportsTo x y) ∧ (ReportsTo y z)) → (ReportsTo x z))",
-   "∀x ((Archive x) → (Badge x))",
-   "∀x ((Laptop x) → (Lab x))",
-   "∀x ((Mentor x) → (Finnish x))",
-   "∀x ((Badge x) → ¬(Archive x))"
-  ],
-  "conclusion": "(Mentor Carla)",
-  "premise_terms": [
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Manager",
-       "x"
-      ]
-     ],
-     [
-      "Payroll",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Parking",
-      "x"
-     ],
-     [
-      "Finnish",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "Oncall",
-    "Farid"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Training",
-      "x"
-     ],
-     [
-      "or",
-      [
-       "Night",
-       "x"
-      ],
-      [
-       "Parking",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Union",
-      "x"
-     ],
-     [
-      "Engineer",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Monday",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Engineer",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "Vpn",
-    "Anna"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Payroll",
-      "x"
-     ],
-     [
-      "or",
-      [
-       "Laptop",
-       "x"
-      ],
-      [
-       "Remote",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "ReportsTo",
-    "Carla",
-    "David"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Archive",
-      "x"
-     ],
-     [
-      "Badge",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Union",
-       "x"
-      ]
-     ],
-     [
-      "Training",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Oncall",
-      "x"
-     ],
-     [
-      "Vpn",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Night",
-      "x"
-     ],
-     [
-      "Finnish",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x",
-     "y"
-    ],
-    [
-     "=>",
-     [
-      "and",
-      [
-       "ReportsTo",
-       "x",
-       "y"
-      ],
-      [
-       "Lab",
-       "y"
-      ]
-     ],
-     [
-      "Monday",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "ReportsTo",
-    "Anna",
-    "Carla"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Manager",
-      "x"
-     ],
-     [
-      "Lead",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Vpn",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Lead",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Mentor",
-      "x"
-     ],
-     [
-      "Finnish",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "ReportsTo",
-    "David",
-    "Farid"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Remote",
-      "x"
-     ],
-     [
-      "Lab",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x",
-     "y",
-     "z"
-    ],
-    [
-     "=>",
-     [
-      "and",
-      [
-       "ReportsTo",
-       "x",
-       "y"
-      ],
-      [
-       "ReportsTo",
-       "y",
-       "z"
-      ]
-     ],
-     [
-      "ReportsTo",
-      "x",
-      "z"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Archive",
-      "x"
-     ],
-     [
-      "Badge",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Laptop",
-      "x"
-     ],
-     [
-      "Lab",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Mentor",
-      "x"
-     ],
-     [
-      "Finnish",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Badge",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Archive",
-       "x"
-      ]
-     ]
-    ]
-   ]
-  ],
-  "conclusion_term": [
-   "Mentor",
-   "Carla"
-  ],
-  "valid": false,
-  "steps": 25,
-  "needed": [
-   1,
-   2,
-   3,
-   4,
-   5,
-   6,
-   8,
-   9,
-   11,
-   12,
-   13,
-   14,
-   16,
-   17,
-   18,
-   19,
-   20,
-   21,
-   23
-  ]
- },
- {
-  "id": "Z31",
+  "id": "Z23",
   "kind": "first-order",
   "trap": null,
   "text": "Everyone who works remotely has a key to the archive or is on call this week, or both. Everyone who works the night shift has done the safety training or is an engineer, or both. No one who is a team lead can enter the lab. Everyone who is an engineer has a company laptop. Everyone who has a company laptop mentors a trainee. David reports to Anna. Carla is a team lead. Everyone who is a manager is a team lead. Everyone who is on call this week can see the payroll. Everyone who has a key to the archive can see the payroll. Everyone who has a badge speaks Finnish. No one who speaks Finnish has a badge. Anna is a manager. Anyone who reports to someone who reports to a third person also reports to that third person. No one who has a parking space attends the Monday meeting. Everyone who uses the VPN attends the Monday meeting. Everyone who speaks Finnish has a badge. Everyone who is in the union can enter the lab. Everyone who can enter the lab is in the union. Everyone who reports to someone who can see the payroll has a parking space. Farid reports to David. Everyone who has done the safety training has a company laptop. Everyone who is not in the union works remotely. Everyone who does not use the VPN works the night shift. Carla reports to Farid. Therefore, Farid mentors a trainee.",
@@ -14822,7 +10999,7 @@
   ]
  },
  {
-  "id": "Z32",
+  "id": "Z24",
   "kind": "first-order",
   "trap": "converse",
   "text": "Everyone who attends the Monday meeting mentors a trainee. Everyone who is a manager can see the payroll. Everyone who is an engineer uses the VPN or can enter the lab, or both. No one who works the night shift speaks Finnish. Everyone who is not on call this week has a badge. Anyone who reports to someone who reports to a third person also reports to that third person. No one who mentors a trainee has a key to the archive. No one who works remotely has a company laptop. Everyone who has a badge has a parking space or has done the safety training, or both. Everyone who mentors a trainee attends the Monday meeting. Everyone who has done the safety training is a manager. Everyone who speaks Finnish works the night shift. Everyone who is not a team lead is an engineer. Everyone who does not speak Finnish works the night shift. Ben attends the Monday meeting. Everyone who has a parking space is a manager. Everyone who uses the VPN is in the union. Everyone who has a key to the archive is a team lead. Everyone who can enter the lab is in the union. David reports to Eva. Everyone who reports to someone who is in the union works remotely. Everyone who is on call this week has a company laptop. Ben reports to David. Eva reports to Farid. Farid attends the Monday meeting. Therefore, David can see the payroll.",
@@ -15301,7 +11478,7 @@
   ]
  },
  {
-  "id": "Z33",
+  "id": "Z25",
   "kind": "first-order",
   "trap": "some",
   "text": "Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who is in the union is on call this week or is a manager, or both. At least one person who has done the safety training is a team lead. No one who can enter the lab has a key to the archive. Everyone who has a parking space has a company laptop. Everyone who reports to someone who mentors a trainee uses the VPN. Everyone who attends the Monday meeting has a badge. Carla reports to David. Everyone who works the night shift mentors a trainee. Carla has a parking space. David reports to Farid. Everyone who is an engineer can see the payroll or works the night shift, or both. Farid reports to Eva. Everyone who has a company laptop has a parking space. Everyone who does not speak Finnish is in the union. Everyone who does not have a company laptop is an engineer. No one who uses the VPN works remotely. Everyone who has a key to the archive can enter the lab. No one who is a team lead has a parking space. Everyone who can see the payroll mentors a trainee. Everyone who speaks Finnish works remotely. Everyone who is a manager attends the Monday meeting. Eva has done the safety training. Everyone who cannot enter the lab has a key to the archive. Everyone who is on call this week attends the Monday meeting. Therefore, David has a badge.",
@@ -15780,7 +11957,7 @@
   ]
  },
  {
-  "id": "Z34",
+  "id": "Z26",
   "kind": "first-order",
   "trap": "converse",
   "text": "Everyone who is on call this week is in the union. Ben reports to Farid. Anna is on call this week. Everyone who cannot see the payroll has a parking space. Everyone who has a key to the archive mentors a trainee. Everyone who has a badge has a company laptop or is on call this week, or both. Everyone who can enter the lab is a manager. Everyone who works remotely has a key to the archive. Everyone who can see the payroll uses the VPN. Everyone who works the night shift speaks Finnish. Anna reports to Eva. Everyone who does not attend the Monday meeting has a badge. Everyone who has done the safety training has a key to the archive. No one who is a team lead uses the VPN. Everyone who reports to someone who is in the union is a team lead. No one who can enter the lab is a manager. Everyone who has a company laptop is in the union. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who uses the VPN can see the payroll. Eva reports to Ben. Everyone who is an engineer attends the Monday meeting. No one who speaks Finnish is an engineer. Everyone who cannot enter the lab is a manager. Farid works the night shift. Everyone who has a parking space has done the safety training or works remotely, or both. Therefore, Eva mentors a trainee.",
@@ -16259,42 +12436,416 @@
   ]
  },
  {
-  "id": "Z35",
+  "id": "Z27",
   "kind": "first-order",
-  "trap": "branch",
-  "text": "Anna reports to Carla. Everyone who is on call this week works remotely or is a manager, or both. Everyone who is in the union works the night shift. Everyone who does not have a badge mentors a trainee. No one who is in the union works the night shift. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who is a manager attends the Monday meeting. Everyone who has a company laptop can enter the lab. Farid reports to Anna. Everyone who has a badge is a team lead. Everyone who is in the union works the night shift. Everyone who is an engineer is a manager. Everyone who does not speak Finnish is on call this week. Everyone who speaks Finnish has a key to the archive. Everyone who has done the safety training can see the payroll. No one who uses the VPN has a key to the archive. Carla reports to Eva. Eva can enter the lab. No one who has a company laptop is a team lead. Everyone who attends the Monday meeting has a parking space. Everyone who can enter the lab has a company laptop. Everyone who works remotely attends the Monday meeting. Everyone who mentors a trainee has done the safety training or is an engineer, or both. Farid can enter the lab. Everyone who reports to someone who can see the payroll uses the VPN. Therefore, Anna has a parking space.",
+  "trap": null,
+  "text": "Everyone who is a manager is on call this week. Everyone who does not work remotely is a team lead. Ben reports to Eva. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who reports to someone who has a parking space is an engineer. Everyone who can enter the lab uses the VPN. Carla reports to Farid. Eva is a manager. Everyone who has a badge mentors a trainee. Everyone who works remotely has done the safety training. Everyone who has a company laptop has a parking space. Farid reports to Ben. No one who is on call this week uses the VPN. Everyone who cannot enter the lab works the night shift. Everyone who is a team lead speaks Finnish or can see the payroll, or both. Everyone who works the night shift has a company laptop or attends the Monday meeting, or both. Everyone who is on call this week is a manager. Everyone who is in the union has a key to the archive. No one who mentors a trainee has a badge. No one who is an engineer has done the safety training. Everyone who attends the Monday meeting has a parking space. Everyone who can see the payroll is in the union. Carla attends the Monday meeting. Everyone who speaks Finnish is in the union. Everyone who does not have a badge mentors a trainee. Therefore, Farid has a key to the archive.",
   "premises": [
-   "(ReportsTo Anna Carla)",
-   "∀x ((Oncall x) → ((Remote x) ∨ (Manager x)))",
-   "∀x ((Union x) → (Night x))",
-   "∀x (¬(Badge x) → (Mentor x))",
-   "∀x ((Union x) → ¬(Night x))",
+   "∀x ((Manager x) → (Oncall x))",
+   "∀x (¬(Remote x) → (Lead x))",
+   "(ReportsTo Ben Eva)",
    "∀x y z (((ReportsTo x y) ∧ (ReportsTo y z)) → (ReportsTo x z))",
-   "∀x ((Manager x) → (Monday x))",
-   "∀x ((Laptop x) → (Lab x))",
-   "(ReportsTo Farid Anna)",
-   "∀x ((Badge x) → (Lead x))",
-   "∀x ((Union x) → (Night x))",
-   "∀x ((Engineer x) → (Manager x))",
-   "∀x (¬(Finnish x) → (Oncall x))",
-   "∀x ((Finnish x) → (Archive x))",
-   "∀x ((Training x) → (Payroll x))",
-   "∀x ((Vpn x) → ¬(Archive x))",
-   "(ReportsTo Carla Eva)",
-   "(Lab Eva)",
-   "∀x ((Laptop x) → ¬(Lead x))",
+   "∀x y (((ReportsTo x y) ∧ (Parking y)) → (Engineer x))",
+   "∀x ((Lab x) → (Vpn x))",
+   "(ReportsTo Carla Farid)",
+   "(Manager Eva)",
+   "∀x ((Badge x) → (Mentor x))",
+   "∀x ((Remote x) → (Training x))",
+   "∀x ((Laptop x) → (Parking x))",
+   "(ReportsTo Farid Ben)",
+   "∀x ((Oncall x) → ¬(Vpn x))",
+   "∀x (¬(Lab x) → (Night x))",
+   "∀x ((Lead x) → ((Finnish x) ∨ (Payroll x)))",
+   "∀x ((Night x) → ((Laptop x) ∨ (Monday x)))",
+   "∀x ((Oncall x) → (Manager x))",
+   "∀x ((Union x) → (Archive x))",
+   "∀x ((Mentor x) → ¬(Badge x))",
+   "∀x ((Engineer x) → ¬(Training x))",
    "∀x ((Monday x) → (Parking x))",
-   "∀x ((Lab x) → (Laptop x))",
-   "∀x ((Remote x) → (Monday x))",
-   "∀x ((Mentor x) → ((Training x) ∨ (Engineer x)))",
-   "(Lab Farid)",
-   "∀x y (((ReportsTo x y) ∧ (Payroll y)) → (Vpn x))"
+   "∀x ((Payroll x) → (Union x))",
+   "(Monday Carla)",
+   "∀x ((Finnish x) → (Union x))",
+   "∀x (¬(Badge x) → (Mentor x))"
   ],
-  "conclusion": "(Parking Anna)",
+  "conclusion": "(Archive Farid)",
   "premise_terms": [
    [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Manager",
+      "x"
+     ],
+     [
+      "Oncall",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Remote",
+       "x"
+      ]
+     ],
+     [
+      "Lead",
+      "x"
+     ]
+    ]
+   ],
+   [
     "ReportsTo",
-    "Anna",
+    "Ben",
+    "Eva"
+   ],
+   [
+    "forall",
+    [
+     "x",
+     "y",
+     "z"
+    ],
+    [
+     "=>",
+     [
+      "and",
+      [
+       "ReportsTo",
+       "x",
+       "y"
+      ],
+      [
+       "ReportsTo",
+       "y",
+       "z"
+      ]
+     ],
+     [
+      "ReportsTo",
+      "x",
+      "z"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x",
+     "y"
+    ],
+    [
+     "=>",
+     [
+      "and",
+      [
+       "ReportsTo",
+       "x",
+       "y"
+      ],
+      [
+       "Parking",
+       "y"
+      ]
+     ],
+     [
+      "Engineer",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lab",
+      "x"
+     ],
+     [
+      "Vpn",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "Carla",
+    "Farid"
+   ],
+   [
+    "Manager",
+    "Eva"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Badge",
+      "x"
+     ],
+     [
+      "Mentor",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Remote",
+      "x"
+     ],
+     [
+      "Training",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Laptop",
+      "x"
+     ],
+     [
+      "Parking",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "Farid",
+    "Ben"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Oncall",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Vpn",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Lab",
+       "x"
+      ]
+     ],
+     [
+      "Night",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lead",
+      "x"
+     ],
+     [
+      "or",
+      [
+       "Finnish",
+       "x"
+      ],
+      [
+       "Payroll",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Night",
+      "x"
+     ],
+     [
+      "or",
+      [
+       "Laptop",
+       "x"
+      ],
+      [
+       "Monday",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Oncall",
+      "x"
+     ],
+     [
+      "Manager",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Union",
+      "x"
+     ],
+     [
+      "Archive",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Mentor",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Badge",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Engineer",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Training",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Monday",
+      "x"
+     ],
+     [
+      "Parking",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Payroll",
+      "x"
+     ],
+     [
+      "Union",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "Monday",
     "Carla"
    ],
    [
@@ -16305,35 +12856,11 @@
     [
      "=>",
      [
-      "Oncall",
+      "Finnish",
       "x"
      ],
-     [
-      "or",
-      [
-       "Remote",
-       "x"
-      ],
-      [
-       "Manager",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
      [
       "Union",
-      "x"
-     ],
-     [
-      "Night",
       "x"
      ]
     ]
@@ -16357,867 +12884,38 @@
       "x"
      ]
     ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Union",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Night",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x",
-     "y",
-     "z"
-    ],
-    [
-     "=>",
-     [
-      "and",
-      [
-       "ReportsTo",
-       "x",
-       "y"
-      ],
-      [
-       "ReportsTo",
-       "y",
-       "z"
-      ]
-     ],
-     [
-      "ReportsTo",
-      "x",
-      "z"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Manager",
-      "x"
-     ],
-     [
-      "Monday",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Laptop",
-      "x"
-     ],
-     [
-      "Lab",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "ReportsTo",
-    "Farid",
-    "Anna"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Badge",
-      "x"
-     ],
-     [
-      "Lead",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Union",
-      "x"
-     ],
-     [
-      "Night",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Engineer",
-      "x"
-     ],
-     [
-      "Manager",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Finnish",
-       "x"
-      ]
-     ],
-     [
-      "Oncall",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Finnish",
-      "x"
-     ],
-     [
-      "Archive",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Training",
-      "x"
-     ],
-     [
-      "Payroll",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Vpn",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Archive",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "ReportsTo",
-    "Carla",
-    "Eva"
-   ],
-   [
-    "Lab",
-    "Eva"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Laptop",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Lead",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Monday",
-      "x"
-     ],
-     [
-      "Parking",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Lab",
-      "x"
-     ],
-     [
-      "Laptop",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Remote",
-      "x"
-     ],
-     [
-      "Monday",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Mentor",
-      "x"
-     ],
-     [
-      "or",
-      [
-       "Training",
-       "x"
-      ],
-      [
-       "Engineer",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "Lab",
-    "Farid"
-   ],
-   [
-    "forall",
-    [
-     "x",
-     "y"
-    ],
-    [
-     "=>",
-     [
-      "and",
-      [
-       "ReportsTo",
-       "x",
-       "y"
-      ],
-      [
-       "Payroll",
-       "y"
-      ]
-     ],
-     [
-      "Vpn",
-      "x"
-     ]
-    ]
    ]
   ],
   "conclusion_term": [
-   "Parking",
-   "Anna"
+   "Archive",
+   "Farid"
   ],
-  "valid": false,
-  "steps": 25,
-  "needed": [
-   1,
-   2,
-   4,
-   6,
-   7,
-   10,
-   12,
-   13,
-   14,
-   15,
-   16,
-   17,
-   18,
-   19,
-   20,
-   21,
-   22,
-   23,
-   25
-  ]
- },
- {
-  "id": "Z36",
-  "kind": "first-order",
-  "trap": "branch",
-  "text": "Everyone who has a key to the archive works the night shift. Everyone who has a parking space is a manager. Everyone who can enter the lab is a manager. Everyone who does not have a badge has a company laptop. No one who is in the union is a team lead. David reports to Ben. Everyone who is not an engineer can see the payroll. No one who attends the Monday meeting has done the safety training. Everyone who works remotely is in the union. Everyone who mentors a trainee is a manager. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who can see the payroll can enter the lab or has a parking space, or both. Everyone who uses the VPN mentors a trainee or has a key to the archive, or both. Everyone who does not speak Finnish uses the VPN. Anna reports to David. Eva can enter the lab. Everyone who reports to someone who is a manager attends the Monday meeting. Ben works remotely. Everyone who works the night shift is on call this week. Everyone who speaks Finnish has done the safety training. Everyone who is an engineer is a team lead. Everyone who has done the safety training speaks Finnish. Eva reports to Anna. Everyone who does not have a company laptop has a badge. Everyone who does not have a company laptop has a badge. Therefore, Anna is on call this week.",
-  "premises": [
-   "∀x ((Archive x) → (Night x))",
-   "∀x ((Parking x) → (Manager x))",
-   "∀x ((Lab x) → (Manager x))",
-   "∀x (¬(Badge x) → (Laptop x))",
-   "∀x ((Union x) → ¬(Lead x))",
-   "(ReportsTo David Ben)",
-   "∀x (¬(Engineer x) → (Payroll x))",
-   "∀x ((Monday x) → ¬(Training x))",
-   "∀x ((Remote x) → (Union x))",
-   "∀x ((Mentor x) → (Manager x))",
-   "∀x y z (((ReportsTo x y) ∧ (ReportsTo y z)) → (ReportsTo x z))",
-   "∀x ((Payroll x) → ((Lab x) ∨ (Parking x)))",
-   "∀x ((Vpn x) → ((Mentor x) ∨ (Archive x)))",
-   "∀x (¬(Finnish x) → (Vpn x))",
-   "(ReportsTo Anna David)",
-   "(Lab Eva)",
-   "∀x y (((ReportsTo x y) ∧ (Manager y)) → (Monday x))",
-   "(Remote Ben)",
-   "∀x ((Night x) → (Oncall x))",
-   "∀x ((Finnish x) → (Training x))",
-   "∀x ((Engineer x) → (Lead x))",
-   "∀x ((Training x) → (Finnish x))",
-   "(ReportsTo Eva Anna)",
-   "∀x (¬(Laptop x) → (Badge x))",
-   "∀x (¬(Laptop x) → (Badge x))"
-  ],
-  "conclusion": "(Oncall Anna)",
-  "premise_terms": [
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Archive",
-      "x"
-     ],
-     [
-      "Night",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Parking",
-      "x"
-     ],
-     [
-      "Manager",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Lab",
-      "x"
-     ],
-     [
-      "Manager",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Badge",
-       "x"
-      ]
-     ],
-     [
-      "Laptop",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Union",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Lead",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "ReportsTo",
-    "David",
-    "Ben"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Engineer",
-       "x"
-      ]
-     ],
-     [
-      "Payroll",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Monday",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Training",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Remote",
-      "x"
-     ],
-     [
-      "Union",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Mentor",
-      "x"
-     ],
-     [
-      "Manager",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x",
-     "y",
-     "z"
-    ],
-    [
-     "=>",
-     [
-      "and",
-      [
-       "ReportsTo",
-       "x",
-       "y"
-      ],
-      [
-       "ReportsTo",
-       "y",
-       "z"
-      ]
-     ],
-     [
-      "ReportsTo",
-      "x",
-      "z"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Payroll",
-      "x"
-     ],
-     [
-      "or",
-      [
-       "Lab",
-       "x"
-      ],
-      [
-       "Parking",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Vpn",
-      "x"
-     ],
-     [
-      "or",
-      [
-       "Mentor",
-       "x"
-      ],
-      [
-       "Archive",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Finnish",
-       "x"
-      ]
-     ],
-     [
-      "Vpn",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "ReportsTo",
-    "Anna",
-    "David"
-   ],
-   [
-    "Lab",
-    "Eva"
-   ],
-   [
-    "forall",
-    [
-     "x",
-     "y"
-    ],
-    [
-     "=>",
-     [
-      "and",
-      [
-       "ReportsTo",
-       "x",
-       "y"
-      ],
-      [
-       "Manager",
-       "y"
-      ]
-     ],
-     [
-      "Monday",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "Remote",
-    "Ben"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Night",
-      "x"
-     ],
-     [
-      "Oncall",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Finnish",
-      "x"
-     ],
-     [
-      "Training",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Engineer",
-      "x"
-     ],
-     [
-      "Lead",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Training",
-      "x"
-     ],
-     [
-      "Finnish",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "ReportsTo",
-    "Eva",
-    "Anna"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Laptop",
-       "x"
-      ]
-     ],
-     [
-      "Badge",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "not",
-      [
-       "Laptop",
-       "x"
-      ]
-     ],
-     [
-      "Badge",
-      "x"
-     ]
-    ]
-   ]
-  ],
-  "conclusion_term": [
-   "Oncall",
-   "Anna"
-  ],
-  "valid": false,
+  "valid": true,
   "steps": 25,
   "needed": [
    1,
    2,
    3,
+   4,
    5,
    6,
-   7,
    8,
-   9,
    10,
    11,
    12,
    13,
    14,
    15,
-   17,
+   16,
    18,
-   19,
    20,
-   21
+   21,
+   22,
+   24
   ]
  },
  {
-  "id": "Z37",
+  "id": "Z28",
   "kind": "first-order",
   "trap": "converse",
   "text": "Everyone who has a badge has a key to the archive. Everyone who mentors a trainee can enter the lab. No one who is on call this week is a team lead. Everyone who has a company laptop is a manager. Everyone who is an engineer has a badge or is in the union, or both. Ben has a key to the archive. Eva reports to David. Everyone who has not done the safety training is an engineer. Everyone who attends the Monday meeting has a company laptop or works remotely, or both. Carla reports to Eva. Everyone who is a manager uses the VPN. Everyone who works remotely is a manager. Everyone who speaks Finnish has done the safety training. Everyone who can see the payroll works the night shift. Everyone who cannot enter the lab mentors a trainee. David can see the payroll. Everyone who is a team lead has a parking space. Everyone who does not mentor a trainee can enter the lab. Anyone who reports to someone who reports to a third person also reports to that third person. Ben reports to Carla. Everyone who reports to someone who has a key to the archive is on call this week. No one who works the night shift speaks Finnish. Everyone who does not have a parking space attends the Monday meeting. Everyone who is in the union has a key to the archive. Everyone who has done the safety training speaks Finnish. Therefore, Carla uses the VPN.",
@@ -17696,7 +13394,7 @@
   ]
  },
  {
-  "id": "Z38",
+  "id": "Z29",
   "kind": "first-order",
   "trap": "other",
   "text": "Everyone who works the night shift has a company laptop. Everyone who is a manager can see the payroll. Everyone who reports to someone who has a company laptop has a key to the archive. Farid reports to Anna. Everyone who is on call this week has a parking space. Everyone who does not use the VPN is in the union. No one who can enter the lab speaks Finnish. Everyone who is in the union is a manager or is an engineer, or both. Everyone who does not speak Finnish can enter the lab. No one who has a key to the archive has a badge. Everyone who uses the VPN has a badge. Anna reports to Carla. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who is not on call this week has done the safety training. Everyone who has done the safety training is a team lead or works the night shift, or both. Everyone who can see the payroll mentors a trainee. Farid is a team lead. Everyone who is a team lead has a company laptop. Everyone who speaks Finnish can enter the lab. Everyone who is an engineer can see the payroll. No one who works remotely has a parking space. Ben attends the Monday meeting. Everyone who has a parking space is on call this week. Everyone who attends the Monday meeting works remotely. Carla reports to David. Therefore, Anna mentors a trainee.",
@@ -18175,39 +13873,122 @@
   ]
  },
  {
-  "id": "Z39",
+  "id": "Z30",
   "kind": "first-order",
-  "trap": "converse",
-  "text": "Everyone who attends the Monday meeting can enter the lab. Everyone who works the night shift speaks Finnish. David reports to Farid. Everyone who uses the VPN has a badge. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who does not have a company laptop is an engineer. Everyone who cannot enter the lab attends the Monday meeting. David mentors a trainee. Everyone who uses the VPN has a badge. Everyone who works remotely has a key to the archive. Everyone who does not work remotely is a team lead. Everyone who reports to someone who mentors a trainee is in the union. Ben has a badge. Farid reports to Eva. Eva reports to Ben. Everyone who is a team lead has a parking space or has done the safety training, or both. Everyone who has a company laptop can see the payroll. Everyone who has done the safety training mentors a trainee. Everyone who is a manager speaks Finnish. Everyone who has a parking space mentors a trainee. No one who attends the Monday meeting can enter the lab. Everyone who is an engineer is a manager or works the night shift, or both. No one who uses the VPN has a key to the archive. Everyone who speaks Finnish is on call this week. No one who is in the union can see the payroll. Therefore, Farid is on call this week.",
+  "trap": null,
+  "text": "Everyone who does not have a company laptop is a team lead. Everyone who does not use the VPN can enter the lab. Carla reports to David. Everyone who can see the payroll has a key to the archive. David can see the payroll. Everyone who is a manager has done the safety training. Everyone who attends the Monday meeting is in the union. Everyone who reports to someone who is on call this week speaks Finnish. Everyone who is a team lead mentors a trainee or is an engineer, or both. Everyone who is not a manager has a parking space. Everyone who works remotely is on call this week. Everyone who is an engineer attends the Monday meeting. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who works the night shift is on call this week. Anna reports to Ben. Ben reports to Carla. Everyone who has a key to the archive can see the payroll. No one who uses the VPN can enter the lab. Everyone who has a company laptop has a badge. Anna has a key to the archive. No one who has a key to the archive has done the safety training. Everyone who has a parking space works remotely or works the night shift, or both. Everyone who mentors a trainee attends the Monday meeting. No one who speaks Finnish has a badge. Everyone who uses the VPN can enter the lab. Therefore, Ben is in the union.",
   "premises": [
-   "∀x ((Monday x) → (Lab x))",
-   "∀x ((Night x) → (Finnish x))",
-   "(ReportsTo David Farid)",
-   "∀x ((Vpn x) → (Badge x))",
+   "∀x (¬(Laptop x) → (Lead x))",
+   "∀x (¬(Vpn x) → (Lab x))",
+   "(ReportsTo Carla David)",
+   "∀x ((Payroll x) → (Archive x))",
+   "(Payroll David)",
+   "∀x ((Manager x) → (Training x))",
+   "∀x ((Monday x) → (Union x))",
+   "∀x y (((ReportsTo x y) ∧ (Oncall y)) → (Finnish x))",
+   "∀x ((Lead x) → ((Mentor x) ∨ (Engineer x)))",
+   "∀x (¬(Manager x) → (Parking x))",
+   "∀x ((Remote x) → (Oncall x))",
+   "∀x ((Engineer x) → (Monday x))",
    "∀x y z (((ReportsTo x y) ∧ (ReportsTo y z)) → (ReportsTo x z))",
-   "∀x (¬(Laptop x) → (Engineer x))",
-   "∀x (¬(Lab x) → (Monday x))",
-   "(Mentor David)",
-   "∀x ((Vpn x) → (Badge x))",
-   "∀x ((Remote x) → (Archive x))",
-   "∀x (¬(Remote x) → (Lead x))",
-   "∀x y (((ReportsTo x y) ∧ (Mentor y)) → (Union x))",
-   "(Badge Ben)",
-   "(ReportsTo Farid Eva)",
-   "(ReportsTo Eva Ben)",
-   "∀x ((Lead x) → ((Parking x) ∨ (Training x)))",
-   "∀x ((Laptop x) → (Payroll x))",
-   "∀x ((Training x) → (Mentor x))",
-   "∀x ((Manager x) → (Finnish x))",
-   "∀x ((Parking x) → (Mentor x))",
-   "∀x ((Monday x) → ¬(Lab x))",
-   "∀x ((Engineer x) → ((Manager x) ∨ (Night x)))",
-   "∀x ((Vpn x) → ¬(Archive x))",
-   "∀x ((Finnish x) → (Oncall x))",
-   "∀x ((Union x) → ¬(Payroll x))"
+   "∀x ((Night x) → (Oncall x))",
+   "(ReportsTo Anna Ben)",
+   "(ReportsTo Ben Carla)",
+   "∀x ((Archive x) → (Payroll x))",
+   "∀x ((Vpn x) → ¬(Lab x))",
+   "∀x ((Laptop x) → (Badge x))",
+   "(Archive Anna)",
+   "∀x ((Archive x) → ¬(Training x))",
+   "∀x ((Parking x) → ((Remote x) ∨ (Night x)))",
+   "∀x ((Mentor x) → (Monday x))",
+   "∀x ((Finnish x) → ¬(Badge x))",
+   "∀x ((Vpn x) → (Lab x))"
   ],
-  "conclusion": "(Oncall Farid)",
+  "conclusion": "(Union Ben)",
   "premise_terms": [
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Laptop",
+       "x"
+      ]
+     ],
+     [
+      "Lead",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Vpn",
+       "x"
+      ]
+     ],
+     [
+      "Lab",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "Carla",
+    "David"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Payroll",
+      "x"
+     ],
+     [
+      "Archive",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "Payroll",
+    "David"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Manager",
+      "x"
+     ],
+     [
+      "Training",
+      "x"
+     ]
+    ]
+   ],
    [
     "forall",
     [
@@ -18220,7 +14001,7 @@
       "x"
      ],
      [
-      "Lab",
+      "Union",
       "x"
      ]
     ]
@@ -18228,13 +14009,22 @@
    [
     "forall",
     [
-     "x"
+     "x",
+     "y"
     ],
     [
      "=>",
      [
-      "Night",
-      "x"
+      "and",
+      [
+       "ReportsTo",
+       "x",
+       "y"
+      ],
+      [
+       "Oncall",
+       "y"
+      ]
      ],
      [
       "Finnish",
@@ -18243,9 +14033,28 @@
     ]
    ],
    [
-    "ReportsTo",
-    "David",
-    "Farid"
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lead",
+      "x"
+     ],
+     [
+      "or",
+      [
+       "Mentor",
+       "x"
+      ],
+      [
+       "Engineer",
+       "x"
+      ]
+     ]
+    ]
    ],
    [
     "forall",
@@ -18255,11 +14064,48 @@
     [
      "=>",
      [
-      "Vpn",
+      "not",
+      [
+       "Manager",
+       "x"
+      ]
+     ],
+     [
+      "Parking",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Remote",
       "x"
      ],
      [
-      "Badge",
+      "Oncall",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Engineer",
+      "x"
+     ],
+     [
+      "Monday",
       "x"
      ]
     ]
@@ -18301,17 +14147,24 @@
     [
      "=>",
      [
-      "not",
-      [
-       "Laptop",
-       "x"
-      ]
+      "Night",
+      "x"
      ],
      [
-      "Engineer",
+      "Oncall",
       "x"
      ]
     ]
+   ],
+   [
+    "ReportsTo",
+    "Anna",
+    "Ben"
+   ],
+   [
+    "ReportsTo",
+    "Ben",
+    "Carla"
    ],
    [
     "forall",
@@ -18321,21 +14174,14 @@
     [
      "=>",
      [
-      "not",
-      [
-       "Lab",
-       "x"
-      ]
+      "Archive",
+      "x"
      ],
      [
-      "Monday",
+      "Payroll",
       "x"
      ]
     ]
-   ],
-   [
-    "Mentor",
-    "David"
    ],
    [
     "forall",
@@ -18349,107 +14195,9 @@
       "x"
      ],
      [
-      "Badge",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Remote",
-      "x"
-     ],
-     [
-      "Archive",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
       "not",
       [
-       "Remote",
-       "x"
-      ]
-     ],
-     [
-      "Lead",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x",
-     "y"
-    ],
-    [
-     "=>",
-     [
-      "and",
-      [
-       "ReportsTo",
-       "x",
-       "y"
-      ],
-      [
-       "Mentor",
-       "y"
-      ]
-     ],
-     [
-      "Union",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "Badge",
-    "Ben"
-   ],
-   [
-    "ReportsTo",
-    "Farid",
-    "Eva"
-   ],
-   [
-    "ReportsTo",
-    "Eva",
-    "Ben"
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Lead",
-      "x"
-     ],
-     [
-      "or",
-      [
-       "Parking",
-       "x"
-      ],
-      [
-       "Training",
+       "Lab",
        "x"
       ]
      ]
@@ -18467,10 +14215,14 @@
       "x"
      ],
      [
-      "Payroll",
+      "Badge",
       "x"
      ]
     ]
+   ],
+   [
+    "Archive",
+    "Anna"
    ],
    [
     "forall",
@@ -18480,29 +14232,15 @@
     [
      "=>",
      [
-      "Training",
+      "Archive",
       "x"
      ],
      [
-      "Mentor",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Manager",
-      "x"
-     ],
-     [
-      "Finnish",
-      "x"
+      "not",
+      [
+       "Training",
+       "x"
+      ]
      ]
     ]
    ],
@@ -18518,46 +14256,9 @@
       "x"
      ],
      [
-      "Mentor",
-      "x"
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Monday",
-      "x"
-     ],
-     [
-      "not",
-      [
-       "Lab",
-       "x"
-      ]
-     ]
-    ]
-   ],
-   [
-    "forall",
-    [
-     "x"
-    ],
-    [
-     "=>",
-     [
-      "Engineer",
-      "x"
-     ],
-     [
       "or",
       [
-       "Manager",
+       "Remote",
        "x"
       ],
       [
@@ -18575,15 +14276,12 @@
     [
      "=>",
      [
-      "Vpn",
+      "Mentor",
       "x"
      ],
      [
-      "not",
-      [
-       "Archive",
-       "x"
-      ]
+      "Monday",
+      "x"
      ]
     ]
    ],
@@ -18599,8 +14297,11 @@
       "x"
      ],
      [
-      "Oncall",
-      "x"
+      "not",
+      [
+       "Badge",
+       "x"
+      ]
      ]
     ]
    ],
@@ -18612,49 +14313,46 @@
     [
      "=>",
      [
-      "Union",
+      "Vpn",
       "x"
      ],
      [
-      "not",
-      [
-       "Payroll",
-       "x"
-      ]
+      "Lab",
+      "x"
      ]
     ]
    ]
   ],
   "conclusion_term": [
-   "Oncall",
-   "Farid"
+   "Union",
+   "Ben"
   ],
-  "valid": false,
+  "valid": true,
   "steps": 25,
   "needed": [
-   2,
+   1,
+   3,
+   4,
    5,
    6,
+   7,
+   8,
    9,
    10,
    11,
    12,
    13,
    14,
-   15,
    16,
-   17,
-   18,
    19,
-   20,
+   21,
    22,
    23,
-   24,
-   25
+   24
   ]
  },
  {
-  "id": "Z40",
+  "id": "Z31",
   "kind": "first-order",
   "trap": "some",
   "text": "Everyone who is in the union is a team lead. Everyone who can enter the lab has a badge. Everyone who has a parking space works remotely or is an engineer, or both. Everyone who has done the safety training speaks Finnish. Everyone who attends the Monday meeting works the night shift. Everyone who works remotely has done the safety training. At least one person who mentors a trainee has a company laptop. Everyone who is an engineer has done the safety training. Everyone who uses the VPN is a manager. Anna mentors a trainee. No one who works the night shift attends the Monday meeting. Eva reports to Farid. David reports to Anna. No one who can see the payroll is a manager. No one who has a company laptop has a badge. Everyone who does not use the VPN has a parking space. Everyone who works the night shift attends the Monday meeting. Eva has a company laptop. Everyone who has a key to the archive is in the union or is on call this week, or both. Anyone who reports to someone who reports to a third person also reports to that third person. Farid reports to David. Everyone who is on call this week is a team lead. Everyone who speaks Finnish has done the safety training. Everyone who cannot enter the lab has a key to the archive. Everyone who reports to someone who is a team lead can see the payroll. Therefore, Farid speaks Finnish.",
@@ -19126,6 +14824,4308 @@
    21,
    22,
    24,
+   25
+  ]
+ },
+ {
+  "id": "Z32",
+  "kind": "first-order",
+  "trap": null,
+  "text": "Everyone who has a parking space has a company laptop. No one who speaks Finnish can enter the lab. Everyone who does not attend the Monday meeting works the night shift. No one who mentors a trainee is a team lead. Ben reports to Farid. Eva has a key to the archive. Everyone who has a key to the archive works remotely or has done the safety training, or both. Everyone who reports to someone who has a badge is in the union. No one who is in the union is an engineer. Everyone who works remotely has a badge. Everyone who has done the safety training has a badge. Everyone who can see the payroll mentors a trainee. Anyone who reports to someone who reports to a third person also reports to that third person. Anna can see the payroll. Everyone who works the night shift uses the VPN or has a parking space, or both. Farid reports to Anna. Everyone who attends the Monday meeting is an engineer. Everyone who has a company laptop is on call this week. Everyone who is a team lead is a manager. Eva reports to Ben. Everyone who is a manager is a team lead. Everyone who speaks Finnish can enter the lab. Everyone who can enter the lab speaks Finnish. Everyone who uses the VPN has a company laptop. Everyone who is not a manager has a key to the archive. Therefore, Ben is on call this week.",
+  "premises": [
+   "∀x ((Parking x) → (Laptop x))",
+   "∀x ((Finnish x) → ¬(Lab x))",
+   "∀x (¬(Monday x) → (Night x))",
+   "∀x ((Mentor x) → ¬(Lead x))",
+   "(ReportsTo Ben Farid)",
+   "(Archive Eva)",
+   "∀x ((Archive x) → ((Remote x) ∨ (Training x)))",
+   "∀x y (((ReportsTo x y) ∧ (Badge y)) → (Union x))",
+   "∀x ((Union x) → ¬(Engineer x))",
+   "∀x ((Remote x) → (Badge x))",
+   "∀x ((Training x) → (Badge x))",
+   "∀x ((Payroll x) → (Mentor x))",
+   "∀x y z (((ReportsTo x y) ∧ (ReportsTo y z)) → (ReportsTo x z))",
+   "(Payroll Anna)",
+   "∀x ((Night x) → ((Vpn x) ∨ (Parking x)))",
+   "(ReportsTo Farid Anna)",
+   "∀x ((Monday x) → (Engineer x))",
+   "∀x ((Laptop x) → (Oncall x))",
+   "∀x ((Lead x) → (Manager x))",
+   "(ReportsTo Eva Ben)",
+   "∀x ((Manager x) → (Lead x))",
+   "∀x ((Finnish x) → (Lab x))",
+   "∀x ((Lab x) → (Finnish x))",
+   "∀x ((Vpn x) → (Laptop x))",
+   "∀x (¬(Manager x) → (Archive x))"
+  ],
+  "conclusion": "(Oncall Ben)",
+  "premise_terms": [
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Parking",
+      "x"
+     ],
+     [
+      "Laptop",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Finnish",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Lab",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Monday",
+       "x"
+      ]
+     ],
+     [
+      "Night",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Mentor",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Lead",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "Ben",
+    "Farid"
+   ],
+   [
+    "Archive",
+    "Eva"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Archive",
+      "x"
+     ],
+     [
+      "or",
+      [
+       "Remote",
+       "x"
+      ],
+      [
+       "Training",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x",
+     "y"
+    ],
+    [
+     "=>",
+     [
+      "and",
+      [
+       "ReportsTo",
+       "x",
+       "y"
+      ],
+      [
+       "Badge",
+       "y"
+      ]
+     ],
+     [
+      "Union",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Union",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Engineer",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Remote",
+      "x"
+     ],
+     [
+      "Badge",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Training",
+      "x"
+     ],
+     [
+      "Badge",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Payroll",
+      "x"
+     ],
+     [
+      "Mentor",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x",
+     "y",
+     "z"
+    ],
+    [
+     "=>",
+     [
+      "and",
+      [
+       "ReportsTo",
+       "x",
+       "y"
+      ],
+      [
+       "ReportsTo",
+       "y",
+       "z"
+      ]
+     ],
+     [
+      "ReportsTo",
+      "x",
+      "z"
+     ]
+    ]
+   ],
+   [
+    "Payroll",
+    "Anna"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Night",
+      "x"
+     ],
+     [
+      "or",
+      [
+       "Vpn",
+       "x"
+      ],
+      [
+       "Parking",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "Farid",
+    "Anna"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Monday",
+      "x"
+     ],
+     [
+      "Engineer",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Laptop",
+      "x"
+     ],
+     [
+      "Oncall",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lead",
+      "x"
+     ],
+     [
+      "Manager",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "Eva",
+    "Ben"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Manager",
+      "x"
+     ],
+     [
+      "Lead",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Finnish",
+      "x"
+     ],
+     [
+      "Lab",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lab",
+      "x"
+     ],
+     [
+      "Finnish",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Vpn",
+      "x"
+     ],
+     [
+      "Laptop",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Manager",
+       "x"
+      ]
+     ],
+     [
+      "Archive",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "Oncall",
+   "Ben"
+  ],
+  "valid": true,
+  "steps": 25,
+  "needed": [
+   1,
+   3,
+   4,
+   5,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18,
+   21,
+   24,
+   25
+  ]
+ },
+ {
+  "id": "Z33",
+  "kind": "first-order",
+  "trap": null,
+  "text": "Everyone who has a company laptop has a parking space. Everyone who mentors a trainee is a team lead. No one who uses the VPN is an engineer. Everyone who is in the union works remotely. Everyone who can enter the lab works the night shift or speaks Finnish, or both. Carla attends the Monday meeting. Everyone who has a key to the archive has a parking space. Everyone who has a parking space is on call this week. Everyone who is not in the union is a manager. Everyone who reports to someone who has done the safety training has a badge. No one who can see the payroll is a team lead. Everyone who can see the payroll attends the Monday meeting. Everyone who uses the VPN is an engineer. Everyone who works the night shift has done the safety training. Everyone who does not mentor a trainee can enter the lab. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who is a manager has a company laptop or has a key to the archive, or both. Eva reports to Carla. Everyone who is an engineer uses the VPN. Everyone who speaks Finnish has done the safety training. Anna can enter the lab. Everyone who attends the Monday meeting can see the payroll. Farid reports to Eva. No one who has a badge works remotely. Anna reports to Farid. Therefore, Farid is on call this week.",
+  "premises": [
+   "∀x ((Laptop x) → (Parking x))",
+   "∀x ((Mentor x) → (Lead x))",
+   "∀x ((Vpn x) → ¬(Engineer x))",
+   "∀x ((Union x) → (Remote x))",
+   "∀x ((Lab x) → ((Night x) ∨ (Finnish x)))",
+   "(Monday Carla)",
+   "∀x ((Archive x) → (Parking x))",
+   "∀x ((Parking x) → (Oncall x))",
+   "∀x (¬(Union x) → (Manager x))",
+   "∀x y (((ReportsTo x y) ∧ (Training y)) → (Badge x))",
+   "∀x ((Payroll x) → ¬(Lead x))",
+   "∀x ((Payroll x) → (Monday x))",
+   "∀x ((Vpn x) → (Engineer x))",
+   "∀x ((Night x) → (Training x))",
+   "∀x (¬(Mentor x) → (Lab x))",
+   "∀x y z (((ReportsTo x y) ∧ (ReportsTo y z)) → (ReportsTo x z))",
+   "∀x ((Manager x) → ((Laptop x) ∨ (Archive x)))",
+   "(ReportsTo Eva Carla)",
+   "∀x ((Engineer x) → (Vpn x))",
+   "∀x ((Finnish x) → (Training x))",
+   "(Lab Anna)",
+   "∀x ((Monday x) → (Payroll x))",
+   "(ReportsTo Farid Eva)",
+   "∀x ((Badge x) → ¬(Remote x))",
+   "(ReportsTo Anna Farid)"
+  ],
+  "conclusion": "(Oncall Farid)",
+  "premise_terms": [
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Laptop",
+      "x"
+     ],
+     [
+      "Parking",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Mentor",
+      "x"
+     ],
+     [
+      "Lead",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Vpn",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Engineer",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Union",
+      "x"
+     ],
+     [
+      "Remote",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lab",
+      "x"
+     ],
+     [
+      "or",
+      [
+       "Night",
+       "x"
+      ],
+      [
+       "Finnish",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "Monday",
+    "Carla"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Archive",
+      "x"
+     ],
+     [
+      "Parking",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Parking",
+      "x"
+     ],
+     [
+      "Oncall",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Union",
+       "x"
+      ]
+     ],
+     [
+      "Manager",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x",
+     "y"
+    ],
+    [
+     "=>",
+     [
+      "and",
+      [
+       "ReportsTo",
+       "x",
+       "y"
+      ],
+      [
+       "Training",
+       "y"
+      ]
+     ],
+     [
+      "Badge",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Payroll",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Lead",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Payroll",
+      "x"
+     ],
+     [
+      "Monday",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Vpn",
+      "x"
+     ],
+     [
+      "Engineer",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Night",
+      "x"
+     ],
+     [
+      "Training",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Mentor",
+       "x"
+      ]
+     ],
+     [
+      "Lab",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x",
+     "y",
+     "z"
+    ],
+    [
+     "=>",
+     [
+      "and",
+      [
+       "ReportsTo",
+       "x",
+       "y"
+      ],
+      [
+       "ReportsTo",
+       "y",
+       "z"
+      ]
+     ],
+     [
+      "ReportsTo",
+      "x",
+      "z"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Manager",
+      "x"
+     ],
+     [
+      "or",
+      [
+       "Laptop",
+       "x"
+      ],
+      [
+       "Archive",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "Eva",
+    "Carla"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Engineer",
+      "x"
+     ],
+     [
+      "Vpn",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Finnish",
+      "x"
+     ],
+     [
+      "Training",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "Lab",
+    "Anna"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Monday",
+      "x"
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "Farid",
+    "Eva"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Badge",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Remote",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "Anna",
+    "Farid"
+   ]
+  ],
+  "conclusion_term": [
+   "Oncall",
+   "Farid"
+  ],
+  "valid": true,
+  "steps": 25,
+  "needed": [
+   1,
+   2,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   14,
+   15,
+   16,
+   17,
+   18,
+   20,
+   22,
+   23,
+   24
+  ]
+ },
+ {
+  "id": "Z34",
+  "kind": "first-order",
+  "trap": "some",
+  "text": "Everyone who reports to someone who can see the payroll has a company laptop. Everyone who uses the VPN is in the union. Anna reports to Ben. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who has a badge is on call this week. Farid reports to Anna. David is on call this week. Everyone who has done the safety training works the night shift. Everyone who can enter the lab can see the payroll. Everyone who does not mentor a trainee speaks Finnish. Everyone who works the night shift has done the safety training. At least one person who is on call this week has a badge. Everyone who does not work the night shift has done the safety training. Farid has a badge. Everyone who works remotely is a team lead. Ben reports to David. Everyone who attends the Monday meeting uses the VPN. Everyone who is a manager is an engineer or can enter the lab, or both. Everyone who speaks Finnish attends the Monday meeting or has a key to the archive, or both. Everyone who does not work remotely is a manager. Everyone who is an engineer can see the payroll. No one who has a badge is a team lead. No one who has a company laptop has a parking space. Everyone who has a key to the archive uses the VPN. Everyone who mentors a trainee has a parking space. Therefore, Anna is in the union.",
+  "premises": [
+   "∀x y (((ReportsTo x y) ∧ (Payroll y)) → (Laptop x))",
+   "∀x ((Vpn x) → (Union x))",
+   "(ReportsTo Anna Ben)",
+   "∀x y z (((ReportsTo x y) ∧ (ReportsTo y z)) → (ReportsTo x z))",
+   "∀x ((Badge x) → (Oncall x))",
+   "(ReportsTo Farid Anna)",
+   "(Oncall David)",
+   "∀x ((Training x) → (Night x))",
+   "∀x ((Lab x) → (Payroll x))",
+   "∀x (¬(Mentor x) → (Finnish x))",
+   "∀x ((Night x) → (Training x))",
+   "∃x ((Oncall x) ∧ (Badge x))",
+   "∀x (¬(Night x) → (Training x))",
+   "(Badge Farid)",
+   "∀x ((Remote x) → (Lead x))",
+   "(ReportsTo Ben David)",
+   "∀x ((Monday x) → (Vpn x))",
+   "∀x ((Manager x) → ((Engineer x) ∨ (Lab x)))",
+   "∀x ((Finnish x) → ((Monday x) ∨ (Archive x)))",
+   "∀x (¬(Remote x) → (Manager x))",
+   "∀x ((Engineer x) → (Payroll x))",
+   "∀x ((Badge x) → ¬(Lead x))",
+   "∀x ((Laptop x) → ¬(Parking x))",
+   "∀x ((Archive x) → (Vpn x))",
+   "∀x ((Mentor x) → (Parking x))"
+  ],
+  "conclusion": "(Union Anna)",
+  "premise_terms": [
+   [
+    "forall",
+    [
+     "x",
+     "y"
+    ],
+    [
+     "=>",
+     [
+      "and",
+      [
+       "ReportsTo",
+       "x",
+       "y"
+      ],
+      [
+       "Payroll",
+       "y"
+      ]
+     ],
+     [
+      "Laptop",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Vpn",
+      "x"
+     ],
+     [
+      "Union",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "Anna",
+    "Ben"
+   ],
+   [
+    "forall",
+    [
+     "x",
+     "y",
+     "z"
+    ],
+    [
+     "=>",
+     [
+      "and",
+      [
+       "ReportsTo",
+       "x",
+       "y"
+      ],
+      [
+       "ReportsTo",
+       "y",
+       "z"
+      ]
+     ],
+     [
+      "ReportsTo",
+      "x",
+      "z"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Badge",
+      "x"
+     ],
+     [
+      "Oncall",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "Farid",
+    "Anna"
+   ],
+   [
+    "Oncall",
+    "David"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Training",
+      "x"
+     ],
+     [
+      "Night",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lab",
+      "x"
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Mentor",
+       "x"
+      ]
+     ],
+     [
+      "Finnish",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Night",
+      "x"
+     ],
+     [
+      "Training",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "exists",
+    [
+     "x"
+    ],
+    [
+     "and",
+     [
+      "Oncall",
+      "x"
+     ],
+     [
+      "Badge",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Night",
+       "x"
+      ]
+     ],
+     [
+      "Training",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "Badge",
+    "Farid"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Remote",
+      "x"
+     ],
+     [
+      "Lead",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "Ben",
+    "David"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Monday",
+      "x"
+     ],
+     [
+      "Vpn",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Manager",
+      "x"
+     ],
+     [
+      "or",
+      [
+       "Engineer",
+       "x"
+      ],
+      [
+       "Lab",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Finnish",
+      "x"
+     ],
+     [
+      "or",
+      [
+       "Monday",
+       "x"
+      ],
+      [
+       "Archive",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Remote",
+       "x"
+      ]
+     ],
+     [
+      "Manager",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Engineer",
+      "x"
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Badge",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Lead",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Laptop",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Parking",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Archive",
+      "x"
+     ],
+     [
+      "Vpn",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Mentor",
+      "x"
+     ],
+     [
+      "Parking",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "Union",
+   "Anna"
+  ],
+  "valid": false,
+  "steps": 25,
+  "needed": [
+   1,
+   2,
+   3,
+   4,
+   7,
+   9,
+   10,
+   12,
+   15,
+   16,
+   17,
+   18,
+   19,
+   20,
+   21,
+   22,
+   23,
+   24,
+   25
+  ]
+ },
+ {
+  "id": "Z35",
+  "kind": "first-order",
+  "trap": null,
+  "text": "Everyone who can enter the lab speaks Finnish or is on call this week, or both. Everyone who is on call this week has a key to the archive. Farid works the night shift. Everyone who attends the Monday meeting works remotely. Everyone who works the night shift has a company laptop. Anyone who reports to someone who reports to a third person also reports to that third person. No one who is an engineer mentors a trainee. Everyone who does not attend the Monday meeting can see the payroll. Everyone who has not done the safety training uses the VPN. No one who has a badge works remotely. Everyone who is not a manager can enter the lab. Everyone who has done the safety training uses the VPN. Everyone who has a key to the archive is a team lead. Everyone who is in the union has a badge. Everyone who has a parking space has a company laptop. Carla is in the union. Eva reports to Carla. Everyone who reports to someone who has a company laptop is an engineer. Farid reports to David. Everyone who speaks Finnish has a key to the archive. No one who has done the safety training uses the VPN. Everyone who is a team lead has a key to the archive. Everyone who is a manager mentors a trainee. Everyone who can see the payroll works the night shift or has a parking space, or both. David reports to Eva. Therefore, David is a team lead.",
+  "premises": [
+   "∀x ((Lab x) → ((Finnish x) ∨ (Oncall x)))",
+   "∀x ((Oncall x) → (Archive x))",
+   "(Night Farid)",
+   "∀x ((Monday x) → (Remote x))",
+   "∀x ((Night x) → (Laptop x))",
+   "∀x y z (((ReportsTo x y) ∧ (ReportsTo y z)) → (ReportsTo x z))",
+   "∀x ((Engineer x) → ¬(Mentor x))",
+   "∀x (¬(Monday x) → (Payroll x))",
+   "∀x (¬(Training x) → (Vpn x))",
+   "∀x ((Badge x) → ¬(Remote x))",
+   "∀x (¬(Manager x) → (Lab x))",
+   "∀x ((Training x) → (Vpn x))",
+   "∀x ((Archive x) → (Lead x))",
+   "∀x ((Union x) → (Badge x))",
+   "∀x ((Parking x) → (Laptop x))",
+   "(Union Carla)",
+   "(ReportsTo Eva Carla)",
+   "∀x y (((ReportsTo x y) ∧ (Laptop y)) → (Engineer x))",
+   "(ReportsTo Farid David)",
+   "∀x ((Finnish x) → (Archive x))",
+   "∀x ((Training x) → ¬(Vpn x))",
+   "∀x ((Lead x) → (Archive x))",
+   "∀x ((Manager x) → (Mentor x))",
+   "∀x ((Payroll x) → ((Night x) ∨ (Parking x)))",
+   "(ReportsTo David Eva)"
+  ],
+  "conclusion": "(Lead David)",
+  "premise_terms": [
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lab",
+      "x"
+     ],
+     [
+      "or",
+      [
+       "Finnish",
+       "x"
+      ],
+      [
+       "Oncall",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Oncall",
+      "x"
+     ],
+     [
+      "Archive",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "Night",
+    "Farid"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Monday",
+      "x"
+     ],
+     [
+      "Remote",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Night",
+      "x"
+     ],
+     [
+      "Laptop",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x",
+     "y",
+     "z"
+    ],
+    [
+     "=>",
+     [
+      "and",
+      [
+       "ReportsTo",
+       "x",
+       "y"
+      ],
+      [
+       "ReportsTo",
+       "y",
+       "z"
+      ]
+     ],
+     [
+      "ReportsTo",
+      "x",
+      "z"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Engineer",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Mentor",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Monday",
+       "x"
+      ]
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Training",
+       "x"
+      ]
+     ],
+     [
+      "Vpn",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Badge",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Remote",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Manager",
+       "x"
+      ]
+     ],
+     [
+      "Lab",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Training",
+      "x"
+     ],
+     [
+      "Vpn",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Archive",
+      "x"
+     ],
+     [
+      "Lead",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Union",
+      "x"
+     ],
+     [
+      "Badge",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Parking",
+      "x"
+     ],
+     [
+      "Laptop",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "Union",
+    "Carla"
+   ],
+   [
+    "ReportsTo",
+    "Eva",
+    "Carla"
+   ],
+   [
+    "forall",
+    [
+     "x",
+     "y"
+    ],
+    [
+     "=>",
+     [
+      "and",
+      [
+       "ReportsTo",
+       "x",
+       "y"
+      ],
+      [
+       "Laptop",
+       "y"
+      ]
+     ],
+     [
+      "Engineer",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "Farid",
+    "David"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Finnish",
+      "x"
+     ],
+     [
+      "Archive",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Training",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Vpn",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lead",
+      "x"
+     ],
+     [
+      "Archive",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Manager",
+      "x"
+     ],
+     [
+      "Mentor",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Payroll",
+      "x"
+     ],
+     [
+      "or",
+      [
+       "Night",
+       "x"
+      ],
+      [
+       "Parking",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "David",
+    "Eva"
+   ]
+  ],
+  "conclusion_term": [
+   "Lead",
+   "David"
+  ],
+  "valid": true,
+  "steps": 25,
+  "needed": [
+   1,
+   2,
+   4,
+   5,
+   6,
+   7,
+   8,
+   10,
+   11,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18,
+   20,
+   23,
+   24,
+   25
+  ]
+ },
+ {
+  "id": "Z36",
+  "kind": "first-order",
+  "trap": "branch",
+  "text": "David is a manager. Everyone who does not attend the Monday meeting has a key to the archive. Anyone who reports to someone who reports to a third person also reports to that third person. No one who works the night shift is in the union. Ben mentors a trainee. Everyone who can see the payroll is on call this week. Everyone who is an engineer can enter the lab. Ben reports to Carla. No one who has a company laptop has done the safety training. Everyone who has a parking space works remotely. Everyone who has a company laptop has done the safety training. Everyone who has a key to the archive speaks Finnish or is a team lead, or both. Everyone who is not an engineer uses the VPN. Everyone who attends the Monday meeting is in the union. Everyone who reports to someone who works remotely works the night shift. Everyone who has a badge works remotely. Everyone who is in the union attends the Monday meeting. No one who mentors a trainee can enter the lab. Eva reports to David. Everyone who is a team lead is a manager. Carla reports to Eva. Everyone who uses the VPN has a parking space or has a badge, or both. Everyone who is a manager mentors a trainee. Everyone who speaks Finnish can see the payroll. No one who has done the safety training has a company laptop. Therefore, Carla is on call this week.",
+  "premises": [
+   "(Manager David)",
+   "∀x (¬(Monday x) → (Archive x))",
+   "∀x y z (((ReportsTo x y) ∧ (ReportsTo y z)) → (ReportsTo x z))",
+   "∀x ((Night x) → ¬(Union x))",
+   "(Mentor Ben)",
+   "∀x ((Payroll x) → (Oncall x))",
+   "∀x ((Engineer x) → (Lab x))",
+   "(ReportsTo Ben Carla)",
+   "∀x ((Laptop x) → ¬(Training x))",
+   "∀x ((Parking x) → (Remote x))",
+   "∀x ((Laptop x) → (Training x))",
+   "∀x ((Archive x) → ((Finnish x) ∨ (Lead x)))",
+   "∀x (¬(Engineer x) → (Vpn x))",
+   "∀x ((Monday x) → (Union x))",
+   "∀x y (((ReportsTo x y) ∧ (Remote y)) → (Night x))",
+   "∀x ((Badge x) → (Remote x))",
+   "∀x ((Union x) → (Monday x))",
+   "∀x ((Mentor x) → ¬(Lab x))",
+   "(ReportsTo Eva David)",
+   "∀x ((Lead x) → (Manager x))",
+   "(ReportsTo Carla Eva)",
+   "∀x ((Vpn x) → ((Parking x) ∨ (Badge x)))",
+   "∀x ((Manager x) → (Mentor x))",
+   "∀x ((Finnish x) → (Payroll x))",
+   "∀x ((Training x) → ¬(Laptop x))"
+  ],
+  "conclusion": "(Oncall Carla)",
+  "premise_terms": [
+   [
+    "Manager",
+    "David"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Monday",
+       "x"
+      ]
+     ],
+     [
+      "Archive",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x",
+     "y",
+     "z"
+    ],
+    [
+     "=>",
+     [
+      "and",
+      [
+       "ReportsTo",
+       "x",
+       "y"
+      ],
+      [
+       "ReportsTo",
+       "y",
+       "z"
+      ]
+     ],
+     [
+      "ReportsTo",
+      "x",
+      "z"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Night",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Union",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "Mentor",
+    "Ben"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Payroll",
+      "x"
+     ],
+     [
+      "Oncall",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Engineer",
+      "x"
+     ],
+     [
+      "Lab",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "Ben",
+    "Carla"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Laptop",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Training",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Parking",
+      "x"
+     ],
+     [
+      "Remote",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Laptop",
+      "x"
+     ],
+     [
+      "Training",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Archive",
+      "x"
+     ],
+     [
+      "or",
+      [
+       "Finnish",
+       "x"
+      ],
+      [
+       "Lead",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Engineer",
+       "x"
+      ]
+     ],
+     [
+      "Vpn",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Monday",
+      "x"
+     ],
+     [
+      "Union",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x",
+     "y"
+    ],
+    [
+     "=>",
+     [
+      "and",
+      [
+       "ReportsTo",
+       "x",
+       "y"
+      ],
+      [
+       "Remote",
+       "y"
+      ]
+     ],
+     [
+      "Night",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Badge",
+      "x"
+     ],
+     [
+      "Remote",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Union",
+      "x"
+     ],
+     [
+      "Monday",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Mentor",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Lab",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "Eva",
+    "David"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lead",
+      "x"
+     ],
+     [
+      "Manager",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "Carla",
+    "Eva"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Vpn",
+      "x"
+     ],
+     [
+      "or",
+      [
+       "Parking",
+       "x"
+      ],
+      [
+       "Badge",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Manager",
+      "x"
+     ],
+     [
+      "Mentor",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Finnish",
+      "x"
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Training",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Laptop",
+       "x"
+      ]
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "Oncall",
+   "Carla"
+  ],
+  "valid": false,
+  "steps": 25,
+  "needed": [
+   1,
+   2,
+   3,
+   4,
+   6,
+   7,
+   10,
+   12,
+   13,
+   14,
+   15,
+   16,
+   18,
+   19,
+   20,
+   21,
+   22,
+   23,
+   24
+  ]
+ },
+ {
+  "id": "Z37",
+  "kind": "first-order",
+  "trap": "converse",
+  "text": "Everyone who has a parking space speaks Finnish. Everyone who attends the Monday meeting speaks Finnish. Everyone who has done the safety training can see the payroll. Everyone who is on call this week mentors a trainee. Everyone who works the night shift has a company laptop. Everyone who reports to someone who has a badge is an engineer. Carla has a company laptop. Everyone who can enter the lab works remotely. Everyone who is in the union is a manager or uses the VPN, or both. Everyone who works remotely can enter the lab. Everyone who has not done the safety training is a team lead. Eva reports to David. Everyone who has a key to the archive speaks Finnish. Everyone who does not work remotely is in the union. Everyone who is a team lead attends the Monday meeting or has a parking space, or both. Ben reports to Eva. David works the night shift. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who uses the VPN has a badge. No one who has a company laptop can enter the lab. No one who mentors a trainee is on call this week. No one who is an engineer can see the payroll. No one who is on call this week mentors a trainee. Carla reports to Ben. Everyone who is a manager has a badge. Therefore, Ben has a key to the archive.",
+  "premises": [
+   "∀x ((Parking x) → (Finnish x))",
+   "∀x ((Monday x) → (Finnish x))",
+   "∀x ((Training x) → (Payroll x))",
+   "∀x ((Oncall x) → (Mentor x))",
+   "∀x ((Night x) → (Laptop x))",
+   "∀x y (((ReportsTo x y) ∧ (Badge y)) → (Engineer x))",
+   "(Laptop Carla)",
+   "∀x ((Lab x) → (Remote x))",
+   "∀x ((Union x) → ((Manager x) ∨ (Vpn x)))",
+   "∀x ((Remote x) → (Lab x))",
+   "∀x (¬(Training x) → (Lead x))",
+   "(ReportsTo Eva David)",
+   "∀x ((Archive x) → (Finnish x))",
+   "∀x (¬(Remote x) → (Union x))",
+   "∀x ((Lead x) → ((Monday x) ∨ (Parking x)))",
+   "(ReportsTo Ben Eva)",
+   "(Night David)",
+   "∀x y z (((ReportsTo x y) ∧ (ReportsTo y z)) → (ReportsTo x z))",
+   "∀x ((Vpn x) → (Badge x))",
+   "∀x ((Laptop x) → ¬(Lab x))",
+   "∀x ((Mentor x) → ¬(Oncall x))",
+   "∀x ((Engineer x) → ¬(Payroll x))",
+   "∀x ((Oncall x) → ¬(Mentor x))",
+   "(ReportsTo Carla Ben)",
+   "∀x ((Manager x) → (Badge x))"
+  ],
+  "conclusion": "(Archive Ben)",
+  "premise_terms": [
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Parking",
+      "x"
+     ],
+     [
+      "Finnish",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Monday",
+      "x"
+     ],
+     [
+      "Finnish",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Training",
+      "x"
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Oncall",
+      "x"
+     ],
+     [
+      "Mentor",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Night",
+      "x"
+     ],
+     [
+      "Laptop",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x",
+     "y"
+    ],
+    [
+     "=>",
+     [
+      "and",
+      [
+       "ReportsTo",
+       "x",
+       "y"
+      ],
+      [
+       "Badge",
+       "y"
+      ]
+     ],
+     [
+      "Engineer",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "Laptop",
+    "Carla"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lab",
+      "x"
+     ],
+     [
+      "Remote",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Union",
+      "x"
+     ],
+     [
+      "or",
+      [
+       "Manager",
+       "x"
+      ],
+      [
+       "Vpn",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Remote",
+      "x"
+     ],
+     [
+      "Lab",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Training",
+       "x"
+      ]
+     ],
+     [
+      "Lead",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "Eva",
+    "David"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Archive",
+      "x"
+     ],
+     [
+      "Finnish",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Remote",
+       "x"
+      ]
+     ],
+     [
+      "Union",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lead",
+      "x"
+     ],
+     [
+      "or",
+      [
+       "Monday",
+       "x"
+      ],
+      [
+       "Parking",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "Ben",
+    "Eva"
+   ],
+   [
+    "Night",
+    "David"
+   ],
+   [
+    "forall",
+    [
+     "x",
+     "y",
+     "z"
+    ],
+    [
+     "=>",
+     [
+      "and",
+      [
+       "ReportsTo",
+       "x",
+       "y"
+      ],
+      [
+       "ReportsTo",
+       "y",
+       "z"
+      ]
+     ],
+     [
+      "ReportsTo",
+      "x",
+      "z"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Vpn",
+      "x"
+     ],
+     [
+      "Badge",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Laptop",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Lab",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Mentor",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Oncall",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Engineer",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Payroll",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Oncall",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Mentor",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "Carla",
+    "Ben"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Manager",
+      "x"
+     ],
+     [
+      "Badge",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "Archive",
+   "Ben"
+  ],
+  "valid": false,
+  "steps": 25,
+  "needed": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18,
+   19,
+   20,
+   22,
+   25
+  ]
+ },
+ {
+  "id": "Z38",
+  "kind": "first-order",
+  "trap": "converse",
+  "text": "David mentors a trainee. Everyone who speaks Finnish is a manager. David reports to Farid. Everyone who works remotely attends the Monday meeting. No one who has a company laptop uses the VPN. No one who attends the Monday meeting has a key to the archive. Everyone who does not have a parking space can see the payroll. Everyone who is a team lead has a badge. Everyone who is an engineer has a key to the archive. Everyone who works the night shift is a team lead. Everyone who is not an engineer is in the union. No one who has done the safety training is on call this week. Everyone who is on call this week has a parking space. Carla reports to Ben. Everyone who has a badge is a team lead. Ben works remotely. Everyone who can see the payroll works the night shift or can enter the lab, or both. Everyone who uses the VPN has a company laptop. Everyone who does not have a company laptop uses the VPN. Farid reports to Carla. Everyone who reports to someone who is a manager has done the safety training. Anyone who reports to someone who reports to a third person also reports to that third person. Everyone who is in the union speaks Finnish or mentors a trainee, or both. Everyone who mentors a trainee is a manager. Everyone who can enter the lab is a team lead. Therefore, Farid has a badge.",
+  "premises": [
+   "(Mentor David)",
+   "∀x ((Finnish x) → (Manager x))",
+   "(ReportsTo David Farid)",
+   "∀x ((Remote x) → (Monday x))",
+   "∀x ((Laptop x) → ¬(Vpn x))",
+   "∀x ((Monday x) → ¬(Archive x))",
+   "∀x (¬(Parking x) → (Payroll x))",
+   "∀x ((Lead x) → (Badge x))",
+   "∀x ((Engineer x) → (Archive x))",
+   "∀x ((Night x) → (Lead x))",
+   "∀x (¬(Engineer x) → (Union x))",
+   "∀x ((Training x) → ¬(Oncall x))",
+   "∀x ((Oncall x) → (Parking x))",
+   "(ReportsTo Carla Ben)",
+   "∀x ((Badge x) → (Lead x))",
+   "(Remote Ben)",
+   "∀x ((Payroll x) → ((Night x) ∨ (Lab x)))",
+   "∀x ((Vpn x) → (Laptop x))",
+   "∀x (¬(Laptop x) → (Vpn x))",
+   "(ReportsTo Farid Carla)",
+   "∀x y (((ReportsTo x y) ∧ (Manager y)) → (Training x))",
+   "∀x y z (((ReportsTo x y) ∧ (ReportsTo y z)) → (ReportsTo x z))",
+   "∀x ((Union x) → ((Finnish x) ∨ (Mentor x)))",
+   "∀x ((Mentor x) → (Manager x))",
+   "∀x ((Lab x) → (Lead x))"
+  ],
+  "conclusion": "(Badge Farid)",
+  "premise_terms": [
+   [
+    "Mentor",
+    "David"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Finnish",
+      "x"
+     ],
+     [
+      "Manager",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "David",
+    "Farid"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Remote",
+      "x"
+     ],
+     [
+      "Monday",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Laptop",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Vpn",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Monday",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Archive",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Parking",
+       "x"
+      ]
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lead",
+      "x"
+     ],
+     [
+      "Badge",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Engineer",
+      "x"
+     ],
+     [
+      "Archive",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Night",
+      "x"
+     ],
+     [
+      "Lead",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Engineer",
+       "x"
+      ]
+     ],
+     [
+      "Union",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Training",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Oncall",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Oncall",
+      "x"
+     ],
+     [
+      "Parking",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "Carla",
+    "Ben"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Badge",
+      "x"
+     ],
+     [
+      "Lead",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "Remote",
+    "Ben"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Payroll",
+      "x"
+     ],
+     [
+      "or",
+      [
+       "Night",
+       "x"
+      ],
+      [
+       "Lab",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Vpn",
+      "x"
+     ],
+     [
+      "Laptop",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Laptop",
+       "x"
+      ]
+     ],
+     [
+      "Vpn",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "Farid",
+    "Carla"
+   ],
+   [
+    "forall",
+    [
+     "x",
+     "y"
+    ],
+    [
+     "=>",
+     [
+      "and",
+      [
+       "ReportsTo",
+       "x",
+       "y"
+      ],
+      [
+       "Manager",
+       "y"
+      ]
+     ],
+     [
+      "Training",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x",
+     "y",
+     "z"
+    ],
+    [
+     "=>",
+     [
+      "and",
+      [
+       "ReportsTo",
+       "x",
+       "y"
+      ],
+      [
+       "ReportsTo",
+       "y",
+       "z"
+      ]
+     ],
+     [
+      "ReportsTo",
+      "x",
+      "z"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Union",
+      "x"
+     ],
+     [
+      "or",
+      [
+       "Finnish",
+       "x"
+      ],
+      [
+       "Mentor",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Mentor",
+      "x"
+     ],
+     [
+      "Manager",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lab",
+      "x"
+     ],
+     [
+      "Lead",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "Badge",
+   "Farid"
+  ],
+  "valid": false,
+  "steps": 25,
+  "needed": [
+   2,
+   4,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   16,
+   17,
+   20,
+   21,
+   22,
+   23,
+   24,
+   25
+  ]
+ },
+ {
+  "id": "Z39",
+  "kind": "first-order",
+  "trap": null,
+  "text": "Eva reports to Carla. Everyone who mentors a trainee is an engineer. Everyone who does not have a key to the archive uses the VPN. Everyone who cannot enter the lab can see the payroll. Everyone who has a key to the archive has a parking space. Everyone who attends the Monday meeting is on call this week. No one who is a manager is on call this week. Ben reports to David. Everyone who has done the safety training works the night shift. Everyone who works remotely has a badge or mentors a trainee, or both. Everyone who is in the union works the night shift. Anyone who reports to someone who reports to a third person also reports to that third person. Eva has a company laptop. Everyone who uses the VPN has done the safety training or is in the union, or both. David has a company laptop. Everyone who is an engineer speaks Finnish. No one who can see the payroll can enter the lab. Everyone who can see the payroll can enter the lab. Everyone who is a team lead has a company laptop. Carla reports to Ben. No one who is a team lead has a parking space. Everyone who reports to someone who works the night shift is a manager. Everyone who has a badge is an engineer. Everyone who has a company laptop is a team lead. Everyone who does not attend the Monday meeting works remotely. Therefore, Carla speaks Finnish.",
+  "premises": [
+   "(ReportsTo Eva Carla)",
+   "∀x ((Mentor x) → (Engineer x))",
+   "∀x (¬(Archive x) → (Vpn x))",
+   "∀x (¬(Lab x) → (Payroll x))",
+   "∀x ((Archive x) → (Parking x))",
+   "∀x ((Monday x) → (Oncall x))",
+   "∀x ((Manager x) → ¬(Oncall x))",
+   "(ReportsTo Ben David)",
+   "∀x ((Training x) → (Night x))",
+   "∀x ((Remote x) → ((Badge x) ∨ (Mentor x)))",
+   "∀x ((Union x) → (Night x))",
+   "∀x y z (((ReportsTo x y) ∧ (ReportsTo y z)) → (ReportsTo x z))",
+   "(Laptop Eva)",
+   "∀x ((Vpn x) → ((Training x) ∨ (Union x)))",
+   "(Laptop David)",
+   "∀x ((Engineer x) → (Finnish x))",
+   "∀x ((Payroll x) → ¬(Lab x))",
+   "∀x ((Payroll x) → (Lab x))",
+   "∀x ((Lead x) → (Laptop x))",
+   "(ReportsTo Carla Ben)",
+   "∀x ((Lead x) → ¬(Parking x))",
+   "∀x y (((ReportsTo x y) ∧ (Night y)) → (Manager x))",
+   "∀x ((Badge x) → (Engineer x))",
+   "∀x ((Laptop x) → (Lead x))",
+   "∀x (¬(Monday x) → (Remote x))"
+  ],
+  "conclusion": "(Finnish Carla)",
+  "premise_terms": [
+   [
+    "ReportsTo",
+    "Eva",
+    "Carla"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Mentor",
+      "x"
+     ],
+     [
+      "Engineer",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Archive",
+       "x"
+      ]
+     ],
+     [
+      "Vpn",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Lab",
+       "x"
+      ]
+     ],
+     [
+      "Payroll",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Archive",
+      "x"
+     ],
+     [
+      "Parking",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Monday",
+      "x"
+     ],
+     [
+      "Oncall",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Manager",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Oncall",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "Ben",
+    "David"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Training",
+      "x"
+     ],
+     [
+      "Night",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Remote",
+      "x"
+     ],
+     [
+      "or",
+      [
+       "Badge",
+       "x"
+      ],
+      [
+       "Mentor",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Union",
+      "x"
+     ],
+     [
+      "Night",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x",
+     "y",
+     "z"
+    ],
+    [
+     "=>",
+     [
+      "and",
+      [
+       "ReportsTo",
+       "x",
+       "y"
+      ],
+      [
+       "ReportsTo",
+       "y",
+       "z"
+      ]
+     ],
+     [
+      "ReportsTo",
+      "x",
+      "z"
+     ]
+    ]
+   ],
+   [
+    "Laptop",
+    "Eva"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Vpn",
+      "x"
+     ],
+     [
+      "or",
+      [
+       "Training",
+       "x"
+      ],
+      [
+       "Union",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "Laptop",
+    "David"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Engineer",
+      "x"
+     ],
+     [
+      "Finnish",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Payroll",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Lab",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Payroll",
+      "x"
+     ],
+     [
+      "Lab",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lead",
+      "x"
+     ],
+     [
+      "Laptop",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "Carla",
+    "Ben"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lead",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Parking",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x",
+     "y"
+    ],
+    [
+     "=>",
+     [
+      "and",
+      [
+       "ReportsTo",
+       "x",
+       "y"
+      ],
+      [
+       "Night",
+       "y"
+      ]
+     ],
+     [
+      "Manager",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Badge",
+      "x"
+     ],
+     [
+      "Engineer",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Laptop",
+      "x"
+     ],
+     [
+      "Lead",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Monday",
+       "x"
+      ]
+     ],
+     [
+      "Remote",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "Finnish",
+   "Carla"
+  ],
+  "valid": true,
+  "steps": 25,
+  "needed": [
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   14,
+   15,
+   16,
+   20,
+   21,
+   22,
+   23,
+   24,
+   25
+  ]
+ },
+ {
+  "id": "Z40",
+  "kind": "first-order",
+  "trap": "other",
+  "text": "Everyone who reports to someone who has a key to the archive can enter the lab. No one who mentors a trainee has a badge. Anyone who reports to someone who reports to a third person also reports to that third person. Carla reports to Eva. Eva reports to Farid. Everyone who can see the payroll mentors a trainee. Everyone who works the night shift has a badge. Everyone who is a team lead is an engineer or has done the safety training, or both. Everyone who is an engineer has a parking space. Carla attends the Monday meeting. Farid reports to Ben. Everyone who attends the Monday meeting speaks Finnish or has a company laptop, or both. Everyone who speaks Finnish has a key to the archive. Anna can see the payroll. Everyone who has a parking space is a manager. Everyone who has done the safety training has a parking space. Everyone who does not work remotely uses the VPN. No one who can enter the lab is on call this week. Everyone who is not in the union is a team lead. Everyone who is in the union is on call this week. Everyone who has a company laptop has a key to the archive. No one who uses the VPN works remotely. Everyone who is on call this week is in the union. Everyone who uses the VPN works remotely. Everyone who does not work the night shift attends the Monday meeting. Therefore, Eva is a manager.",
+  "premises": [
+   "∀x y (((ReportsTo x y) ∧ (Archive y)) → (Lab x))",
+   "∀x ((Mentor x) → ¬(Badge x))",
+   "∀x y z (((ReportsTo x y) ∧ (ReportsTo y z)) → (ReportsTo x z))",
+   "(ReportsTo Carla Eva)",
+   "(ReportsTo Eva Farid)",
+   "∀x ((Payroll x) → (Mentor x))",
+   "∀x ((Night x) → (Badge x))",
+   "∀x ((Lead x) → ((Engineer x) ∨ (Training x)))",
+   "∀x ((Engineer x) → (Parking x))",
+   "(Monday Carla)",
+   "(ReportsTo Farid Ben)",
+   "∀x ((Monday x) → ((Finnish x) ∨ (Laptop x)))",
+   "∀x ((Finnish x) → (Archive x))",
+   "(Payroll Anna)",
+   "∀x ((Parking x) → (Manager x))",
+   "∀x ((Training x) → (Parking x))",
+   "∀x (¬(Remote x) → (Vpn x))",
+   "∀x ((Lab x) → ¬(Oncall x))",
+   "∀x (¬(Union x) → (Lead x))",
+   "∀x ((Union x) → (Oncall x))",
+   "∀x ((Laptop x) → (Archive x))",
+   "∀x ((Vpn x) → ¬(Remote x))",
+   "∀x ((Oncall x) → (Union x))",
+   "∀x ((Vpn x) → (Remote x))",
+   "∀x (¬(Night x) → (Monday x))"
+  ],
+  "conclusion": "(Manager Eva)",
+  "premise_terms": [
+   [
+    "forall",
+    [
+     "x",
+     "y"
+    ],
+    [
+     "=>",
+     [
+      "and",
+      [
+       "ReportsTo",
+       "x",
+       "y"
+      ],
+      [
+       "Archive",
+       "y"
+      ]
+     ],
+     [
+      "Lab",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Mentor",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Badge",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x",
+     "y",
+     "z"
+    ],
+    [
+     "=>",
+     [
+      "and",
+      [
+       "ReportsTo",
+       "x",
+       "y"
+      ],
+      [
+       "ReportsTo",
+       "y",
+       "z"
+      ]
+     ],
+     [
+      "ReportsTo",
+      "x",
+      "z"
+     ]
+    ]
+   ],
+   [
+    "ReportsTo",
+    "Carla",
+    "Eva"
+   ],
+   [
+    "ReportsTo",
+    "Eva",
+    "Farid"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Payroll",
+      "x"
+     ],
+     [
+      "Mentor",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Night",
+      "x"
+     ],
+     [
+      "Badge",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lead",
+      "x"
+     ],
+     [
+      "or",
+      [
+       "Engineer",
+       "x"
+      ],
+      [
+       "Training",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Engineer",
+      "x"
+     ],
+     [
+      "Parking",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "Monday",
+    "Carla"
+   ],
+   [
+    "ReportsTo",
+    "Farid",
+    "Ben"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Monday",
+      "x"
+     ],
+     [
+      "or",
+      [
+       "Finnish",
+       "x"
+      ],
+      [
+       "Laptop",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Finnish",
+      "x"
+     ],
+     [
+      "Archive",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "Payroll",
+    "Anna"
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Parking",
+      "x"
+     ],
+     [
+      "Manager",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Training",
+      "x"
+     ],
+     [
+      "Parking",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Remote",
+       "x"
+      ]
+     ],
+     [
+      "Vpn",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Lab",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Oncall",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Union",
+       "x"
+      ]
+     ],
+     [
+      "Lead",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Union",
+      "x"
+     ],
+     [
+      "Oncall",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Laptop",
+      "x"
+     ],
+     [
+      "Archive",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Vpn",
+      "x"
+     ],
+     [
+      "not",
+      [
+       "Remote",
+       "x"
+      ]
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Oncall",
+      "x"
+     ],
+     [
+      "Union",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "Vpn",
+      "x"
+     ],
+     [
+      "Remote",
+      "x"
+     ]
+    ]
+   ],
+   [
+    "forall",
+    [
+     "x"
+    ],
+    [
+     "=>",
+     [
+      "not",
+      [
+       "Night",
+       "x"
+      ]
+     ],
+     [
+      "Monday",
+      "x"
+     ]
+    ]
+   ]
+  ],
+  "conclusion_term": [
+   "Manager",
+   "Eva"
+  ],
+  "valid": false,
+  "steps": 25,
+  "needed": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   18,
+   19,
+   20,
+   21,
    25
   ]
  }

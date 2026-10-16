@@ -70,3 +70,11 @@ def test_first_order_with_equality():
     out = check_argument(["(= a b)", "(P a)"], "(P b)")
     assert out.startswith("VALID")
     assert "Premises needed: 1, 2" in out
+
+
+def test_atoms_written_as_calls_and_unnested_quantifiers():
+    # two shapes models write: ReportsTo(Carla, Eva) and forall [x] forall [y] ...
+    out = check_argument(["ReportsTo(Carla, Eva)", "ReportsTo(Eva, Ben)",
+                          "(forall [x] forall [y] forall [z] (=> (and (ReportsTo x y) (ReportsTo y z)) (ReportsTo x z)))"],
+                         "ReportsTo(Carla, Ben)")
+    assert out.startswith("VALID")

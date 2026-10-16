@@ -424,7 +424,8 @@ def harder_main(want, make=None, prefix="X", seed=2028):
         chain_at = sorted(order.index(k) for k in range(len(chain)))
         pfs, cf = [p[0] for p in ps], concl[0]
         key = (tuple(map(str, pfs)), str(cf))
-        if key in seen:
+        # a distractor may not repeat a premise word for word
+        if key in seen or len(set(key[0])) < len(pfs):
             continue
         arg = Argument(pfs, cf, timeout=10)
         valid = arg.valid
@@ -456,7 +457,8 @@ def hard_main(want):
             ps, kind = perturb(rng, ps, concl, spots, ctx)
         pfs, cf = [p[0] for p in ps], concl[0]
         key = (tuple(map(str, pfs)), str(cf))
-        if key in seen:
+        # a distractor may not repeat a premise word for word
+        if key in seen or len(set(key[0])) < len(pfs):
             continue
         arg = Argument(pfs, cf, timeout=10)
         valid = arg.valid

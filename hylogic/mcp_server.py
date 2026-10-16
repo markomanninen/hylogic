@@ -16,6 +16,7 @@ HYLOGIC_MCP_LOG  file to append every call and its result to, as JSON lines
 
 import json
 import os
+import re
 import time
 
 import hy
@@ -26,6 +27,8 @@ from hylogic.argument import Argument
 from hylogic.exercises import describe
 from hylogic.formulas import formula, pretty
 from hylogic.terms import term
+
+QUANTIFIER_WORDS = {"forall", "exists", "∀", "∃"}
 
 INSTRUCTIONS = """\
 check_argument decides whether premises logically entail a conclusion. \
@@ -39,9 +42,41 @@ and give their meanings to get the explanation in words.
 mcp = FastMCP("hylogic", instructions=INSTRUCTIONS)
 
 
+_CALL = re.compile(r"(?<![\w(\[-])([A-Za-z_][\w-]*)\(([^()]*)\)")
+
+
+def _calls_to_lists(text):
+    """Atoms written as calls, ReportsTo(Carla, Eva), as s-expressions:
+    (ReportsTo Carla Eva). Models write this form often, and it is unambiguous."""
+    while True:
+        new = _CALL.sub(lambda m: "(" + m.group(1) + " " + m.group(2).replace(",", " ") + ")", text)
+        if new == text:
+            return text
+        text = new
+
+
+def _nest_quantifiers(form):
+    """(forall [x] forall [y] body) as (forall [x] (forall [y] body))."""
+    if isinstance(form, hy.models.Expression):
+        items = [_nest_quantifiers(x) for x in form]
+        if (len(items) > 3 and isinstance(items[0], hy.models.Symbol)
+                and str(items[0]) in QUANTIFIER_WORDS and isinstance(items[1], hy.models.List)):
+            return hy.models.Expression([items[0], items[1], _nest_quantifiers(hy.models.Expression(items[2:]))])
+        return hy.models.Expression(items)
+    return form
+
+
 def _read(text):
     """One formula read from s-expression text."""
-    forms = list(hy.read_many(text))
+    try:
+        forms = list(hy.read_many(text))
+    except Exception:
+        forms = []
+    if len(forms) != 1 and _CALL.search(text):
+        forms = list(hy.read_many(_calls_to_lists(text)))
+    elif len(forms) == 1 and _CALL.search(text) and not isinstance(forms[0], hy.models.Expression):
+        forms = list(hy.read_many(_calls_to_lists(text)))
+    forms = [_nest_quantifiers(f) for f in forms]
     if len(forms) != 1:
         raise ValueError(f"expected one formula, found {len(forms)}")
     form = forms[0]
