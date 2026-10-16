@@ -348,7 +348,8 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
   (setv args (list (or argv (cut sys.argv 1 None)))
         time-limit 10.0
         options {"age_ratio" 10 "equality" 2 "ordered" 1 "index" 1 "definitional" 8 "epr" 1
-                 "goal_bias" 6 "portfolio" 80 "finder_first" 30})
+                 "goal_bias" 6 "portfolio" 40 "schedule" "unordered"
+                 "finder_first" 30})
   ;; --set name=value passes a search option to prove, for experiments
   (while (in "--set" args)
     (setv i (.index args "--set")
