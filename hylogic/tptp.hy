@@ -239,6 +239,13 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
     (= result-status "timeout") "Timeout"
     True "GaveUp"))
 
+(setv SCHEDULE
+  ;; strategies a portfolio can run after the main search, as option changes
+  {"plain" {}
+   "unordered" {"ordered" 0}
+   "no_goal_bias" {"goal_bias" 2 "age_ratio" 3}
+   "fifo" {"age_ratio" 1}})
+
 (defn solve [path [time-limit 10.0] [limit 1000000] [equality 0] [epr 0] #** options]
   "Read and attempt a TPTP problem. Returns the SZS status and the result.
   equality 1 adds the equality axioms when the problem uses =, and equality 2
@@ -292,7 +299,7 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
         axioms (if (and (= equality 1) problem.has-equality)
                    [#* problem.premises #* (equality-axioms [#* problem.premises problem.goal])]
                    problem.premises)
-        search-options (dfor [k v] (.items options) :if (not-in k #{"superposition" "portfolio" "finder_first"}) k v)
+        search-options (dfor [k v] (.items options) :if (not-in k #{"superposition" "portfolio" "finder_first" "schedule"}) k v)
         budget (- (* 0.8 time-limit) (- (time.monotonic) started))
         main-share (if (.get options "portfolio" 0) (/ (get options "portfolio") 100) 1)
         result (prove problem.goal axioms :limit limit
@@ -300,16 +307,26 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
                       :superposition (if (= equality 2) 1 (.get options "superposition" 0))
                       #** search-options)
         model None)
-  ;; portfolio: if the main search fails, plain resolution with fair selection gets
-  ;; the rest of the search time; it finds some proofs that ordering prunes away
+  ;; portfolio: if the main search fails, the strategies in "schedule" share the
+  ;; rest of the search time; each finds proofs the others prune away
+  ;; (benchmarks/tptp/strategies.py measured which)
   (when (and (.get options "portfolio" 0) (not result.proved) (!= result.status "saturated"))
-    (setv rest (- (* 0.8 time-limit) (- (time.monotonic) started)))
-    (when (> rest 0.5)
-      (setv second (prove problem.goal axioms :limit limit :timeout rest
-                          :age-ratio (.get options "age_ratio" 10)
-                          :definitional (.get options "definitional" False)))
+    (setv names (.split (.get options "schedule" "plain") "+"))
+    (for [[i name] (enumerate names)]
+      (setv rest (- (* 0.8 time-limit) (- (time.monotonic) started)))
+      (when (< rest 0.5) (break))
+      (setv share (/ rest (- (len names) i))
+            strategy (get SCHEDULE name)
+            second (if (= name "plain")
+                       (prove problem.goal axioms :limit limit :timeout share
+                              :age-ratio (.get options "age_ratio" 10)
+                              :definitional (.get options "definitional" False))
+                       (prove problem.goal axioms :limit limit :timeout share
+                              :superposition (if (= equality 2) 1 0)
+                              #** (| search-options strategy))))
       (when (or second.proved (and (= second.status "saturated") (not problem.has-equality)))
-        (setv result second))))
+        (setv result second)
+        (break))))
   ;; the two model finders find different countermodels (benchmarks/tptp):
   ;; enumerating function tables, then flattening into SAT; they share the rest
   (when (not result.proved)
@@ -336,7 +353,8 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
   (while (in "--set" args)
     (setv i (.index args "--set")
           [k v] (.split (get args (+ i 1)) "=" 1)
-          (get options (hy.mangle k)) (int v))
+          ;; numbers for most options, names for schedule (such as unordered+fifo)
+          (get options (hy.mangle k)) (if (.isdigit v) (int v) v))
     (del (cut args i (+ i 2))))
   (when (in "--time-limit" args)
     (setv i (.index args "--time-limit")
