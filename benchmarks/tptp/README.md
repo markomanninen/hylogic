@@ -284,7 +284,12 @@ first-UIP learning, backjumping, VSIDS and restarts agreed with DPLL on 600
 random instances and was 7 times faster on pigeonhole 8->7 and over 100
 times faster on random 3-SAT with 160 variables. The algebra problems went
 from 9 seconds to 0.3, and the model finders, which use the same solver, now
-show 23 non-theorems, more than Vampire's 20.
+show 23 non-theorems, more than the 20 Vampire shows in its theorem-proving
+mode. That comparison flatters HyLogic: in its satisfiability schedule
+(`--mode portfolio --schedule casc_sat`) Vampire shows 36 of the 40, and its
+finite model builder alone (`-sa fmb`) 34. The baseline runs used the
+theorem-proving mode for every problem, which is the right setting for the
+theorems but not for the non-theorems.
 
 **A soundness bug, again found by the benchmark.** The first CDCL run
 reported five isomorphism theorems as CounterSatisfiable. A constant fixed to
@@ -308,4 +313,6 @@ it is now SMT-LIB's and TPTP's own equality.
 | HyLogic after round three | 105 | 23 |
 | Lean 4.35 `grind`, on HyLogic's export | 103 | |
 | E 3.2.5 | 207 | 16 |
-| Vampire 5.1.0, and HyLogic through the bridge | 231 | 20 |
+| Vampire 5.1.0 (`casc`), and HyLogic through the bridge | 231 | 20 |
+| Vampire 5.1.0, satisfiability schedule (`casc_sat`) | | 36 |
+| Vampire 5.1.0, finite model builder only (`-sa fmb`) | | 34 |
