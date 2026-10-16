@@ -160,6 +160,17 @@
   (assert (= (sorted (distinct-constants (clauses-of-all ['(¬ (= a b)) '(¬ (= b c)) '(¬ (= a c))])))
              ["a" "b" "c"])))
 
+(defn test-finite-decision-needs-the-whole-bound-searched []
+  ;; every element is one of 11 distinct constants: a model with 11 elements, but
+  ;; the search stops at 10, which once made "no model up to 10" a proof
+  (import hylogic.finite [decide-finite])
+  (setv cs (lfor i (range 11) f"c{i}")
+        cl [(frozenset (gfor c cs #("=" "?x" c)))
+            #* (lfor [i a] (enumerate cs) b (cut cs (+ i 1) None) (frozenset [#("not" #("=" a b))]))])
+  (assert (!= (decide-finite cl) "proved"))
+  ;; with 3 constants the bound is searched in full, and a model is found
+  (assert (= (decide-finite [(frozenset (gfor c ["a" "b" "c"] #("=" "?x" c)))]) "saturated")))
+
 (defn test-equality-is-exported-as-equality []
   (setv smt (to-smtlib ['(= a b) '(P a)] '(P b)))
   (assert (in "(assert (= |a| |b|))" smt))
@@ -192,6 +203,41 @@
 
 (defn test-ground-needs-ground-clauses []
   (assert (is (decide-ground [(frozenset [#("p" "?x")])]) None)))
+
+(defn test-ground-bound-does-not-intersect-covering-clauses []
+  ;; f(a) = b | f(a) = c and f(a) = c | f(a) = d hold with f(a) = b = d, so f(a)
+  ;; need not be c; g1..g3 are covered only on c, and g1(f(a)), g2(f(a)), g3(f(a))
+  ;; are three new elements. A model has 6 elements, more than the 4 constants;
+  ;; intersecting the two clauses once gave the bound 4 and a wrong "proved"
+  (import hylogic.euf [decide-euf])
+  (defn eq [s t] #("=" s t))
+  (defn ne [s t] #("not" #("=" s t)))
+  (setv fa #("f" "a") gs ["g1" "g2" "g3"]
+        cl [[(eq fa "b") (eq fa "c")] [(eq fa "c") (eq fa "d")]
+            [(ne "a" "b")] [(ne "a" "c")] [(ne "b" "c")] [(ne fa "c")]
+            #* (lfor g gs [(eq #(g "c") "a")])
+            #* (lfor g gs k ["a" "b" "c"] [(ne #(g fa) k)])
+            #* (lfor [i g] (enumerate gs) h (cut gs (+ i 1) None) [(ne #(g fa) #(h fa))])]
+        cl (lfor c cl (frozenset c)))
+  (assert (= (decide-euf cl) "saturated"))
+  (assert (!= (decide-ground cl) "proved")))
+
+(defn test-ground-decision-without-terms-has-a-one-element-model []
+  ;; with no terms the bound was 0, no size was tried, and "no model up to 0"
+  ;; proved p, and the empty clause set, unsatisfiable. LCL679+1.001, whose
+  ;; negated conjecture is ∃x ⊤, came out proved, though it is CounterSatisfiable
+  (assert (= (decide-ground []) "saturated"))
+  (assert (= (decide-ground [(frozenset ["p"]) (frozenset [#("not" "q")])]) "saturated"))
+  (assert (= (decide-ground [(frozenset ["p"]) (frozenset [#("not" "p")])]) "proved")))
+
+(defn test-ground-decision-on-lcl679 []
+  (import os pathlib [Path] hylogic.tptp [read-problem])
+  (setv root (os.environ.get "TPTP"))
+  (when (or (not root) (not (.exists (/ (Path root) "Problems" "LCL" "LCL679+1.001.p"))))
+    (pytest.skip "set TPTP to a TPTP library to run this test"))
+  (setv p (read-problem (/ (Path root) "Problems" "LCL" "LCL679+1.001.p"))
+        cl (lfor f [#* p.premises #("not" p.goal)] c (clausify f 8) c))
+  (assert (= (decide-ground cl) "saturated")))
 
 (defn test-ground-decision-never-claims-a-model-for-alg105 []
   ;; fixed constants once lacked "no other value", so a size-9 search could give a
