@@ -205,12 +205,25 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
   (setv m (re.search r"% Status\s*:\s*(\w+)" (.read-text (Path path) :encoding "utf-8" :errors "replace")))
   (if m (.group m 1) None))
 
+(defn _distinct-objects [x [found None]]
+  "The distinct objects (double-quoted names) occurring in formulas."
+  (when (is found None) (setv found #{}))
+  (cond
+    (and (isinstance x str) (.startswith x "\"")) (.add found x)
+    (isinstance x #(tuple list)) (for [y x] (_distinct-objects y found)))
+  found)
+
 (defn read-problem [path]
   "A TPTP problem file as a Problem, with its includes read from the TPTP root."
   (setv premises [] conjectures [])
   (_read-formulas path (_tptp-root path) None premises conjectures)
   (when (> (len conjectures) 1)
     (raise (TPTPError "more than one conjecture")))
+  ;; distinct objects such as "Apple" denote pairwise different elements in
+  ;; TPTP; saying so as premises lets every method below know it
+  (setv objects (sorted (_distinct-objects [#* premises #* conjectures])))
+  (for [[i a] (enumerate objects)  b (cut objects (+ i 1) None)]
+    (.append premises #("not" #("=" a b))))
   (Problem (. (Path path) stem) premises (if conjectures (get conjectures 0) None) (_status path)))
 
 (defn szs-status [problem result-status countermodel [equality-built-in False]]
@@ -239,18 +252,25 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
   ;; effectively propositional problems are decided exactly by grounding and SAT
   (when epr
     (import hylogic.resolution [clausify Result]
-            hylogic.grounding [decide-epr])
+            hylogic.grounding [decide-epr epr-refutation])
     (import hylogic.ground [decide-ground]
             hylogic.euf [decide-euf])
-    (setv clauses (lfor f [#* problem.premises #("not" problem.goal)]
-                          c (clausify f (.get options "definitional" False)) c)
-          verdict (or (decide-epr clauses :deadline (+ started (* 0.25 time-limit)))
+    (setv definitional (.get options "definitional" False)
+          goal-clauses (clausify #("not" problem.goal) definitional)
+          clauses [#* (gfor f problem.premises  c (clausify f definitional) c) #* goal-clauses]
+          epr-verdict (decide-epr clauses :deadline (+ started (* 0.25 time-limit)))
+          verdict (or epr-verdict
                       ;; ground problems with functions: exactly by congruence closure,
                       ;; then by a bounded search for finite models
                       (decide-euf clauses :deadline (+ started (* 0.75 time-limit)))
                       (decide-ground clauses :deadline (+ started (* 0.8 time-limit)))))
     (when verdict
-      (return #((szs-status problem verdict None True) (Result verdict None {"kept" 0 "generated" 0}) problem))))
+      ;; a SAT answer comes with a readable proof when one fits in the time left:
+      ;; the ground instances of an unsatisfiable core, refuted by resolution
+      (setv result (when (= epr-verdict "proved")
+                     (epr-refutation clauses (set goal-clauses) :deadline (+ started (* 0.95 time-limit)))))
+      (return #((szs-status problem verdict None True)
+                (or result (Result verdict None {"kept" 0 "generated" 0})) problem))))
   ;; a short model search first: small countermodels are cheap, and the search
   ;; at the end gets only what resolution leaves
   (when (.get options "finder_first" 0)
