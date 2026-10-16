@@ -285,3 +285,13 @@
                    :if (and (isinstance a tuple) (.startswith (get a 0) "$def")) a))
   (assert defs)
   (assert (all (gfor a defs (= (len a) 1)))))
+
+(defn test-epr-grounding-splits-unconnected-variables []
+  ;; p(x) | q(y) | r(z) over 40 constants is 64000 instances, over the cap;
+  ;; split into three one-variable parts it is 120 and decides at once
+  (import hylogic.grounding [decide-epr])
+  (setv facts (lfor i (range 40) (frozenset [#("s" f"c{i}")]))
+        wide (frozenset [#("p" "?x") #("q" "?y") #("r" "?z")])
+        refuted [(frozenset [#("not" #("p" "c5"))]) (frozenset [#("not" #("q" "c7"))])])
+  (assert (= (decide-epr [#* facts wide #* refuted (frozenset [#("not" #("r" "c9"))])]) "proved"))
+  (assert (= (decide-epr [#* facts wide #* refuted]) "saturated")))

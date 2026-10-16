@@ -334,6 +334,7 @@ non-theorems. Four changes closed most of both, each measured on its own.
 | + backward demodulation (with ordered rewriting) | 31 | 6 | 3 | 34 | 32 | 8 | 31 | 145 | 0 |
 | + backward demodulation (oriented rules only) | 31 | 6 | 3 | 34 | 32 | 9 | 31 | 146 | 0 |
 | + unit deletion | 32 | 10 | 5 | 34 | 33 | 10 | 31 | 155 | 0 |
+| + clause splitting before grounding EPR problems | 32 | 32 | 5 | 34 | 33 | 10 | 31 | 177 | 0 |
 
 **Ground equality decided exactly** (`hylogic.euf`). Equality with
 uninterpreted functions is decidable for ground clauses, with no bound on
@@ -378,12 +379,24 @@ It added nine theorems, most of them in the hard rows. A proof now cites
 the units and equations each simplification used, so it reads from the axioms
 to the empty clause without gaps.
 
+**Splitting before grounding.** Twenty-one of the theorems E proved and
+HyLogic did not came from one family, description logic (ALC) translated to
+first order. They have no functions, so grounding decides them, but with 53
+constants a clause of three variables has 148877 instances and grounding gave
+up at its cap. The variables of those clauses never occur in one literal
+together, so the clause splitting written for the model finder breaks each
+into one-variable parts, 53 instances apiece. Splitting keeps satisfiability
+in both directions, so a satisfiable answer stays valid. Each of these
+problems is now decided in a few hundredths of a second, where E needs a
+third of one, and 22 theorems were added, all in the hard row. Grounding
+answers with a status and no step-by-step proof.
+
 ## Where the gap stands after round four
 
 | | Theorems, of 234 | Non-theorems, of 40 |
 |---|---:|---:|
 | HyLogic after round three | 105 | 23 |
-| HyLogic after round four | 124 | 31 |
+| HyLogic after round four | 146 | 31 |
 | E 3.2.5 | 207 | 16 |
 | Vampire 5.1.0 (`casc`) | 231 | 20 |
 | Vampire 5.1.0, satisfiability schedule (`casc_sat`) | | 36 |

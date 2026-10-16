@@ -12,11 +12,12 @@ assignment describes a model where = is a congruence, which shows the problem
 satisfiable, so EPR problems get an exact answer either way. This is the idea
 behind instantiation-based provers such as iProver."
 
-(import itertools [product]
+(import itertools [product count]
         time
         hylogic.terms [variable? compound? show variables-of]
         hylogic.unify [instantiate]
-        hylogic.cdcl [cdcl :as dpll])
+        hylogic.cdcl [cdcl :as dpll]
+        hylogic.finite [split-clause])
 
 (defn _atom [lit] (if (and (compound? lit) (= (get lit 0) "not")) (get lit 1) lit))
 
@@ -54,7 +55,12 @@ behind instantiation-based provers such as iProver."
 (defn ground-clauses [clauses [max-clauses 50000] [deadline None]]
   "All ground instances of EPR clauses (with equality axioms if = occurs),
   or None if the clauses are not EPR or the instances would be too many."
-  (setv [constants predicates functional] (_symbols clauses))
+  ;; split clauses whose variables fall into unconnected groups (see
+  ;; hylogic.finite): n^a + n^b instances instead of n^(a+b). Symbols are
+  ;; collected afterwards, so the new predicates get equality axioms too.
+  (setv fresh (count 1)
+        clauses (lfor c clauses  part (split-clause (list c) fresh 1) part)
+        [constants predicates functional] (_symbols clauses))
   (when functional (return None))
   (when (not constants) (setv constants #{"c0"}))
   (setv cs (sorted constants) out [])

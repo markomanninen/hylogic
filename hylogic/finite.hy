@@ -52,13 +52,13 @@ model up to k proves the clauses unsatisfiable: a theorem."
     (.append out (if (_negative? l) #("not" flat-atom) flat-atom)))
   [#* out #* extra])
 
-(defn split-clause [clause fresh]
+(defn split-clause [clause fresh [keep 3]]
   "Flat clauses equivalent to the clause on every domain, each with fewer variables.
   A clause A ∨ B whose parts share only the variables I becomes A ∨ s(I) and
   ¬s(I) ∨ B, with s a new predicate (clause splitting, as in Paradox): grounding
   then costs n^|A| + n^|B| instead of n^|A ∪ B| for a domain of n elements."
   (setv clause (list clause) all-vars (variables-of (tuple clause)))
-  (when (<= (len all-vars) 3) (return [clause]))
+  (when (<= (len all-vars) keep) (return [clause]))
   (setv best None)
   (for [v all-vars]
     (setv a (lfor l clause :if (in v (variables-of l)) l)
@@ -72,7 +72,7 @@ model up to k proves the clauses unsatisfiable: a theorem."
   (when (is best None) (return [clause]))
   (setv [_ a b shared] best
         atom #(f"$split{(next fresh)}" #* shared))
-  [#* (split-clause [#* a atom] fresh) #* (split-clause [#("not" atom) #* b] fresh)])
+  [#* (split-clause [#* a atom] fresh keep) #* (split-clause [#("not" atom) #* b] fresh keep)])
 
 (defn _signature [flat-clauses]
   "Predicates and functions (with constants as 0-ary functions) with arities."
