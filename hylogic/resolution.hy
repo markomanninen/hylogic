@@ -25,9 +25,11 @@ unprocessed clause, resolve it against everything processed so far, keep the
 new clauses that are neither duplicates nor subsumed by older ones."
 
 (import heapq
+        time
+        hylogic.superposition :as sp
         itertools [count]
         hylogic.formulas [basic]
-        hylogic.terms [term compound? show size variables-of]
+        hylogic.terms [term variable? compound? show size variables-of]
         hylogic.unify [unify substitute match-term rename FRESH])
 
 (setv QUANTIFIERS #{"forall" "exists"}
@@ -99,17 +101,38 @@ new clauses that are neither duplicates nor subsumed by older ones."
     (is op None) (if (compound? f) #((get f 0) #* (gfor x (args f) (_replace-bound x env))) f)
     True #(op #* (gfor a (args f) (skolemize a env universals)))))
 
-(defn cnf-clauses [f]
+(setv DEFINITIONS (count 1))
+
+(defn cnf-clauses [f [definitions None] [max-product 8]]
   "Clauses (lists of literals) of a quantifier-free formula in negation normal form,
-  by distributing or over and. This can grow exponentially; real provers avoid
-  that with definitional (Tseitin) transformation."
+  by distributing or over and. This can grow exponentially.
+
+  With a definitions list, a disjunction whose distribution would make more than
+  max-product clauses gets its multi-clause parts named instead: a part C becomes a
+  new atom d(x...) over C's variables, and the clauses (not d(x...)) | c for each
+  clause c of C go to definitions. Since the formula is in negation normal form,
+  d occurs only positively, so this one direction is enough (Plaisted and
+  Greenbaum, 1986), and the clause set grows linearly."
   (setv op (if (connective? f) (get f 0) None))
   (cond
-    (= op "and") (lfor a (args f) c (cnf-clauses a) c)
+    (= op "and") (lfor a (args f) c (cnf-clauses a definitions max-product) c)
     (= op "or") (do
+      (setv parts (lfor a (args f) (cnf-clauses a definitions max-product)))
+      (when (is-not definitions None)
+        (setv product 1)
+        (for [p parts] (*= product (len p)))
+        (when (> product max-product)
+          (setv parts
+            (lfor p parts
+              (if (> (len p) 1)
+                  (do
+                    (setv atom #(f"$def{(next DEFINITIONS)}" #* (variables-of (tuple (gfor c p l c l)))))
+                    (for [c p] (.append definitions [#("not" atom) #* c]))
+                    [[atom]])
+                  p)))))
       (setv result [[]])
-      (for [a (args f)]
-        (setv result (lfor c1 result c2 (cnf-clauses a) (+ c1 c2))))
+      (for [p parts]
+        (setv result (lfor c1 result c2 p (+ c1 c2))))
       result)
     True [[f]]))
 
@@ -120,14 +143,19 @@ new clauses that are neither duplicates nor subsumed by older ones."
 (defn tautology? [lits]
   (any (gfor l lits (in (complement l) lits))))
 
-(defn clausify [formula]
-  "A formula (quoted Hy form or term) as a list of clauses, each a frozenset of literals."
-  (clauses-of (skolemize (nnf (eliminate-implications (basic formula))))))
+(defn clausify [formula [definitional False]]
+  "A formula (quoted Hy form or term) as a list of clauses, each a frozenset of literals.
+  definitional names subformulas instead of distributing them (see cnf-clauses)."
+  (clauses-of (skolemize (nnf (eliminate-implications (basic formula)))) definitional))
 
-(defn clauses-of [f]
+(defn clauses-of [f [definitional False]]
   "Clauses of a Skolemized formula, without tautologies and duplicates."
-  (setv clauses [])
-  (for [c (cnf-clauses f)]
+  (setv clauses []
+        definitions (when definitional []))
+  ;; definitional is off (False or 0), on (True: name above 8 clauses) or the threshold itself
+  (setv max-product (if (and (isinstance definitional int) (> definitional 1)) definitional 8)
+        clauses-f (cnf-clauses f definitions max-product))
+  (for [c (+ clauses-f (or definitions []))]
     ;; ⊤ makes a clause always true; ⊥ adds nothing to it
     (when (any (gfor l c (in l #{"true" #("not" "false")}))) (continue))
     (setv c (frozenset (gfor l c :if (not-in l #{"false" #("not" "true")}) l)))
@@ -190,12 +218,50 @@ new clauses that are neither duplicates nor subsumed by older ones."
       (return True)))
   False)
 
-(defn resolvents [c1 c2]
-  "All binary resolvents of two clauses, c2 renamed apart first."
+(defn features [lits]
+  "The sign and predicate of each literal: a clause can subsume another only if its
+  features are a subset of the other's, and resolve with it only if they share a
+  predicate with opposite signs. Checking this first skips most futile work."
+  (frozenset (gfor l lits #((negative? l) (_predicate (atom-of l))))))
+
+(defn symbols [lits]
+  "The constants and function symbols of a clause. Matching only instantiates
+  variables, so a clause can subsume another only if its symbols occur there too."
+  (setv found #{})
+  (defn walk [t]
+    (cond
+      (variable? t) None
+      (compound? t) (do (.add found #((get t 0) (- (len t) 1))) (for [a (cut t 1 None)] (walk a)))
+      True (.add found #(t 0))))
+  (for [l lits  :setv a (atom-of l)]
+    (when (compound? a) (for [x (cut a 1 None)] (walk x))))
+  (frozenset found))
+
+(defn _predicate [atom] (if (compound? atom) (get atom 0) atom))
+
+(defn eligible [lits]
+  "The literals of a clause that ordered resolution may resolve on.
+  If the clause has negative literals, only the heaviest of them is selected;
+  otherwise its maximal literals in the Knuth-Bendix ordering of their atoms.
+  Resolving only on these literals keeps resolution complete while cutting most
+  inferences (Bachmair and Ganzinger, 1994)."
+  (setv negs (lfor l lits :if (negative? l) l))
+  (if negs
+      #{(max negs :key (fn [l] #((size l) (show (_mask l)) (show l))))}
+      (set (gfor l lits :if (not (any (gfor m lits (sp.kbo> (atom-of m) (atom-of l))))) l))))
+
+(defn resolvents [c1 c2 [ordered False]]
+  "All binary resolvents of two clauses, c2 renamed apart first.
+  With ordered, only eligible literals are resolved on."
+  ;; eligibility is decided before renaming: selection must not depend on
+  ;; variable names, or the same clause could select different literals
+  ;; at different times, and ordered resolution would lose completeness
   (setv mapping {}
+        e1 (if ordered (eligible c1) c1)
+        e2 (frozenset (gfor l (if ordered (eligible c2) c2) (rename l mapping)))
         l2 (frozenset (gfor l c2 (rename l mapping))))
   ;; sorted, so that every run takes the same path whatever the hash seed
-  (for [a (sorted c1 :key show)  b (sorted l2 :key show)]
+  (for [a (sorted e1 :key show)  b (sorted e2 :key show)]
     (when (!= (negative? a) (negative? b))
       (setv s (unify (atom-of a) (atom-of b)))
       (when (is-not s None)
@@ -219,7 +285,7 @@ new clauses that are neither duplicates nor subsumed by older ones."
   (defn [property] proved [self] (= self.status "proved"))
   (defn proof [self]
     "The proof as numbered lines, from input clauses to the empty clause."
-    (when (not self.proved) (return []))
+    (when (or (not self.proved) (is self.clause None)) (return []))
     (setv order [] seen #{})
     (defn visit [c]
       (when (not-in c.id seen)
@@ -234,54 +300,138 @@ new clauses that are neither duplicates nor subsumed by older ones."
              (+ c.rule " " (.join ", " (gfor p c.parents (str p.id))))
              c.rule)))))
 
-(defn saturate [clauses [limit 5000]]
-  "The given-clause loop. clauses are Clause objects."
-  (setv ids (count 1)
+(defn saturate [clauses [limit 5000] [timeout None] [age-ratio 0] [superposition 0]
+                [ordered 0] [index 0] [goal-bias 0]]
+  "The given-clause loop. clauses are Clause objects. Stops after timeout seconds if given.
+
+  The next clause to process is the lightest one, except that with age-ratio n
+  every (n+1)th pick is the oldest unprocessed clause instead. Picking only by
+  weight can postpone a heavy clause forever; mixing in age makes the search
+  fair, so every clause is eventually processed.
+
+  With superposition, equality is built in: new clauses are rewritten with the
+  unit equations processed so far, and superposition, equality resolution and
+  equality factoring run alongside resolution (see hylogic.superposition).
+
+  ordered restricts resolution to eligible literals (see eligible), and index
+  filters subsumption checks and resolution partners by features first.
+
+  With goal-bias b, a clause that does not descend from the negated goal weighs
+  b/2 times its size when picking by weight (b = 2: no bias; b = 3: 1.5 times),
+  so the search stays near the goal, as in the set-of-support strategy."
+  (setv deadline (when timeout (+ (time.monotonic) timeout))
+        ids (count 1)
         tie (count)
         processed []
         queue []
+        by-age []
+        picks 0
         seen #{}
+        rules []
         stats {"kept" 0 "generated" 0})
+
+  (defn pick []
+    "The next unprocessed clause, by weight or, every (age-ratio + 1)th time, by age."
+    (nonlocal picks)
+    (+= picks 1)
+    (setv heap (if (and age-ratio (= (% picks (+ age-ratio 1)) 0)) by-age queue))
+    (for [h [heap queue by-age]]
+      (while h
+        (setv c (get (heapq.heappop h) 2))
+        (when (not c.done)
+          (setv c.done True)
+          (return c))))
+    None)
 
   (defn add [clause]
     "Keep a new clause unless it is a tautology, a duplicate or subsumed."
+    (when superposition
+      (setv [lits changed] (sp.demodulate (sp.drop-false-equations clause.literals) rules))
+      (when (sp.trivial? lits) (return None))
+      (when changed (setv clause.rule (+ clause.rule "+demod")))
+      (setv clause.literals lits))
     (setv lits clause.literals)
     (when (tautology? lits) (return None))
     (setv key (canonical lits))
     (when (in key seen) (return None))
     (.add seen key)
-    (when (any (gfor p processed (subsumes? p.literals lits))) (return None))
-    (setv clause.id (next ids))
+    (setv clause.features (features lits)
+          clause.symbols (symbols lits))
+    (when (any (gfor p processed (and (or (not index) (and (<= p.features clause.features)
+                                                           (<= p.symbols clause.symbols)))
+                                      (subsumes? p.literals lits))))
+      (return None))
+    (setv clause.id (next ids)
+          clause.done False
+          clause.goal (or (= clause.rule "negated goal") (any (gfor p clause.parents (getattr p "goal" False)))))
     (+= (get stats "kept") 1)
-    (heapq.heappush queue #((weight lits) (next tie) clause))
+    (heapq.heappush queue #((if (and goal-bias (not clause.goal)) (* (weight lits) (/ goal-bias 2)) (weight lits))
+                            (next tie) clause))
+    (when age-ratio (heapq.heappush by-age #(clause.id 0 clause)))
     clause)
+
+  (defn inferences [given processed]
+    "Every clause derived from the given clause and the processed ones."
+    (for [lits (factors given.literals)]
+      (yield #(lits #(given) "factor")))
+    (setv partners (frozenset (gfor [neg pred] given.features #((not neg) pred))))
+    (for [other processed]
+      (when (or (not index) (& partners other.features))
+        (for [lits (resolvents given.literals other.literals ordered)]
+          (yield #(lits #(given other) "resolve")))))
+    (when superposition
+      (for [lits (sp.equality-resolvents given.literals)]
+        (yield #(lits #(given) "equality resolution")))
+      (for [lits (sp.equality-factors given.literals)]
+        (yield #(lits #(given) "equality factoring")))
+      (for [other processed]
+        (for [lits (sp.superpositions given.literals other.literals)]
+          (yield #(lits #(given other) "superposition")))
+        (when (is-not other given)
+          (for [lits (sp.superpositions other.literals given.literals)]
+            (yield #(lits #(other given) "superposition")))))))
 
   (for [c clauses]
     (add c)
     (when (not c.literals) (return (Result "proved" c stats))))
-  (while queue
-    (setv given (get (heapq.heappop queue) 2))
-    (when (any (gfor p processed (subsumes? p.literals given.literals)))
+  (while True
+    (setv given (pick))
+    (when (is given None) (break))
+    (when (any (gfor p processed (and (or (not index) (and (<= p.features given.features)
+                                                           (<= p.symbols given.symbols)))
+                                      (subsumes? p.literals given.literals))))
       (continue))
     ;; drop processed clauses that the given clause makes redundant
-    (setv processed (lfor p processed :if (not (subsumes? given.literals p.literals)) p))
+    (setv processed (lfor p processed
+                          :if (not (and (or (not index) (and (<= given.features p.features)
+                                                             (<= given.symbols p.symbols)))
+                                        (subsumes? given.literals p.literals)))
+                          p))
     (.append processed given)
-    (for [lits (factors given.literals)]
-      (add (Clause lits #(given) "factor")))
-    (for [other processed  lits (resolvents given.literals other.literals)]
+    ;; a processed unit equation that can be oriented becomes a rewrite rule
+    (when (and superposition (= (len given.literals) 1))
+      (setv [lit] given.literals)
+      (when (and (sp.equation? lit) (not (sp.negative? lit)))
+        (setv rule (sp.orient lit))
+        (when rule (.append rules rule))))
+    (for [[lits parents rule] (inferences given processed)]
       (+= (get stats "generated") 1)
-      (setv new (add (Clause lits #(given other) "resolve")))
+      (when (and deadline (> (time.monotonic) deadline))
+        (return (Result "timeout" None stats)))
+      (setv new (add (Clause lits parents rule)))
       (when (and new (not new.literals))
         (return (Result "proved" new stats))))
     (when (> (get stats "kept") limit)
-      (return (Result "gave-up" None stats))))
+      (return (Result "gave-up" None stats)))
+    (when (and deadline (> (time.monotonic) deadline))
+      (return (Result "timeout" None stats))))
   (Result "saturated" None stats))
 
-(defn prove [goal [axioms #()] [limit 5000]]
+(defn prove [goal [axioms #()] [limit 5000] [timeout None] [definitional False] #** options]
   "Try to prove goal from axioms: refute the axioms together with the negated goal."
   (setv clauses [])
-  (for [a axioms  lits (clausify a)]
+  (for [a axioms  lits (clausify a definitional)]
     (.append clauses (Clause lits)))
-  (for [lits (clausify #("not" (basic goal)))]
+  (for [lits (clausify #("not" (basic goal)) definitional)]
     (.append clauses (Clause lits :rule "negated goal")))
-  (saturate clauses limit))
+  (saturate clauses limit timeout #** options))

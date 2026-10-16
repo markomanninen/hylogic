@@ -17,6 +17,10 @@ from hylogic.truth import truth_table, propositions, counterexample, connective_
 from hylogic.resolution import prove, clausify
 from hylogic.rewrite import normalize, make_rule
 from hylogic.argument import Argument
+from hylogic.sat import satisfiable, to_dimacs
+from hylogic.export import to_smtlib, to_tptp, check_with_z3
+from hylogic.models import find_model, countermodel
+from hylogic import sat as _sat
 from hylogic.connectives import CONNECTIVES
 from hylogic import truth as _truth
 
@@ -25,12 +29,14 @@ is_satisfiable = getattr(_truth, hy.mangle("satisfiable?"))
 is_contradiction = getattr(_truth, hy.mangle("contradiction?"))
 is_equivalent = getattr(_truth, hy.mangle("equivalent?"))
 entails = getattr(_truth, hy.mangle("entails?"))
+is_valid = getattr(_sat, hy.mangle("valid?"))
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 __all__ = [
     "formula", "pretty", "basic", "evaluate", "truth_table", "propositions",
     "counterexample", "connective_tables", "prove", "clausify", "normalize",
     "make_rule", "Argument", "CONNECTIVES", "is_tautology", "is_satisfiable",
-    "is_contradiction", "is_equivalent", "entails",
+    "is_contradiction", "is_equivalent", "entails", "satisfiable", "is_valid",
+    "to_dimacs", "to_smtlib", "to_tptp", "check_with_z3", "find_model", "countermodel",
 ]

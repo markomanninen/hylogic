@@ -196,6 +196,136 @@ Term rewriting is included too:
 (get (normalize '(+ (s (s 0)) (s 0)) PEANO) 0)    ; #("s" #("s" #("s" 0)))
 ```
 
+## Teaching and exercises
+
+`hylogic.exercises` checks the two classic kinds of exercise and explains a
+wrong answer in the words of the exercise. A formalization is correct when it
+is logically equivalent to the reference, however it is written. A wrong one
+gets a situation where the two come apart:
+
+```hy
+(import hylogic.exercise-sets [check-answer])
+
+(check-answer "F2" '(→ P Q))      ; "The street is wet only if it rains."
+; Not quite. Suppose “it rains” is false and “the street is wet” is true.
+; Then your formula is true, but the sentence is false.
+
+(check-answer "V9" True)          ; "Everybody loves somebody. So there is somebody whom everybody loves."
+; Not quite. The argument is invalid. In this world the premises are true and the conclusion is false:
+; Domain: d1, d2
+;   Loves holds for: (d1 d1), (d2 d2)
+```
+
+The exercise set has 16 sentences to formalize, propositional and
+first-order, and 10 arguments to judge. `check-formalization` and
+`check-validity-claim` work with your own exercises too, and a claim that an
+argument is invalid can come with a counterexample, which is checked.
+
+[Hylogic tutorial.ipynb](Hylogic%20tutorial.ipynb) walks through truth
+tables, arguments, exercises, models and proofs. It runs on the ordinary
+Python kernel with `%load_ext hylogic.ipython`, which adds a `%%hy` cell
+magic.
+
+## Larger problems, countermodels and other solvers
+
+Truth tables double with every proposition. For larger propositional
+problems, `satisfiable` and `valid?` in `hylogic.sat` use the Tseitin
+transformation and the DPLL algorithm, which stay in milliseconds up to about
+40 variables. Arguments switch to it on their own above 10 propositions.
+
+```hy
+(import hylogic.sat [satisfiable valid?])
+(satisfiable '(∧ (∨ P Q) (¬ P)))      ; {"P" False "Q" True}
+```
+
+When a first-order argument is invalid, `countermodel` looks for a small
+world that shows it, by grounding the formulas over a domain of up to four
+elements and solving the result with DPLL:
+
+```hy
+(import hylogic [countermodel])
+(print (countermodel ['(∀ [x] (∃ [y] (Loves x y)))] '(∃ [y] (∀ [x] (Loves x y)))))
+```
+
+```
+Domain: d1, d2
+  Loves holds for: (d1 d1), (d2 d2)
+```
+
+Everybody loves somebody, here themselves, but nobody is loved by everybody.
+
+For problems beyond hylogic's reach, `to-smtlib` and `to-tptp` write the same
+question for real solvers such as Z3 and cvc5, or provers such as Vampire and
+E, and `to-dimacs` writes the SAT clauses for any SAT solver. With
+`pip install "hylogic[z3]"`, `check-with-z3` runs Z3 directly.
+[benchmarks/](benchmarks/) compares the four methods on the same problems.
+
+## TPTP problems, E, Vampire and Lean
+
+HyLogic reads problems in TPTP, the standard language of first-order
+provers, and answers the way they do, with an SZS status line:
+
+```bash
+python -m hylogic.tptp --time-limit 10 PUZ001+1.p
+# % SZS status Theorem for PUZ001+1
+```
+
+For problems beyond its own prover, HyLogic hands them to E or Vampire when
+they are installed, reads the proof they print, and shows it as its own
+numbered steps:
+
+```hy
+(import hylogic.external [prove-external])
+(setv r (prove-external '(Mortal socrates) ['(∀ [x] (→ (Man x) (Mortal x))) '(Man socrates)]
+                        :prover "vampire"))
+(for [line (.proof r)] (print line))
+```
+
+```
+   1. ∀X0 ((man X0) → (mortal X0))                 input
+   2. (man socrates)                               input
+  ...
+  10. ¬(man socrates)                              resolution 7, 9
+  11. ⊥                                            resolution 10, 8
+```
+
+`to-lean` writes a problem as a Lean 4 theorem, and `check-lean` runs Lean on
+it, with `sorry` to check the statement or `grind` to let Lean's automation
+prove it.
+
+On a fixed sample of 234 TPTP theorems within 10 seconds, HyLogic's own
+prover proves 98 (39 before its ordered resolution, superposition,
+goal-directed selection and other improvements), Lean's `grind` 103 of the
+exported problems, E 207 and Vampire 231; of 40 non-theorems HyLogic shows 20
+with countermodels, as many as Vampire. Through the bridge HyLogic presented
+every one of the 440 E and Vampire proofs. [benchmarks/tptp/](benchmarks/tptp/) has the plan, every
+step and the numbers.
+
+## For AI agents
+
+`hylogic-mcp` is a [Model Context Protocol](https://modelcontextprotocol.io)
+server with one tool, `check_argument`. An agent formalizes an argument,
+calls the tool, and gets the verdict with a counterexample or countermodel
+when the argument is invalid. Formulas can be s-expression strings or JSON
+arrays, since models write JSON most reliably.
+
+```bash
+pip install "hylogic[mcp]"
+claude mcp add hylogic -- hylogic-mcp
+```
+
+```
+check_argument(premises=["(=> P Q)", "Q"], conclusion="P",
+               meanings={"P": "it rains", "Q": "the street is wet"})
+
+INVALID (checked by truth table)
+Read as: P → Q; Q ⊢ P
+Counterexample: “it rains” is false and “the street is wet” is true. Then every premise is true and the conclusion is false.
+```
+
+[benchmarks/field_test/](benchmarks/field_test/) measures whether the tool
+helps agents judge arguments, and what it costs.
+
 ## From Python
 
 Formulas are nested tuples of strings, and the Hy names that end in `?` have

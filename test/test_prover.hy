@@ -114,3 +114,22 @@
   test-hard-problems-need-a-larger-search [name axioms goal]
   (assert (= (. (prove goal axioms :limit 2000) status) "gave-up"))
   (assert (. (prove goal axioms :limit 10000) proved)))
+
+(defn test-matching-with-shared-variable-names-does-not-loop []
+  ;; the rule's ?x and ?y meet a term that uses the same names swapped
+  (import hylogic.superposition [demodulate orient])
+  (setv rule (orient #("=" #("m" "?x" "?y") "?x")))
+  (setv [out changed] (demodulate (frozenset [#("p" #("m" "?y" "?x"))]) [rule]))
+  (assert changed)
+  (assert (= out (frozenset [#("p" "?y")]))))
+
+(defn test-ordered-resolution-stays-complete-on-swb020 []
+  ;; selection once depended on variable names, so a clause could select different
+  ;; literals as given clause and as partner, and this theorem saturated unproved
+  (import os pathlib [Path] hylogic.tptp [read-problem])
+  (setv root (os.environ.get "TPTP"))
+  (when (or (not root) (not (.exists (/ (Path root) "Problems" "SWB" "SWB020+2.p"))))
+    (pytest.skip "set TPTP to a TPTP library to run this test"))
+  (setv p (read-problem (/ (Path root) "Problems" "SWB" "SWB020+2.p")))
+  (for [opts [{"ordered" 1 "definitional" 8} {"age_ratio" 10 "superposition" 1 "ordered" 1 "index" 1 "definitional" 8}]]
+    (assert (= (. (prove p.goal p.premises :limit 1000000 :timeout 60 #** opts) status) "proved") opts)))

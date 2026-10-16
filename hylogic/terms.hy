@@ -12,7 +12,8 @@ strings, which are simpler to compare and hash than Hy's own models:
   "Turn a quoted Hy form into a term."
   (cond
     (isinstance form hy.models.Symbol) (str form)
-    (isinstance form #(hy.models.Expression hy.models.List)) (tuple (gfor x form (term x)))
+    ;; plain tuples too, since they may hold quoted forms: #("not" '(P x))
+    (isinstance form #(hy.models.Expression hy.models.List tuple)) (tuple (gfor x form (term x)))
     (isinstance form hy.models.String) (str form)
     (isinstance form hy.models.Integer) (int form)
     (isinstance form hy.models.Float) (float form)
