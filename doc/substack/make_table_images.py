@@ -73,7 +73,7 @@ table("table3_checker", "Arguments judged correctly, with and without HyLogic's 
       "70 generated arguments in English, each checked with HyLogic and Z3, judged once per model and condition.")
 table("table4_provers", "Theorems from the TPTP library proved within ten seconds each",
       ["", "Theorems, of 234"],
-      [["HyLogic, first version", "39"], ["HyLogic, after the measured changes", "105"],
+      [["HyLogic, first version", "39"], ["HyLogic, after the measured changes", "146"],
        ["Lean's grind, on HyLogic's export", "103"], ["E 3.2.5", "207"], ["Vampire 5.1.0", "231"]],
       "Problems with at most 50 formulas from TPTP v9.3.1, drawn with a fixed seed. Apple Silicon, one problem per process.",
       highlight=lambda row: row[0].startswith("HyLogic"))
