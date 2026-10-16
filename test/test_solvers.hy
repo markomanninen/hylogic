@@ -159,3 +159,47 @@
 (defn test-distinct-constants []
   (assert (= (sorted (distinct-constants (clauses-of-all ['(¬ (= a b)) '(¬ (= b c)) '(¬ (= a c))])))
              ["a" "b" "c"])))
+
+(defn test-equality-is-exported-as-equality []
+  (setv smt (to-smtlib ['(= a b) '(P a)] '(P b)))
+  (assert (in "(assert (= |a| |b|))" smt))
+  (assert (not-in "declare-fun |=|" smt))
+  (assert (in "(a = b)" (to-tptp ['(= a b)] '(P b)))))
+
+(defn test-z3-checks-equality []
+  (pytest.importorskip "z3")
+  (assert (= (check-with-z3 ['(= a b) '(P a)] '(P b)) "valid"))
+  (assert (= (check-with-z3 ['(P a)] '(P b)) "invalid")))
+
+;; Ground problems with functions
+
+(import hylogic.ground [decide-ground])
+
+(defn closure [f]
+  "Clauses saying f maps each of a, b to a or b."
+  (lfor x ["a" "b"] (frozenset [#("=" #(f x) "a") #("=" #(f x) "b")])))
+
+(defn test-ground-theorem-with-a-function []
+  ;; f(a) = b, f(b) = a and a != b, so f(f(a)) = a
+  (setv cl [#* (closure "f") (frozenset [#("=" #("f" "a") "b")]) (frozenset [#("=" #("f" "b") "a")])
+            (frozenset [#("not" #("=" "a" "b"))]) (frozenset [#("not" #("=" #("f" #("f" "a")) "a"))])])
+  (assert (= (decide-ground cl) "proved")))
+
+(defn test-ground-non-theorem-has-a-model []
+  ;; nothing forces f(a) = a
+  (setv cl [#* (closure "f") (frozenset [#("not" #("=" "a" "b"))]) (frozenset [#("not" #("=" #("f" "a") "a"))])])
+  (assert (= (decide-ground cl) "saturated")))
+
+(defn test-ground-needs-ground-clauses []
+  (assert (is (decide-ground [(frozenset [#("p" "?x")])]) None)))
+
+(defn test-ground-decision-never-claims-a-model-for-alg105 []
+  ;; fixed constants once lacked "no other value", so a size-9 search could give a
+  ;; constant two values and claim a model for this theorem (TPTP ALG105+1)
+  (import os pathlib [Path] hylogic.tptp [read-problem])
+  (setv root (os.environ.get "TPTP"))
+  (when (or (not root) (not (.exists (/ (Path root) "Problems" "ALG" "ALG105+1.p"))))
+    (pytest.skip "set TPTP to a TPTP library to run this test"))
+  (setv p (read-problem (/ (Path root) "Problems" "ALG" "ALG105+1.p"))
+        cl (lfor f [#* p.premises #("not" p.goal)] c (clausify f 8) c))
+  (assert (!= (decide-ground cl :max-size 10) "saturated")))

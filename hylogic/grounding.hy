@@ -16,7 +16,7 @@ behind instantiation-based provers such as iProver."
         time
         hylogic.terms [variable? compound? show variables-of]
         hylogic.unify [instantiate]
-        hylogic.sat [dpll])
+        hylogic.cdcl [cdcl :as dpll])
 
 (defn _atom [lit] (if (and (compound? lit) (= (get lit 0) "not")) (get lit 1) lit))
 

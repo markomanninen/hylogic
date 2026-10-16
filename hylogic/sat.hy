@@ -124,8 +124,9 @@ negative integer is a negated variable.
 
 (defn satisfiable [form]
   "An assignment of the formula's atoms that makes it true, or None if there is none."
+  (import hylogic.cdcl [cdcl])
   (setv cnf (tseitin form)
-        model (dpll cnf.clauses))
+        model (cdcl cnf.clauses))
   (when (is model None) (return None))
   (dfor [name var] (.items cnf.atoms) name (.get model var False)))
 

@@ -294,10 +294,11 @@ it, with `sorry` to check the statement or `grind` to let Lean's automation
 prove it.
 
 On a fixed sample of 234 TPTP theorems within 10 seconds, HyLogic's own
-prover proves 98 (39 before its ordered resolution, superposition,
-goal-directed selection and other improvements), Lean's `grind` 103 of the
-exported problems, E 207 and Vampire 231; of 40 non-theorems HyLogic shows 20
-with countermodels, as many as Vampire. Through the bridge HyLogic presented
+prover proves 105 (39 before its ordered resolution, superposition,
+goal-directed selection, SAT-based ground decision and other improvements),
+Lean's `grind` 103 of the exported problems, E 207 and Vampire 231; of 40
+non-theorems HyLogic shows 23 with countermodels, E 16, and Vampire 20 in
+its theorem-proving mode but 36 with its satisfiability schedule. Through the bridge HyLogic presented
 every one of the 440 E and Vampire proofs. [benchmarks/tptp/](benchmarks/tptp/) has the plan, every
 step and the numbers.
 

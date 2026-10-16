@@ -32,7 +32,7 @@ installed (pip install hylogic[z3])."
       (in op QUANTIFIERS) (formula (get f 2) (| bound (set (get f 1))))
       op (for [a (args-of f)] (formula a bound))
       (in f #{"true" "false"}) None
-      (compound? f) (do (setv (get (get sig "predicates") (get f 0)) (- (len f) 1))
+      (compound? f) (do (when (!= (get f 0) "=") (setv (get (get sig "predicates") (get f 0)) (- (len f) 1)))
                         (for [a (cut f 1 None)] (term a bound)))
       True (.add (get sig "propositions") f)))
   (for [f formulas] (formula f #{}))
@@ -62,6 +62,9 @@ installed (pip install hylogic[z3])."
            (and (= op "or") (not xs)) "false"
            True (+ "(" (get _SMT-OPS op) " " (.join " " xs) ")")))
     (in f #{"true" "false"}) f
+    ;; equality is built into SMT-LIB and TPTP; it is not a declared predicate
+    (and (compound? f) (= (get f 0) "=") (= (len f) 3))
+      (+ "(= " (_smt-term (get f 1) bound) " " (_smt-term (get f 2) bound) ")")
     (compound? f) (_smt-term f bound)
     True (_smt-name f)))
 
@@ -132,6 +135,8 @@ installed (pip install hylogic[z3])."
            True (+ "(" (.join f" {(get _TPTP-OPS op)} " xs) ")")))
     (= f "true") "$true"
     (= f "false") "$false"
+    (and (compound? f) (= (get f 0) "=") (= (len f) 3))
+      (+ "(" (_tptp-term (get f 1) bound) " = " (_tptp-term (get f 2) bound) ")")
     (compound? f) (_tptp-term f bound)
     True (_tptp-word f)))
 
