@@ -253,3 +253,59 @@ and 20 of the 40 non-theorems shown with countermodels, as many as Vampire
 found and fixed a real soundness bug. The remaining distance to E and
 Vampire is strategy: decades of tuned heuristics, clause splitting and
 large strategy schedules, which this study does not attempt to copy.
+
+## Round three: the algebra theorems
+
+The thirteen unsolved EPR theorems were finite algebra problems: ground
+clauses, no variables, with operations tabulated on named elements, and
+questions about those tables. Neither resolution nor grounding over
+constants fits them. Two additions did:
+
+| Step | NEQ r0 | NEQ r1 | NEQ r2 | EQ r0 | EQ r1 | EQ r2 | Non-theorems | All | Wrong |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Round two's defaults | 31 | 5 | 2 | 19 | 32 | 9 | 20 | 118 | 0 |
+| + ground decision with SAT | 31 | 5 | 2 | 23 | 32 | 9 | 20 | 122 | 0 |
+| + CDCL instead of DPLL (first run) | 31 | 5 | 2 | 26 | 32 | 9 | 23 | 128 | **5** |
+| + the encoding fixed | 31 | 5 | 2 | 26 | 32 | 9 | 23 | 128 | 0 |
+
+**Ground decision** (`hylogic.ground`). Every ground term gets a value
+variable in a domain {1..n}, functions share one table each, and equality
+literals become auxiliary variables. When every term is forced to equal a
+constant, through closure clauses such as `op(e1, e2) = e0 | ... | = e4` and,
+for nested terms, through the values their arguments can take, no model up to
+the number of constants proves the problem. On 500 random ground problems it
+agreed with Z3 every time. It decided 10 of the 17 algebra problems; the
+other 7 are about isomorphisms whose mapping functions are defined only on
+part of the elements, so their bound grows to hundreds and they stay open.
+
+**CDCL** (`hylogic.cdcl`). The DPLL solver scanned every clause on every
+step. A conflict-driven clause learning solver with two watched literals,
+first-UIP learning, backjumping, VSIDS and restarts agreed with DPLL on 600
+random instances and was 7 times faster on pigeonhole 8->7 and over 100
+times faster on random 3-SAT with 160 variables. The algebra problems went
+from 9 seconds to 0.3, and the model finders, which use the same solver, now
+show 23 non-theorems, more than Vampire's 20.
+
+**A soundness bug, again found by the benchmark.** The first CDCL run
+reported five isomorphism theorems as CounterSatisfiable. A constant fixed to
+its own element (symmetry breaking) got the clause "has value k" but not "has
+no other value", so in a larger domain it could take two values, and the SAT
+solver found a "model". DPLL had hidden this by timing out first. Constants
+now get exactly one value, and every model is checked against the original
+clauses before it is reported. The random comparison with Z3 had not caught
+it, because its domains stay small, so ALG105+1 itself is now a regression
+test. The export to SMT-LIB and TPTP also turned out to declare = as an
+ordinary predicate, so the Z3 check failed on every problem with equality;
+it is now SMT-LIB's and TPTP's own equality.
+
+## Where the gap stands after round three
+
+| | Theorems, of 234 | Non-theorems, of 40 |
+|---|---:|---:|
+| HyLogic, baseline | 39 | 18 |
+| HyLogic after round one | 86 | 18 |
+| HyLogic after round two | 98 | 20 |
+| HyLogic after round three | 105 | 23 |
+| Lean 4.35 `grind`, on HyLogic's export | 103 | |
+| E 3.2.5 | 207 | 16 |
+| Vampire 5.1.0, and HyLogic through the bridge | 231 | 20 |
