@@ -137,7 +137,8 @@ def _certify(argument, premises, conclusion):
     steps = [s for s in report["steps"] if s.get("theorem") != "$refutation"]
     passed = sum(1 for s in steps if s.get("ok"))
     if report["verified"]:
-        return (f"Lean check: verified, Lean 4 accepted all {passed} steps of the proof and how they "
+        steps_text = "the 1 step" if passed == 1 else f"all {passed} steps"
+        return (f"Lean check: verified, Lean 4 accepted {steps_text} of the proof and how they "
                 f"chain from the premises to a contradiction ({report.get('seconds', 0):.1f} s). "
                 "The clausal form of the premises is taken as given.")
     failed = [s for s in steps if not s.get("ok")]

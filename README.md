@@ -345,7 +345,7 @@ VALID (checked by resolution)
 Read as: ∀x ((Man x) → (Mortal x)); (Man socrates); (Greek socrates) ⊢ (Mortal socrates)
 Premises needed: 1, 2 (of 3)
 Proof: 4 steps, shown with detail=true
-Lean check: verified, Lean 4 accepted all 1 steps of the proof and how they chain from the premises to a contradiction (4.3 s). The clausal form of the premises is taken as given.
+Lean check: verified, Lean 4 accepted the 1 step of the proof and how they chain from the premises to a contradiction (4.3 s). The clausal form of the premises is taken as given.
 ```
 
 [benchmarks/field_test/](benchmarks/field_test/) measures whether the tool
