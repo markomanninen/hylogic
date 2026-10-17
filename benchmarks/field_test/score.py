@@ -36,6 +36,7 @@ def main(run, items_file=HERE / "items.json"):
         tool_verdicts = [answer(c.get("result")) for c in calls if "result" in c]
         rows.append({
             "condition": condition, "model": model, "id": item_id, "kind": item["kind"],
+            "trap": item.get("trap"),
             "expected": expected, "given": given, "correct": given == expected,
             "tool_calls": len(calls), "tool_errors": sum("error" in c for c in calls),
             "last_tool_verdict": tool_verdicts[-1] if tool_verdicts else None,
@@ -50,8 +51,8 @@ def main(run, items_file=HERE / "items.json"):
     groups = defaultdict(list)
     for r in rows:
         groups[(r["model"], r["condition"])].append(r)
-    print("| Model | Condition | Correct | Propositional | Syllogisms | No answer | Tool calls | Tool errors | Output tokens | Cost $ | Seconds |")
-    print("|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|")
+    print("| Model | Condition | Correct | Propositional | Syllogisms | No answer | Tool calls | Tool errors | Input tokens | Output tokens | Cost $ | Seconds |")
+    print("|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|")
     for (model, condition), rs in sorted(groups.items()):
         n = len(rs)
         prop = [r for r in rs if r["kind"] == "propositional"]
@@ -59,8 +60,20 @@ def main(run, items_file=HERE / "items.json"):
         print(f"| {model} | {condition} | {sum(r['correct'] for r in rs)}/{n} "
               f"| {sum(r['correct'] for r in prop)}/{len(prop)} | {sum(r['correct'] for r in syl)}/{len(syl)} "
               f"| {sum(r['given'] is None for r in rs)} | {sum(r['tool_calls'] for r in rs)} "
-              f"| {sum(r['tool_errors'] for r in rs)} | {sum(r['output_tokens'] for r in rs)} "
+              f"| {sum(r['tool_errors'] for r in rs)} | {sum(r['input_tokens'] for r in rs)} | {sum(r['output_tokens'] for r in rs)} "
               f"| {sum(r['cost'] for r in rs):.2f} | {sum(r['seconds'] for r in rs):.0f} |")
+    if any(r["kind"] == "first-order" for r in rows):
+        # first-order items: correct answers per trap (none = a valid item)
+        traps = sorted({str(r["trap"]) for r in rows})
+        print()
+        print("| Model | Condition | " + " | ".join(traps) + " |")
+        print("|---|---|" + "---:|" * len(traps))
+        for (model, condition), rs in sorted(groups.items()):
+            cells = []
+            for t in traps:
+                ts = [r for r in rs if str(r["trap"]) == t]
+                cells.append(f"{sum(r['correct'] for r in ts)}/{len(ts)}")
+            print(f"| {model} | {condition} | " + " | ".join(cells) + " |")
     print()
     for (model, condition), rs in sorted(groups.items()):
         wrong = [r["id"] for r in rs if not r["correct"]]

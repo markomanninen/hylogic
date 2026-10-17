@@ -68,9 +68,12 @@ which removes symmetric models."
         (and (compound? s) (not (compound? t))) (do (.add lefts s) (.add values t))
         (and (compound? t) (not (compound? s))) (do (.add lefts t) (.add values s))
         True (do (setv lefts None) (break))))
+    ;; each such clause alone bounds t, so keep the smallest. Intersecting them is
+    ;; wrong: t = b | t = c and t = c | t = d both hold when t = b = d
     (when (and lefts (= (len lefts) 1))
-      (setv term (next (iter lefts))
-            (get covered term) (& (.get covered term values) values))))
+      (setv term (next (iter lefts)))
+      (when (or (not-in term covered) (< (len values) (len (get covered term))))
+        (setv (get covered term) values))))
   (setv memo {})
   (defn possible [t]
     "The constants t can equal, or None if it is not bounded."
@@ -194,7 +197,8 @@ which removes symmetric models."
   "proved, saturated (a model exists) or None, for ground clauses with functions."
   (when (not (ground? clauses)) (return None))
   (setv terms (_terms clauses)
-        bound (closure-bound clauses terms)
+        ;; a domain has at least one element, even when no term names one
+        bound (max 1 (closure-bound clauses terms))
         clique (distinct-constants clauses)
         fixed (dfor [i c] (enumerate clique) c (+ i 1))
         top (min bound max-size))

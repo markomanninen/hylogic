@@ -343,13 +343,15 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
               model (isinstance found tuple)))))
   #((szs-status problem result.status model (= equality 1)) result problem))
 
+;; the best combination measured in benchmarks/tptp; --set overrides each
+(setv DEFAULTS {"age_ratio" 10 "equality" 2 "ordered" 1 "index" 1 "definitional" 8 "epr" 1
+                "goal_bias" 6 "portfolio" 40 "schedule" "unordered"
+                "finder_first" 30})
+
 (defn main [[argv None]]
-  ;; the best combination measured in benchmarks/tptp; --set overrides each
   (setv args (list (or argv (cut sys.argv 1 None)))
         time-limit 10.0
-        options {"age_ratio" 10 "equality" 2 "ordered" 1 "index" 1 "definitional" 8 "epr" 1
-                 "goal_bias" 6 "portfolio" 40 "schedule" "unordered"
-                 "finder_first" 30})
+        options (dict DEFAULTS))
   ;; --set name=value passes a search option to prove, for experiments
   (while (in "--set" args)
     (setv i (.index args "--set")
@@ -367,6 +369,11 @@ Theorem, CounterSatisfiable, Unsatisfiable, Satisfiable, GaveUp or Timeout."
       (setv [status result _] (solve path :time-limit time-limit #** options))
       (except [e TPTPError]
         (print f"% SZS status Inappropriate for {name}: {e}")
+        (continue))
+      ;; formulas nested thousands deep (LCL662+1.020) are beyond the recursive
+      ;; parser and clausifier; that is giving up, not a crash
+      (except [RecursionError]
+        (print f"% SZS status GaveUp for {name}: formulas nested too deeply")
         (continue)))
     (print f"% SZS status {status} for {name}")
     (when result.proved

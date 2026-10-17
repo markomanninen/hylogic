@@ -52,17 +52,18 @@ behind instantiation-based provers such as iProver."
           (.append out [#("not" #("=" (get args i) b)) #("not" #(p #* args)) #(p #* moved)])))))
   out)
 
-(defn ground-clauses [clauses [max-clauses 50000] [deadline None] [origins None]]
+(defn ground-clauses [clauses [max-clauses 50000] [deadline None] [origins None] [definitions None]]
   "All ground instances of EPR clauses (with equality axioms if = occurs),
   or None if the clauses are not EPR or the instances would be too many.
   With an origins list, it gets for every instance #(clause split?), the input
-  clause it came from and whether it was split first, or None for an equality axiom."
+  clause it came from and whether it was split first, or None for an equality axiom.
+  A definitions dict gets the meaning of each split predicate (see split-clause)."
   ;; split clauses whose variables fall into unconnected groups (see
   ;; hylogic.finite): n^a + n^b instances instead of n^(a+b). Symbols are
   ;; collected afterwards, so the new predicates get equality axioms too.
   (setv fresh (count 1)
         parts (lfor c clauses
-                :setv split (split-clause (list c) fresh 1)
+                :setv split (split-clause (list c) fresh 1 definitions)
                 part split
                 #(part c (> (len split) 1)))
         [constants predicates functional] (_symbols (lfor [part _ _] parts part)))
@@ -106,7 +107,8 @@ behind instantiation-based provers such as iProver."
   None if the clauses are satisfiable or the deadline passes."
   (import hylogic.resolution [Clause Result]
           hylogic.cdcl [Solver refutation _Timeout])
-  (setv origins [] ground (ground-clauses clauses :deadline deadline :origins origins))
+  (setv origins [] definitions {}
+        ground (ground-clauses clauses :deadline deadline :origins origins :definitions definitions))
   (when (is ground None) (return None))
   (setv [cnf names] (_cnf ground) solver (Solver cnf deadline))
   (when (is-not (try (.solve solver) (except [_Timeout] (return None))) None)
@@ -126,7 +128,10 @@ behind instantiation-based provers such as iProver."
                         (when (not-in source inputs)
                           (setv (get inputs source)
                                 (Clause source #() (if (in source goal-clauses) "negated goal" "axiom"))))
-                        (Clause atoms #((get inputs source)) (if split "instance, split" "instance"))))))
+                        (setv c (Clause atoms #((get inputs source)) (if split "instance, split" "instance")))
+                        ;; what the split predicates mean, for checking the instance (hylogic.certify)
+                        (when split (setv c.definitions definitions))
+                        c))))
         ;; a chain: the parents resolved one after another, left to right
         (setv c (Clause atoms (tuple (gfor p parents (node p))) "resolve")))
     (setv (get made k) c)

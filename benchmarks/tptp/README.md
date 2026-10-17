@@ -505,3 +505,145 @@ four not at all.
 | E 3.2.5 | 207 | 16 |
 | Vampire 5.1.0 (`casc`) | 231 | 20 |
 | Vampire 5.1.0 (`casc_sat`) | | 36 |
+
+## Lean checks HyLogic's own proofs
+
+Step 4 gave Lean HyLogic's problems, and Lean's `grind` searched for its own
+proofs. `hylogic.certify` gives Lean HyLogic's proofs instead. Every clause
+HyLogic derives becomes a Lean theorem saying that its premises imply it, over
+an arbitrary nonempty domain with every function and predicate symbol a
+variable, so the step holds in every interpretation. A last theorem chains the
+steps from the input clauses to False. A proof is then trusted because Lean's
+kernel checked every inference, not because HyLogic printed it.
+
+`grind` is good at ground reasoning with equality but weak at choosing
+instances of universally quantified premises. With only variables and no
+ground terms to match, it finds nothing. So HyLogic replays each inference to
+recover the instances it used (the unifier of a resolution or superposition
+step, the match of every rewrite rule and unit clause a simplification used)
+and writes them into the Lean proof. What is left for `grind` is ground
+logic with equality, which it decides.
+
+    theorem «$s7»
+        («$h1» : ∀ «?A87» : «$U», ((«multiplication» «zero» «?A87») = «zero»))
+        («$h2» : ∀ «?A96» : «$U», ((«strong_iteration» «?A96») = («addition» («multiplication» «?A96» («strong_iteration» «?A96»)) «one»)))
+        («$h3» : ∀ «?A128» : «$U», ((«addition» «zero» «?A128») = «?A128»))
+        («$h4» : ¬((«strong_iteration» «zero») = «one»)) :
+        False := by
+      have «$i1» := «$h1» («strong_iteration» «zero»)
+      have «$i2» := «$h2» «zero»
+      have «$i3» := «$h3» «one»
+      grind
+
+The input clauses are taken as given, so parsing, clausification and
+Skolemization are not checked. A clause with a Skolem function does not
+follow from its formula, it is only satisfiable when the formula is, so this
+part would need a different kind of certificate. Grounding's clause
+splitting is checked. A split instance does not follow from its clause alone,
+only together with the definition of the new predicate, s(I) ↔ ∀ y, B, so the
+step takes that definition as a premise, and a final theorem replaces each
+split predicate by its definition, which leaves the input clauses alone
+contradictory. Equality lemmas from congruence closure and the equality
+axioms of grounding are steps without premises, so Lean proves them too.
+TPTP's distinct objects are input clauses.
+
+`lean_proofs.py` found the proof of each of the 161 problems HyLogic proves in
+the final run again with the command line's defaults and 10 seconds, and ran
+Lean 4.35 on one file per proof. Lean accepted all 161 proofs, every one of
+their 13,180 steps and the chained refutations. No step was invalid, so this
+found no bug in HyLogic. A first run reported 23 proofs as failing, and the
+fault was in the export. A split definition that mentions another split
+predicate has to have it replaced by its definition as well.
+
+| Rule | Steps | Verified | Proved by `grind` without the instances |
+|---|---:|---:|---:|
+| resolve (also chains of SAT resolution) | 4,706 | 4,706 | 4,519 of 4,555 |
+| instance, split | 2,912 | 2,912 | 3,062 of 3,062 |
+| instance | 2,427 | 2,427 | 2,383 of 2,386 |
+| equality lemma | 1,732 | 1,732 | 1,760 of 1,760 |
+| simplified | 1,212 | 1,212 | 1,219 of 1,219 |
+| superposition | 70 | 70 | 65 of 70 |
+| simplification | 37 | 37 | 33 of 37 |
+| factor | 26 | 26 | 22 of 23 |
+| equality axiom | 21 | 21 | 22 of 22 |
+| equality resolution | 19 | 19 | 19 of 19 |
+| demodulation | 18 | 18 | 18 of 18 |
+| All | 13,180 | 13,180 | 13,122 of 13,171 |
+| Proofs | 161 | 161 | 131 of 160 |
+
+Rules with a suffix such as +demod or +unit deletion are counted under their
+first rule. The two runs found their proofs again separately, so the step
+counts differ a little. Without the instances `grind` fails on 49 steps, and
+29 proofs are incomplete; with them it fails on none. The split instances
+need no replayed instances, since `grind` instantiates the clause and the
+definitions itself.
+
+Lean took 5 seconds for the median proof, 13 at most (1,188 steps), and 849
+seconds in all, most of it starting Lean. One problem, SYO605+1, ran out of
+search time while four checks ran in parallel and was checked alone.
+
+## A soundness sweep
+
+Three soundness bugs had been found so far, all by benchmarks and none by
+unit tests, so HyLogic was run on every problem the samples are drawn from
+that neither sample contains. These are the FOF problems with at most 50
+formulas whose status is Theorem, CounterSatisfiable, Unsatisfiable or
+Satisfiable, 3781 of them (sweep_list.py lists them). Each had 10 seconds
+with the default options, six at a time, and the whole run took an hour.
+
+| Status | Problems | Solved, 1.4.0 | Solved, after the fixes | Wrong, 1.4.0 | Wrong, after |
+|---|---:|---:|---:|---:|---:|
+| Theorem | 2723 | 1188 | 1188 | 0 | 0 |
+| CounterSatisfiable | 564 | 401 | 400 | 0 | 0 |
+| Unsatisfiable | 180 | 125 | 123 | 0 | 0 |
+| Satisfiable | 314 | 94 | 94 | 0 | 0 |
+| All | 3781 | 1808 | 1805 | 0 | 0 |
+
+**No answer was wrong.** The small differences in solved problems are
+timing. The six problems the second run lost all solve when run again,
+and NUM378+1.015.020 was one of them for another reason, given below.
+
+**A decider can hide behind another.** solve tries grounding, then
+congruence closure, then the bounded ground search, so a wrong verdict
+from a later method never shows when an earlier one answers first. Each
+decider was therefore run alone for 5 seconds on these problems and both
+samples, 4295 in all. The bounded ground search said proved for two
+CounterSatisfiable problems, LCL679+1.001 and SYN916+1. Their clauses
+have no terms, the bound on the model size came out as 0, no size was
+tried, and finding no model up to size 0 was taken as a proof. A domain
+has at least one element, and the bound is now at least 1. Reading the
+same code found two more of the kind that no problem reaches. The ground
+search intersected the constants of two clauses t = b | t = c and
+t = c | t = d about one term, which is wrong when t = b = d, and the
+bound came out too small. Each clause bounds t on its own, so the
+smallest one is kept. decide-finite, which nothing in the prover calls,
+searched up to 10 elements but took no model as a proof for larger bounds
+too. Each fix has a unit test that failed before it.
+
+**Fourteen errors, now none.** Four theorems (LCL450+1, LCL450+2, SYN917+1
+and SYN938+1) crashed in the Knuth-Bendix ordering. The rule index
+redefined the ordering's helper for head symbols under the same name, and
+the index's version compared a string with a tuple when a proposition met
+a definition atom without arguments. The ordering has its own helper
+again, which orders every other pair as before, and SYN917+1 and SYN938+1
+are now proved. Ten problems (LCL662+1.020 and kin, SYN986+1.004 to .006)
+nest formulas thousands of levels deep, past Python's recursion limit.
+They now end with GaveUp instead of a traceback; raising the limit only
+let them run far past the time limit.
+
+**A time limit kept.** The model finder that enumerates function tables
+checked the clock only between tries, and one try can ground a formula
+into millions of parts. NUM378+1.015.020 ran for minutes with a 10 second
+limit whenever resolution had not finished first. Grounding now checks the
+clock at every quantifier and connective.
+
+**The samples did not change.** With the fixes the first sample gave 191
+of 274 (192 before) and the held-out sample 168 of 240 (168), with no wrong
+answers. The one problem lost, SYO605+1, timed out while another program
+loaded the machine and is proved in 3.4 seconds when run again.
+
+**Known gaps.** TPTP numbers denote themselves, so 1 != 2 holds implicitly,
+but HyLogic reads them as uninterpreted constants; no eligible problem
+uses a number in a formula. The flattening model finder keys functions by
+name alone, so a symbol used with two arities would get the totality
+axioms of one only; no eligible problem does that either.

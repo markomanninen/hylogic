@@ -291,7 +291,10 @@ numbered steps:
 
 `to-lean` writes a problem as a Lean 4 theorem, and `check-lean` runs Lean on
 it, with `sorry` to check the statement or `grind` to let Lean's automation
-prove it.
+prove it. `hylogic.certify` writes HyLogic's own proof as Lean theorems, one
+per inference with the instances it used, and `certify` has Lean check every
+step and the whole refutation from the input clauses. Lean accepted all 161
+TPTP proofs of the benchmark below, 13,180 steps, without an invalid one.
 
 On a fixed sample of 234 TPTP theorems within 10 seconds, HyLogic's own
 prover proves 161 (39 before its ordered resolution, superposition,
@@ -327,6 +330,22 @@ check_argument(premises=["(=> P Q)", "Q"], conclusion="P",
 INVALID (checked by truth table)
 Read as: P → Q; Q ⊢ P
 Counterexample: “it rains” is false and “the street is wet” is true. Then every premise is true and the conclusion is false.
+```
+
+A valid argument comes with the premises it needs. `detail=true` adds the
+proof, and `certify=true` has Lean 4 check every step of it in a few seconds,
+when the `lean` command is installed (or named by `HYLOGIC_LEAN`); without
+Lean the answer says how to install it.
+
+```
+check_argument(premises=["(forall [x] (=> (Man x) (Mortal x)))", "(Man socrates)", "(Greek socrates)"],
+               conclusion="(Mortal socrates)", certify=True)
+
+VALID (checked by resolution)
+Read as: ∀x ((Man x) → (Mortal x)); (Man socrates); (Greek socrates) ⊢ (Mortal socrates)
+Premises needed: 1, 2 (of 3)
+Proof: 4 steps, shown with detail=true
+Lean check: verified, Lean 4 accepted the 1 step of the proof and how they chain from the premises to a contradiction (4.3 s). The clausal form of the premises is taken as given.
 ```
 
 [benchmarks/field_test/](benchmarks/field_test/) measures whether the tool

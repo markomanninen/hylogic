@@ -223,8 +223,9 @@ new clauses that are neither duplicates nor subsumed by older ones."
   (if lits (.join " | " (sorted (map show lits))) "□"))
 
 (defclass Clause []
-  (defn __init__ [self literals [parents #()] [rule "axiom"]]
+  (defn __init__ [self literals [parents #()] [rule "axiom"] [source None]]
     (setv self.literals (frozenset literals)
+          self.source source
           self.parents parents
           self.rule rule
           self.rules-seen 0
@@ -354,6 +355,18 @@ new clauses that are neither duplicates nor subsumed by older ones."
   (defn __init__ [self status clause stats]
     (setv self.status status self.clause clause self.stats stats))
   (defn [property] proved [self] (= self.status "proved"))
+  (defn premises-used [self]
+    "The positions of the axioms the proof starts from, in order: what the
+    conclusion depends on. Empty when the negated goal alone is contradictory."
+    (when (or (not self.proved) (is self.clause None)) (return []))
+    (setv seen #{} found #{} todo [self.clause])
+    (while todo
+      (setv c (.pop todo))
+      (when (in (id c) seen) (continue))
+      (.add seen (id c))
+      (when (is-not (getattr c "source" None) None) (.add found c.source))
+      (.extend todo [#* c.parents #* (getattr c "used" [])]))
+    (sorted found))
   (defn proof [self]
     "The proof as numbered lines, from input clauses to the empty clause."
     (when (or (not self.proved) (is self.clause None)) (return []))
@@ -562,8 +575,9 @@ new clauses that are neither duplicates nor subsumed by older ones."
 (defn prove [goal [axioms #()] [limit 5000] [timeout None] [definitional False] #** options]
   "Try to prove goal from axioms: refute the axioms together with the negated goal."
   (setv clauses [])
-  (for [a axioms  lits (clausify a definitional)]
-    (.append clauses (Clause lits)))
+  ;; every input clause remembers which axiom it came from (see premises-used)
+  (for [[i a] (enumerate axioms)  lits (clausify a definitional)]
+    (.append clauses (Clause lits :source i)))
   (for [lits (clausify #("not" (basic goal)) definitional)]
     (.append clauses (Clause lits :rule "negated goal")))
   (saturate clauses limit timeout #** options))

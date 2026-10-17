@@ -114,3 +114,12 @@
   (.write-text (/ d "TST008+1.p") "fof(p, axiom, p(a)).\nfof(g, conjecture, p(b)).\n")
   (assert (= (get (solve (/ d "TST007+1.p") :time-limit 5 :epr 1) 0) "Theorem"))
   (assert (= (get (solve (/ d "TST008+1.p") :time-limit 5 :epr 1) 0) "CounterSatisfiable")))
+
+(defn test-deeply-nested-formulas-give-up-instead-of-crashing [tmp-path capsys]
+  ;; LCL662+1.020 and its kin nest formulas thousands deep, past Python's recursion
+  ;; limit; the command line once died with a traceback and no SZS status
+  (import hylogic.tptp [main])
+  (setv f (/ tmp-path "deep.p"))
+  (.write-text f (+ "fof(deep, conjecture, " (* "~ " 5000) "p).\n"))
+  (main [(str f)])
+  (assert (in "SZS status GaveUp for deep" (. (.readouterr capsys) out))))

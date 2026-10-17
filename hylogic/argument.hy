@@ -10,14 +10,39 @@
 
 A propositional argument is checked with a truth table, which also finds a
 counterexample when it is invalid. An argument with quantifiers or
-predicates is checked with the resolution prover."
+predicates is checked with the resolution prover, using the search settings
+the TPTP benchmarks measured best, and a countermodel is looked for when no
+proof is found. Either way `used` names the premises a valid argument needs."
 
-(import hylogic.formulas [formula pretty operator-of args-of QUANTIFIERS]
+(import time
+        hylogic.formulas [formula pretty operator-of args-of QUANTIFIERS]
         hylogic.terms [compound?]
         hylogic.truth [counterexample propositions]
         hylogic.sat [counterexample :as sat-counterexample]
-        hylogic.resolution [prove]
-        hylogic.models [countermodel])
+        hylogic.resolution [prove clausify]
+        hylogic.models [countermodel]
+        hylogic.finite [find-finite-model distinct-constants])
+
+;; the search settings benchmarks/tptp measured best: a main search, then
+;; unordered superposition, which proves what the ordering prunes away
+(setv SEARCH {"superposition" 1 "ordered" 1 "index" 1 "definitional" 8
+              "age_ratio" 10 "goal_bias" 6})
+
+(defn _mentions-equality [x]
+  (cond
+    (isinstance x tuple) (or (and x (= (get x 0) "=")) (any (gfor y x (_mentions-equality y))))
+    True False))
+
+(defn _finite-model-text [found]
+  "A model from hylogic.finite as text: its size, function values and true facts."
+  (setv [n facts] found lines [f"{n} elements"])
+  (for [f (sorted facts :key str)]
+    (.append lines (if (= (get f 0) "$fn")
+                       (+ "  " (get f 1) "(" (.join ", " (map str (cut f 2 -1))) ") = " (str (get f -1)))
+                       (if (isinstance f tuple)
+                           (+ "  " (get f 0) "(" (.join ", " (map str (cut f 1 None))) ")")
+                           (+ "  " (str f))))))
+  (.join "\n" lines))
 
 ;; Up to this many propositions an argument is checked with a truth table,
 ;; which finds the first counterexample in table order. Beyond it the SAT
@@ -33,47 +58,73 @@ predicates is checked with the resolution prover."
     True (not (compound? f))))
 
 (defclass Argument []
-  (defn __init__ [self premises conclusion [meanings None] [limit 5000]]
+  (defn __init__ [self premises conclusion [meanings None] [limit 5000] [timeout 5]]
     (setv self.premises (lfor p premises (formula p))
           self.conclusion (formula conclusion)
           self.meanings (dfor [k v] (.items (or meanings {})) (str k) v)
           self.limit limit
+          self.timeout timeout
           self._checked False))
 
   (defn check [self]
     "Decide validity once. Sets valid (True, False or None if undecided) and method."
     (when self._checked (return self))
     (setv self._checked True
+          self.result None
           self.counterexample None
+          self.used None
           self.proof None)
     (setv self.countermodel None)
     (cond
       (not (all (gfor f [#* self.premises self.conclusion] (propositional? f))))
         (do
-          (setv result (prove self.conclusion self.premises :limit self.limit)
-                self.method "resolution"
+          (setv equality (_mentions-equality #(#* self.premises self.conclusion))
+                result (prove self.conclusion self.premises :limit self.limit
+                              :timeout (* 0.6 self.timeout) #** SEARCH))
+          (when (and (not result.proved) (!= result.status "saturated"))
+            (setv second (prove self.conclusion self.premises :limit self.limit
+                                :timeout (* 0.4 self.timeout) #** (| SEARCH {"ordered" 0})))
+            (when second.proved (setv result second)))
+          (setv self.method "resolution"
+                self.result result
                 self.proof (.proof result))
           (if result.proved
-              (setv self.valid True)
+              (setv self.valid True
+                    self.used (lfor i (.premises-used result) (+ i 1)))
               ;; a small world where the premises hold and the conclusion fails
               (do
                 (setv self.countermodel (countermodel self.premises self.conclusion))
+                (when (not self.countermodel)
+                  (setv clauses (lfor f [#* self.premises #("not" self.conclusion)]  c (clausify f 8) c)
+                        found (find-finite-model clauses :max-size 6
+                                                 :fixed-constants (distinct-constants clauses)
+                                                 :deadline (+ (time.monotonic) self.timeout)))
+                  (when (isinstance found tuple)
+                    (setv self.countermodel (_finite-model-text found))))
                 (cond
                   self.countermodel (setv self.valid False self.method "countermodel")
-                  (= result.status "saturated") (setv self.valid False)
+                  ;; superposition may be incomplete, so its saturation proves nothing
+                  (and (= result.status "saturated") (not equality)) (setv self.valid False)
                   True (setv self.valid None)))))
-      (<= (len (propositions #("and" #* self.premises self.conclusion))) TRUTH-TABLE-LIMIT)
-        (setv self.method "truth table"
-              self.counterexample (counterexample self.premises self.conclusion)
-              self.valid (is self.counterexample None))
       True
-        (setv self.method "SAT"
-              self.counterexample (sat-counterexample self.premises self.conclusion)
-              self.valid (is self.counterexample None)))
+        (do
+          (setv small (<= (len (propositions #("and" #* self.premises self.conclusion))) TRUTH-TABLE-LIMIT)
+                refute (if small counterexample sat-counterexample)
+                self.method (if small "truth table" "SAT")
+                self.counterexample (refute self.premises self.conclusion)
+                self.valid (is self.counterexample None))
+          ;; the premises needed: drop each one that the argument stays valid without
+          (when self.valid
+            (setv keep (list (range (len self.premises))))
+            (for [i (list keep)]
+              (setv trial (lfor k keep :if (!= k i) k))
+              (when (is (refute (lfor k trial (get self.premises k)) self.conclusion) None)
+                (setv keep trial)))
+            (setv self.used (lfor k keep (+ k 1))))))
     self)
 
   (defn __getattr__ [self name]
-    (when (in name #{"valid" "method" "counterexample" "countermodel" "proof"})
+    (when (in name #{"valid" "method" "counterexample" "countermodel" "proof" "used" "result"})
       (.check self)
       (return (getattr self name)))
     (raise (AttributeError name)))

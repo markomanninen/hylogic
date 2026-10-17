@@ -175,3 +175,25 @@
   (assert (< (- (time.monotonic) start) 1))
   ;; and real subsumption is still found
   (assert (subsumes? (frozenset [#("p" "?x") #("q" "?x")]) (frozenset [#("p" "a") #("q" "a") #("r" "b")]))))
+
+(defn test-kbo-compares-a-proposition-with-a-0-ary-definition []
+  ;; a closed disjunct is named by a 1-tuple atom such as ($def3); the KBO once
+  ;; picked up the rule index's head function and compared "p" with a tuple
+  (import hylogic.superposition [kbo>] hylogic.resolution [eligible])
+  (setv d #("$def3"))
+  (assert (not (and (kbo> "p" d) (kbo> d "p"))))
+  (assert (eligible (frozenset ["p" d])))
+  ;; the order it gives otherwise is unchanged: name first, then length
+  (assert (kbo> #("g" "a") #("f" "a")))
+  (assert (kbo> "b" "a")))
+
+(defn test-lcl450-no-longer-crashes []
+  ;; LCL450+1 gave the KBO a proposition and a 0-ary definition atom of one size
+  (import os pathlib [Path] hylogic.tptp [solve])
+  (setv root (os.environ.get "TPTP"))
+  (when (or (not root) (not (.exists (/ (Path root) "Problems" "LCL" "LCL450+1.p"))))
+    (pytest.skip "set TPTP to a TPTP library to run this test"))
+  (setv [status _ _] (solve (str (/ (Path root) "Problems" "LCL" "LCL450+1.p")) :time-limit 3 :epr 1
+                            :equality 2 :definitional 8 :finder_first 30 :portfolio 40
+                            :schedule "unordered" :ordered 1 :index 1 :goal_bias 6 :age_ratio 10))
+  (assert (in status #{"Theorem" "Timeout" "GaveUp"})))

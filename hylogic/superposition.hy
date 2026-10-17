@@ -23,8 +23,11 @@ Vampire use; this is a small version of it without literal selection."
 
 ;; The Knuth-Bendix ordering
 
-(defn _head [t]
-  (if (compound? t) #((- (len t) 1) (str (get t 0))) #(0 (str t))))
+(defn _kbo-head [t]
+  "The head symbol as the KBO compares it: by name, then by length. The KBO once
+  called _head, which the rule index below redefines; that version gave the same
+  order but compared a string with a tuple for a 0-ary definition atom ($def3)."
+  (if (compound? t) #((str (get t 0)) (len t)) #((str t) 0)))
 
 (defn _var-counts [t [c None]]
   (when (is c None) (setv c (Counter)))
@@ -52,8 +55,8 @@ Vampire use; this is a small version of it without literal selection."
         (cond
           (> ws wt) True
           (< ws wt) False
-          (> (_head s) (_head t)) True
-          (< (_head s) (_head t)) False
+          (> (_kbo-head s) (_kbo-head t)) True
+          (< (_kbo-head s) (_kbo-head t)) False
           True (do
                  (for [[a b] (zip (cut s 1 None) (cut t 1 None))]
                    (when (!= a b) (return (kbo> a b))))

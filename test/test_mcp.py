@@ -46,3 +46,53 @@ def test_one_element_array_is_the_proposition():
     # also seen in the field test: the conclusion R sent as ["R"]
     out = check_argument(["(=> P R)", "P"], ["R"])
     assert out.startswith("VALID (checked by truth table)")
+
+
+def test_valid_argument_names_the_premises_it_needs():
+    # R plays no part: the answer says which premises carry the conclusion
+    out = check_argument(["(=> P Q)", "R", "P"], "Q")
+    assert "Premises needed: 1, 3 (of 3)" in out
+
+
+def test_first_order_proof_only_with_detail():
+    premises = ["(forall [x] (=> (Man x) (Mortal x)))", "(Man socrates)", "(Greek socrates)"]
+    short = check_argument(premises, "(Mortal socrates)")
+    assert short.startswith("VALID (checked by resolution)")
+    assert "Premises needed: 1, 2 (of 3)" in short
+    assert "shown with detail=true" in short and "□" not in short
+    full = check_argument(premises, "(Mortal socrates)", detail=True)
+    assert "Proof:" in full and "□" in full
+    assert len(full) > len(short)
+
+
+def test_first_order_with_equality():
+    # superposition: from a = b and P(a), P(b)
+    out = check_argument(["(= a b)", "(P a)"], "(P b)")
+    assert out.startswith("VALID")
+    assert "Premises needed: 1, 2" in out
+
+
+def test_atoms_written_as_calls_and_unnested_quantifiers():
+    # two shapes models write: ReportsTo(Carla, Eva) and forall [x] forall [y] ...
+    out = check_argument(["ReportsTo(Carla, Eva)", "ReportsTo(Eva, Ben)",
+                          "(forall [x] forall [y] forall [z] (=> (and (ReportsTo x y) (ReportsTo y z)) (ReportsTo x z)))"],
+                         "ReportsTo(Carla, Ben)")
+    assert out.startswith("VALID")
+
+
+def test_certify_without_lean_says_how_to_install(monkeypatch):
+    monkeypatch.setenv("HYLOGIC_LEAN", "no-such-lean-command")
+    out = check_argument(["(=> P Q)", "P"], "Q", certify=True)
+    assert out.startswith("VALID")
+    assert "Lean check: not run, Lean 4 is not installed" in out
+
+
+def test_certify_with_lean():
+    from hylogic.mcp_server import lean_available
+    if not lean_available():
+        pytest.skip("lean is not installed")
+    out = check_argument(["(forall [x] (=> (Man x) (Mortal x)))", "(Man socrates)"], "(Mortal socrates)",
+                         certify=True)
+    assert "Lean check: verified" in out
+    # an invalid argument has no proof to certify, and says nothing about Lean
+    assert "Lean check" not in check_argument(["(=> P Q)", "Q"], "P", certify=True)

@@ -102,3 +102,77 @@ adds 60 to 70 % to the cost. A checker would pay off only where the reasoning
 itself is the hard part, with longer or first-order arguments, and only if
 the model formalizes the sentences correctly, which is where Haiku's errors
 were.
+
+## Round two: first-order arguments
+
+The first round's arguments were short and mostly propositional, and the
+models judged them well without the tool. `items_fo.json` (made by
+`make_items_fo.py`) has 40 longer first-order arguments about people in an
+office: chains of three to seven premises with "everyone who", "no one who",
+"only someone who", "someone who" and relations such as "reports to". Half
+are valid, and a valid one needs every premise (HyLogic's proof uses all of
+them). An invalid one is a valid chain with one change a hasty reader can
+miss, recorded as its trap.
+
+| Trap | Change |
+|---|---|
+| `converse` | one rule turned around, "everyone who has a badge works remotely" where the chain needs the converse |
+| `some` | one "everyone who" weakened to "at least one person who" |
+| `scope` | "everyone trusts someone" taken as "someone is trusted by everyone" |
+| `other` | the chain starts from a fact about another person |
+
+Validity is decided by HyLogic and checked with Z3. With the tool the prompt
+asks for predicates and quantifiers. The tool answers with the verdict, the
+premises a valid argument needs and the length of the proof, and returns the
+proof itself only with `detail=true`, since the agent pays for every line.
+
+    ITEMS_FILE=items_fo.json run_agents.sh haiku
+
+### Hypotheses, written before running
+
+| | Hypothesis | Expected |
+|---|---|---|
+| H5 | Without the tool, longer chains and the traps cost the small model more than the first round did | Haiku below 90 % |
+| H6 | Most errors without the tool fall on `some` and `scope` | more than on `converse` and `other` |
+| H7 | With the tool, accuracy rises; the remaining errors are formalization mistakes | Haiku 95 % or more |
+| H8 | The tool costs less here than in the first round, relative to answering without it, because the model can stop reasoning once the tool decides | less than 1.6 times |
+
+### Pilots and the hardest set
+
+Three ten-item pilots with Haiku decided how hard the items had to be. On
+`items_fo.json` it judged everything correctly once one wording was fixed:
+"someone who has a laptop can enter the lab" also reads as a rule in English,
+so the generator now writes "at least one person who". On the hard set
+(13 to 19 premises, two people, distractors, shuffled) it got 9 of 10 without
+the tool and 10 with it, so the generator gained `--harder` and `--hardest`.
+`items_fo_hardest.json` has 25 premises per argument, and each valid chain
+needs two contrapositive steps and two case splits. The hardest pilot also
+showed Haiku writing atoms as calls, `ReportsTo(Carla, Eva)`, and quantifiers
+without their own parentheses; the tool now reads both.
+
+### Results on the hardest set
+
+Each of the 40 items once per condition, Haiku only.
+
+| Haiku, 40 items of 25 premises | Correct | Output tokens per item | Median time | Cost |
+|---|---:|---:|---:|---:|
+| Without the tool | 38 | 11,800 | 71 s | $2.55 |
+| With the tool | 40 | 14,100 | 85 s | $4.28 |
+
+Both errors without the tool fell on invalid items with a rule turned
+around. In Z24 Haiku used the reversed rule as if it were the one the chain
+needed. In Z18 it decided that the premises contradict each other, which they
+do not (HyLogic finds a model of them), and called the argument valid by
+explosion. With the tool every one of the 41 calls was read correctly and
+every final answer followed the tool.
+
+| | Hypothesis | Result |
+|---|---|---|
+| H5 | Without the tool Haiku stays below 90 % | Rejected. 95 %, at about 12,000 output tokens an argument. |
+| H6 | Most errors fall on `some` and `scope` | Rejected. Both fell on `converse`. |
+| H7 | With the tool 95 % or more | Held. 40 of 40. |
+| H8 | The tool costs less than 1.6 times | Rejected. 1.68 times. |
+
+At this length the tool turned two wrong answers into right ones, at two
+thirds more cost. Haiku reasoned through each chain at length either way and
+then checked it, so the tool served as a final check, not a shortcut.

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hylogic"
-version = "1.4.0"
+version = "1.5.0"
 description = "Propositional and first-order logic in Hy: truth tables, arguments, models and a resolution prover"
 readme = "README.md"
 license = "MIT"
