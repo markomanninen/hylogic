@@ -197,3 +197,15 @@
                             :equality 2 :definitional 8 :finder_first 30 :portfolio 40
                             :schedule "unordered" :ordered 1 :index 1 :goal_bias 6 :age_ratio 10))
   (assert (in status #{"Theorem" "Timeout" "GaveUp"})))
+
+(defn test-proofs-print-the-same-under-any-hash-seed []
+  ;; the units and rules a simplification cites were collected in set order,
+  ;; so line numbers changed with PYTHONHASHSEED
+  (import os subprocess sys)
+  (setv code "import hy\nfrom hylogic.problems import FIRST_ORDER\nfrom hylogic.resolution import prove\nn, a, g = [p for p in FIRST_ORDER if 'curiosity' in str(p)][0]\nprint('\\n'.join(prove(g, a).proof()))"
+        outs (sfor seed ["0" "1" "2" "3"]
+               (. (subprocess.run [sys.executable "-c" code] :capture-output True :text True
+                                  :env (| (dict os.environ) {"PYTHONHASHSEED" seed}))
+                  stdout)))
+  (assert (= (len outs) 1))
+  (assert (in "□" (next (iter outs)))))
