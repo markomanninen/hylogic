@@ -84,15 +84,14 @@ Logic is a natural fit because formulas are trees. In Hy, a formula is simply qu
 The program receives that as data and can take it apart, rewrite it and prove things about it without a parser. The prover does what classical provers do. It turns formulas into clauses, matches them with unification, and searches for a contradiction with resolution. It then prints the proof with each step's parents, here for the textbook puzzle of who killed the cat Tuna.
 
 ```
-   8. (not (Kills curiosity tuna))                 negated goal
-  10. (Kills jack tuna)                            resolve 5, 8
-  13. (AnimalLover jack)                           resolve 12, 1
-  16. (not (Animal tuna)) | (not (AnimalLover jack)) resolve 4, 10
-  21. (not (AnimalLover jack))                     resolve 16, 9
-  26. □                                            resolve 21, 13
+   3. (not (Kills curiosity tuna))                 negated goal
+   4. (Kills jack tuna)                            simplification 2, 3
+   8. (AnimalLover jack)                           resolve+unit deletion 5, 6, 7
+  11. (Animal tuna)                                resolve 9, 10
+  12. □                                            resolve+unit deletion 1, 4, 8, 11
 ```
 
-Read from line 8. If Curiosity did not kill Tuna, Jack did. Jack owns a dog, so he loves animals, and animal lovers kill no animals. The empty clause □ marks the contradiction.
+Read from line 3. If Curiosity did not kill Tuna, Jack did. Jack owns a dog, so he loves animals, Tuna is a cat and so an animal, and animal lovers kill no animals. The empty clause □ marks the contradiction.
 
 Macros are the other place a Lisp earns its keep. A rewrite rule such as "the derivative of a constant is zero" has to stay unevaluated text, and its condition has to become a function of the rule's variables. A function cannot see its arguments before they are evaluated, but a macro can.
 
