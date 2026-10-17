@@ -14,19 +14,37 @@ A theorem prover decides whether a conclusion follows from premises. Most automa
 
 The basic step is [resolution](https://en.wikipedia.org/wiki/Resolution_(logic)), from [J. A. Robinson's paper of 1965](https://doi.org/10.1145/321250.321253). From "A or B" and "not A or C" it concludes "B or C". When the statements contain variables, it first finds the substitution that makes them match, which is called [unification](https://en.wikipedia.org/wiki/Unification_(computer_science)), so that "every man is mortal" can meet "Socrates is a man".
 
-HyLogic prints every step with the lines it came from. This is its proof of a textbook puzzle. Jack owns a dog, every dog owner loves animals, no animal lover kills an animal, Tuna is a cat, every cat is an animal, and either Jack or Curiosity killed Tuna. Did Curiosity kill Tuna?
+Here is a textbook puzzle. Jack owns a dog, every dog owner loves animals, no animal lover kills an animal, Tuna is a cat, every cat is an animal, and either Jack or Curiosity killed Tuna. Did Curiosity kill Tuna? In HyLogic the premises are written as formulas in [Hy](https://hylang.org) and handed to the prover.
+
+```hy
+(import hylogic.resolution [prove])
+
+(setv premises
+  ['(exists [x] (and (Dog x) (Owns jack x)))
+   '(forall [x] (=> (exists [y] (and (Dog y) (Owns x y)))
+                    (AnimalLover x)))
+   '(forall [x] (=> (AnimalLover x)
+                    (forall [y] (=> (Animal y) (not (Kills x y))))))
+   '(or (Kills jack tuna) (Kills curiosity tuna))
+   '(Cat tuna)
+   '(forall [x] (=> (Cat x) (Animal x)))])
+
+(print (.join "\n" (.proof (prove '(Kills curiosity tuna) premises))))
+```
+
+HyLogic prints the proof with every step and the lines it came from. Lines 1, 2, 5, 6, 8, 9 and 10 are the premises in clause form, and these are the steps that follow from them.
 
 ```
    3. (not (Kills curiosity tuna))     negated goal
    4. (Kills jack tuna)                simplification 2, 3
-   8. (AnimalLover jack)               resolve+unit deletion 5, 6, 7
-  11. (Animal tuna)                    resolve 9, 10
-  12. □                                resolve+unit deletion 1, 4, 8, 11
+   7. (Animal tuna)                    resolve 5, 6
+  11. (AnimalLover jack)               resolve+unit deletion 8, 9, 10
+  12. □                                resolve+unit deletion 1, 4, 7, 11
 ```
 
-Read from line 3. If Curiosity did not kill Tuna, Jack did. Jack owns a dog, so he loves animals, Tuna is a cat and so an animal, and animal lovers kill no animals. The empty clause □ marks the contradiction, so Curiosity did it.
+Read from line 3. If Curiosity did not kill Tuna, Jack did (line 4). Tuna is a cat and so an animal (line 7). Jack owns a dog, so he loves animals (line 11). Animal lovers kill no animals, so line 12 is a contradiction, marked by the empty clause □, and Curiosity did it.
 
-A prover is also a place where a Lisp still earns its keep. Formulas are trees, and in [Hy](https://hylang.org) a formula is simply quoted code, such as `'(∀ [x] (→ (Man x) (Mortal x)))`. The program receives it as data and can take it apart, transform it and prove things about it without a parser. I first wrote HyLogic in 2017, and this year rewrote it and measured it against real provers.
+A prover is also a place where a Lisp still earns its keep. Formulas are trees, and in Hy a formula is simply quoted code, as in the premises above. The program receives it as data and can take it apart, transform it and prove things about it without a parser. I first wrote HyLogic in 2017, and this year rewrote it and measured it against real provers.
 
 ## Result 1. Methods mattered, speed hardly did
 
@@ -101,10 +119,10 @@ Each now has a test that fails on the old code. The lesson is an old one. A wide
 
 ## Result 4. Lean checks every step
 
-Tests and benchmarks give confidence, but a proof checked by an independent system gives more. [Lean](https://lean-lang.org), created by Leonardo de Moura, is a proof assistant with a small trusted core that checks every proof it is given, and mathematicians use it to formalize research mathematics in its library [Mathlib](https://github.com/leanprover-community/mathlib4). HyLogic now writes each step of a proof as a small Lean theorem saying that the step's premises imply its conclusion. This is step 8 of the Tuna proof.
+Tests and benchmarks give confidence, but a proof checked by an independent system gives more. [Lean](https://lean-lang.org), created by Leonardo de Moura, is a proof assistant with a small trusted core that checks every proof it is given, and mathematicians use it to formalize research mathematics in its library [Mathlib](https://github.com/leanprover-community/mathlib4). HyLogic now writes each step of a proof as a small Lean theorem saying that the step's premises imply its conclusion. This is line 11 of the Tuna proof, that Jack loves animals.
 
 ```lean
-theorem «$s8»
+theorem «$s11»
     («$h1» : ∀ «?x2» «?y3» : «$U»,
       («AnimalLover» «?x2») ∨ ¬(«Dog» «?y3») ∨ ¬(«Owns» «?x2» «?y3»))
     («$h2» : («Owns» «jack» «sk1»))
