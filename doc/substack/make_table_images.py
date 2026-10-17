@@ -54,27 +54,34 @@ def table(name, title, headers, rows, note, highlight=lambda row: False, worse=(
 
 
 OUT.mkdir(exist_ok=True)
-table("table1_camel", "Python plans against Hy plans in CaMeL, on the same runs",
-      ["", "Python plans", "Hy plans"],
-      [["Tasks solved, no attack (16)", "11", "10"], ["Tasks solved, under attack (39)", "38", "32"],
-       ["Attacks that succeeded", "0", "0"], ["Retries per run, no attack", "1.25", "1.56"],
-       ["Model cost, no-attack run", "$0.74", "$1.08"]],
-      "AgentDojo banking suite, Claude Haiku through claude -p, CaMeL's own interpreter and policies.",
-      worse={(0, 2), (1, 2), (3, 2), (4, 2)})
-table("table2_tokens", "Tokens to describe a page's interactive elements to a model",
-      ["Format", "Tokens", "Relative to HTML"],
-      [["HTML", "51,950", "1.00"], ["HyML s-expressions", "53,995", "1.04"], ["HyML as JSON", "62,015", "1.19"],
-       ["JSON, compact", "78,730", "1.52"], ["JSON, indented", "99,246", "1.91"]],
-      "1,661 elements from Wikipedia, Hacker News and GitHub's login page, counted with OpenAI's o200k tokenizer.",
-      highlight=lambda row: row[0].startswith("HyML"))
-table("table3_checker", "Arguments judged correctly, with and without HyLogic's checker",
-      ["", "Without tool", "With tool", "Cost with the tool"],
-      [["Claude Haiku", "67 of 70", "69 of 70", "1.7 times"], ["Claude Opus", "70 of 70", "70 of 70", "1.6 times"]],
-      "70 generated arguments in English, each checked with HyLogic and Z3, judged once per model and condition.")
-table("table4_provers", "Theorems from the TPTP library proved within ten seconds each",
-      ["", "Theorems, of 234"],
-      [["HyLogic, first version", "39"], ["HyLogic, after the measured changes", "161"],
-       ["Lean's grind, on HyLogic's export", "53"], ["E 3.2.5", "207"], ["Vampire 5.1.0", "231"]],
-      "Problems with at most 50 formulas from TPTP v9.3.1, drawn with a fixed seed. Apple Silicon, one problem per process.",
+table("prover_methods", "What each method added, in theorems proved of 234",
+      ["Method", "Theorems"],
+      [["First version, plain resolution", "39"],
+       ["Fair choice of the next clause, by age as well as size", "+9"],
+       ["Superposition for equality, with ordered resolution", "+28"],
+       ["Naming subformulas, indexing, deciding problems without functions by SAT", "+10"],
+       ["A search that stays close to the goal", "+11"],
+       ["Ground problems decided by a SAT solver", "+7"],
+       ["Ground equality decided by congruence closure", "+6"],
+       ["Simplification as E does it", "+11"],
+       ["Splitting clauses before grounding them", "+22"],
+       ["A schedule of two search strategies", "+13"],
+       ["Smaller steps", "+5"],
+       ["HyLogic now", "161"]],
+      "TPTP v9.3.1 problems with at most 50 formulas, ten seconds each. Each change measured on its own and kept only if it helped.",
+      highlight=lambda row: row[0] in ("First version, plain resolution", "HyLogic now"))
+table("prover_results", "Problems solved within ten seconds each",
+      ["", "Theorems, of 234", "Non-theorems, of 40", "Held-out theorems, of 200"],
+      [["HyLogic, first version", "39", "18", ""], ["HyLogic now", "161", "31", "141"],
+       ["Lean's grind, on HyLogic's export", "53", "", ""], ["E 3.2.5", "207", "16", "189"],
+       ["Vampire 5.1.0", "231", "20", "197"]],
+      "Vampire shows 36 of the non-theorems with its schedule for finding models. The held-out sample was drawn with "
+      "another seed and never used in tuning. Apple Silicon, one problem per process.",
       highlight=lambda row: row[0].startswith("HyLogic"))
+table("field_checker", "Arguments judged correctly, with and without HyLogic's checker",
+      ["", "Without the tool", "With the tool", "Cost with the tool"],
+      [["Short arguments, Claude Haiku", "67 of 70", "69 of 70", "1.7 times"],
+       ["Short arguments, Claude Opus", "70 of 70", "70 of 70", "1.6 times"],
+       ["25 premises, Claude Haiku", "38 of 40", "40 of 40", "1.7 times"]],
+      "Generated arguments in English, each decided by HyLogic and Z3, judged once per model and condition.")
 print(sorted(p.name for p in OUT.iterdir()))
