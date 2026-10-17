@@ -62,7 +62,7 @@ Each change was measured on its own and kept only if it helped. The largest sing
 
 The second largest step came from an unexpected place. Twenty-one theorems that E proved and HyLogic did not belonged to one family, [description logic](https://en.wikipedia.org/wiki/Description_logic) translated into first-order logic. They have no functions, so replacing every variable by every constant turns them into a propositional problem that a [SAT solver](https://en.wikipedia.org/wiki/SAT_solver) decides. With 53 constants, though, a clause with three variables has 148,877 instances, too many to write down. The variables of those clauses never occur together in one statement, so each clause splits into parts with one variable each and 53 instances apiece, a technique from the Paradox model finder by Koen Claessen and Niklas Sörensson. HyLogic now decides each of these problems in a few hundredths of a second, where E needs a third of one.
 
-Speed did little. With twenty seconds instead of ten, HyLogic proved 5 more theorems. [PyPy](https://pypy.org), a faster Python, ran the search 1.8 times faster, but loading took two seconds, and it added 2. The gains came from doing less work, not from doing the same work faster.
+Speed did little. With twenty seconds instead of ten, HyLogic proved 5 more theorems. [PyPy](https://pypy.org), a faster Python, ran the search 1.8 times faster, but it spent two of every ten seconds loading HyLogic, so it proved only 2 more theorems. The gains came from doing less work, not from doing the same work faster.
 
 ## Result 2. Two thirds of the way to E, and ahead on counterexamples
 
