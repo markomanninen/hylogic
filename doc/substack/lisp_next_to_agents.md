@@ -90,11 +90,11 @@ Logic is a natural fit because formulas are trees. In Hy, a formula is simply qu
 The program receives that as data and can take it apart, rewrite it and prove things about it without a parser. The prover does what classical provers do. It turns formulas into clauses, matches them with unification, and searches for a contradiction with resolution. It then prints the proof with each step's parents, here for the textbook puzzle of who killed the cat Tuna.
 
 ```
-   3. (not (Kills curiosity tuna))                 negated goal
-   4. (Kills jack tuna)                            simplification 2, 3
-   8. (AnimalLover jack)                           resolve+unit deletion 5, 6, 7
-  11. (Animal tuna)                                resolve 9, 10
-  12. □                                            resolve+unit deletion 1, 4, 8, 11
+   3. (not (Kills curiosity tuna))     negated goal
+   4. (Kills jack tuna)                simplification 2, 3
+   8. (AnimalLover jack)               resolve+unit deletion 5, 6, 7
+  11. (Animal tuna)                    resolve 9, 10
+  12. □                                resolve+unit deletion 1, 4, 8, 11
 ```
 
 Read from line 3. If Curiosity did not kill Tuna, Jack did. Jack owns a dog, so he loves animals, Tuna is a cat and so an animal, and animal lovers kill no animals. The empty clause □ marks the contradiction.
@@ -147,11 +147,11 @@ Most of the remaining distance lies in reasoning with equality. This is what sup
 
 ```
    2. (= op_e (mult (mult (rd op_c (mult ?A ?B)) ?B) ?A))  axiom
-   3. (= (mult ?A unit) ?A)                                axiom
-   4. (= (mult unit ?A) ?A)                                axiom
-   5. (= (mult (rd ?A ?B) ?B) ?A)                          axiom
-   6. (= op_e op_c)                                        superposition+demod 2, 3, 4, 5
-  10. □                                                    simplification 1, 6, 7, 8, 9
+   3. (= (mult ?A unit) ?A)         axiom
+   4. (= (mult unit ?A) ?A)         axiom
+   5. (= (mult (rd ?A ?B) ?B) ?A)   axiom
+   6. (= op_e op_c)                 superposition+demod 2, 3, 4, 5
+  10. □                             simplification 1, 6, 7, 8, 9
 ```
 
 Line 6 is the step a person would look for. Putting unit for both variables of axiom 2 and simplifying with axioms 3 to 5 shows that op_e is the element op_c, and lines 7 to 9 say that op_c associates, which settles all three goals at once. E finds this in a hundredth of a second. HyLogic timed out on it until it learned to rewrite the clauses it had already used with every new equation.
@@ -168,7 +168,8 @@ check_argument(premises=["(=> P Q)", "Q"], conclusion="P",
 
 INVALID (checked by truth table)
 Read as: P → Q; Q ⊢ P
-Counterexample: “it rains” is false and “the street is wet” is true. Then every premise is true and the conclusion is false.
+Counterexample: “it rains” is false and “the street is wet” is true.
+Then every premise is true and the conclusion is false.
 ```
 
 To measure it, I generated 70 arguments in everyday English, each checked by both HyLogic and Z3. A valid argument needs every one of its premises. An invalid one is tempting, because its conclusion holds in most of the situations the premises allow. The wording includes "only if" and "unless", which people often get wrong, and eight syllogisms test belief bias, such as "All roses are flowers. Some flowers fade quickly. Therefore, some roses fade quickly", which sounds right and does not follow. Each argument went once to each model, with and without the tool.
