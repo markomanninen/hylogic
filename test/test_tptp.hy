@@ -123,3 +123,15 @@
   (.write-text f (+ "fof(deep, conjecture, " (* "~ " 5000) "p).\n"))
   (main [(str f)])
   (assert (in "SZS status GaveUp for deep" (. (.readouterr capsys) out))))
+
+(defn test-distinct-objects-are-different-for-every-method [tmp-path]
+  ;; TPTP's double-quoted names denote different elements. Only congruence
+  ;; closure once knew it, so grounding found a model of "Apple" = "Microsoft"
+  ;; and reported this theorem (SYO561+1) as CounterSatisfiable
+  (import hylogic.tptp [DEFAULTS])
+  (setv path (/ tmp-path "apple.p"))
+  (.write-text path "fof(apple_not_microsoft, conjecture, \"Apple\" != \"Microsoft\").\n")
+  (assert (in #("not" #("=" "\"Apple\"" "\"Microsoft\"")) (. (read-problem path) premises)))
+  (setv [status result _] (solve path :time-limit 5 #** DEFAULTS))
+  (assert (= status "Theorem"))
+  (assert (.proof result)))
