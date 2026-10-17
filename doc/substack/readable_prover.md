@@ -104,7 +104,7 @@ Most of the remaining distance in theorems lies in reasoning with equality. Here
   10. □                             simplification 1, 6, 7, 8, 9
 ```
 
-Line 6 is the step a person would look for. Putting unit for both variables of axiom 2 and simplifying with axioms 3 to 5 shows that op_e is the element op_c, and lines 7 to 9 say that op_c associates, which settles all three goals at once. E finds this in a hundredth of a second. HyLogic timed out on it until it learned to rewrite the clauses it had already used with every new equation. The rest of the distance is decades of tuned search strategy in E and Vampire, which a prover meant to be read has no reason to copy. HyLogic can instead hand a problem to E or Vampire, read the proof it prints and show it in the same numbered form, which worked for all 440 proofs they produced.
+Line 6 is the step a person would look for. Putting unit for both variables of axiom 2 and simplifying with axioms 3 to 5 shows that op_e is the element op_c, and lines 7 to 9 say that op_c associates, which settles all three goals at once. E finds this in a hundredth of a second. HyLogic timed out on it until I made it rewrite the clauses it has already used with every new equation it finds, and now it finds the proof in a tenth of a second. The rest of the distance is decades of tuned search strategy in E and Vampire, which a prover meant to be read has no reason to copy. HyLogic can instead hand a problem to E or Vampire, read the proof it prints and show it in the same numbered form, which worked for all 440 proofs they produced.
 
 ## Result 3. The benchmark found the bugs, not the tests
 
