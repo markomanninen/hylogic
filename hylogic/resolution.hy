@@ -425,7 +425,8 @@ new clauses that are neither duplicates nor subsumed by older ones."
     instance of ¬A. #(literals changed?)."
     (when (not units) (return #(lits False [])))
     (setv out [] used [])
-    (for [l lits]
+    ;; in a fixed order, so that the units cited, and the proof, are the same every run
+    (for [l (sorted lits :key show)]
       (setv a (atom-of l) sign (not (negative? l))
             hit (next (gfor key [(_unit-key sign a) #(sign (_predicate a) "*")]
                             [u source] (.get units key [])

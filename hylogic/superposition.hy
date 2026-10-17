@@ -18,7 +18,7 @@ the search from rewriting back and forth. Superposition is the method E and
 Vampire use; this is a small version of it without literal selection."
 
 (import collections [Counter]
-        hylogic.terms [variable? compound? size]
+        hylogic.terms [variable? compound? size show]
         hylogic.unify [unify substitute match-term rename instantiate])
 
 ;; The Knuth-Bendix ordering
@@ -185,7 +185,8 @@ Vampire use; this is a small version of it without literal selection."
   The rules used are appended to fired when it is a list."
   (when (not rules) (return #(literals False)))
   (setv out [] changed False)
-  (for [lit literals]
+  ;; in a fixed order, so that the rules cited in a proof are the same every run
+  (for [lit (sorted literals :key show)]
     (setv atom (atom-of lit))
     (if (compound? atom)
         (do
