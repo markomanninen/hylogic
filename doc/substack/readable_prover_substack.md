@@ -52,7 +52,7 @@ A prover is also a place where a Lisp still earns its keep. Formulas are trees, 
 
 The benchmark is a fixed sample of 274 problems from TPTP with at most 50 formulas each, drawn with a fixed seed across easy and hard problems, with and without equality. 234 are theorems and 40 are not. Each prover gets ten seconds per problem on the same machine. The first version of HyLogic proved 39 of the theorems.
 
-HyLogic is measured against two of the strongest automated provers. [E](https://www.eprover.org), written by Stephan Schulz and developed since the late 1990s, is built around superposition and is known for its fast rewriting and for choosing a search strategy to suit each problem. [Vampire](https://vprover.github.io), developed by Andrei Voronkov at the University of Manchester together with Laura Kovács's group at TU Wien, had won the main first-order division of [CASC](https://tptp.org/CASC/), the annual competition of automated provers, [fourteen years in a row by 2013](https://staffnet.cs.manchester.ac.uk/newsletters/CS_Newsletter_2013-07-01.htm), and in 2025 it became [the first prover to win all of the competition's divisions](https://www.tuwien.at/en/tu-wien/news/news-articles/news/riesenerfolg-fuer-vampire). Both are written in C or C++ and tuned on TPTP itself, so they set a high bar for a prover written to be read.
+[E](https://www.eprover.org), written by Stephan Schulz and developed since the late 1990s, is built around superposition and is known for its fast rewriting and for choosing a search strategy to suit each problem. [Vampire](https://vprover.github.io), developed by Andrei Voronkov at the University of Manchester together with Laura Kovács's group at TU Wien, had won the main first-order division of [CASC](https://tptp.org/CASC/), the annual competition of automated provers, [fourteen years in a row by 2013](https://staffnet.cs.manchester.ac.uk/newsletters/CS_Newsletter_2013-07-01.htm), and in 2025 it became [the first prover to win all of the competition's divisions](https://www.tuwien.at/en/tu-wien/news/news-articles/news/riesenerfolg-fuer-vampire). Both are written in C or C++ and tuned on TPTP itself, so they set a high bar for a prover written to be read.
 
 ![](article_images/prover_methods.png)
 
@@ -62,13 +62,13 @@ Each change was measured on its own and kept only if it helped. The largest sing
 
 The second largest step came from an unexpected place. Twenty-one theorems that E proved and HyLogic did not belonged to one family, [description logic](https://en.wikipedia.org/wiki/Description_logic) translated into first-order logic. They have no functions, so replacing every variable by every constant turns them into a propositional problem that a [SAT solver](https://en.wikipedia.org/wiki/SAT_solver) decides. With 53 constants, though, a clause with three variables has 148,877 instances, too many to write down. The variables of those clauses never occur together in one statement, so each clause splits into parts with one variable each and 53 instances apiece, a technique from the Paradox model finder by Koen Claessen and Niklas Sörensson. HyLogic now decides each of these problems in a few hundredths of a second, where E needs a third of one.
 
-Speed did little. With twenty seconds instead of ten, HyLogic proved 5 more theorems. [PyPy](https://pypy.org), a faster Python, ran the search 1.8 times faster, but it spent two of every ten seconds loading HyLogic, so it proved only 2 more theorems. The gains came from doing less work, not from doing the same work faster.
+With twenty seconds instead of ten, HyLogic proved 5 more theorems. [PyPy](https://pypy.org), a faster Python, ran the search 1.8 times faster, but it spent two of every ten seconds loading HyLogic, so it proved only 2 more theorems. The gains came from doing less work, not from doing the same work faster.
 
 ## Result 2. Two thirds of the way to E, and ahead on counterexamples
 
 ![](article_images/prover_results.png)
 
-*Problems solved within ten seconds each. Vampire shows 36 of the non-theorems with its schedule for finding models.*
+*Problems solved within ten seconds each.*
 
 Lean's `grind` in the table is a different kind of tool. Lean is a proof assistant, where people write proofs and Lean checks them, and `grind` is its newest automation, a tactic in the style of [SMT solvers](https://en.wikipedia.org/wiki/Satisfiability_modulo_theories) that closes goals by reasoning with equality and by case analysis. HyLogic can write each TPTP problem as a Lean theorem, and when `grind` is asked to prove those theorems, it proves 53 of the 234 with ten seconds each and 103 with twenty.
 
@@ -98,11 +98,11 @@ HyLogic now gives no wrong answer on any of the 4,295 TPTP problems it has been 
 - **Objects that are different by definition.** TPTP writes names in double quotes for objects that are distinct, so "Apple" and "Microsoft" can never be equal. Only one of HyLogic's methods knew it, and another found a world where they were equal. A problem in the check sample showed it.
 - **Searches that claimed too much.** Running each of HyLogic's methods on its own over the 3,781 further problems caught a bounded search for models answering "no model, so proved" when it had searched nothing, and the same code had two more ways to claim a proof too soon. HyLogic itself never gave those answers, because another method answered first, so the order of the methods had been hiding them.
 
-All six are fixed, and each fix comes with a test built from the problem that exposed it.
+All six are fixed, and each fix has a test that fails without it.
 
 ## Result 4. Lean checks every step
 
-Tests and benchmarks give confidence, but a proof checked by an independent system gives more. [Lean](https://lean-lang.org), created by Leonardo de Moura, is a proof assistant with a small trusted core that checks every proof it is given, and mathematicians use it to formalize research mathematics in its library [Mathlib](https://github.com/leanprover-community/mathlib4). HyLogic now writes each step of a proof as a small Lean theorem saying that the step's premises imply its conclusion. This is line 11 of the Tuna proof, that Jack loves animals.
+[Lean](https://lean-lang.org), created by Leonardo de Moura, is a proof assistant with a small trusted core that checks every proof it is given, and mathematicians use it to formalize research mathematics in its library [Mathlib](https://github.com/leanprover-community/mathlib4). HyLogic now writes each step of a proof as a small Lean theorem saying that the step's premises imply its conclusion. This is line 11 of the Tuna proof, that Jack loves animals.
 
 ```lean
 theorem «$s11»
@@ -115,7 +115,7 @@ theorem «$s11»
   grind
 ```
 
-The work is shared. HyLogic says which values the rule was applied to, Jack and Jack's dog, and Lean's automation `grind` checks the rest. Without that hint `grind` cannot always choose the values itself, and it verified 131 of 160 proofs. With it, Lean verified all 161 proofs the benchmark produced and all 13,180 of their steps, including the steps of proofs found by the SAT solver, and a final theorem for each proof that chains the steps into a contradiction. Not one step was wrong.
+The work is shared. HyLogic says which values the rule was applied to, Jack and Jack's dog, and Lean's automation `grind` checks the rest. Without that hint `grind` cannot always choose the values itself, and it verified 131 of 160 proofs. With it, Lean verified all 161 proofs the benchmark produced and all 13,180 of their steps, including the steps of proofs found by the SAT solver, and a final theorem for each proof that chains the steps into a contradiction.
 
 One stage stays outside the check. Turning a formula into clauses introduces [Skolem constants](https://en.wikipedia.org/wiki/Skolem_normal_form), such as `sk1` for "Jack's dog", and a clause with one does not follow from its formula, it is only satisfiable whenever the formula is. Lean takes the clauses as given and checks everything from there to the contradiction.
 
@@ -149,14 +149,14 @@ The chain runs through Farid, who attends the Monday meeting, so he mentors a tr
 
 The models were far better than I expected. On the long arguments Haiku worked through each chain at length, about 12,000 tokens an argument, and was right 38 times. Both of its errors fell on a rule turned around. Once, on the argument above, it used the reversed rule as if it were the one the chain needed, and once it decided that the premises contradicted each other, which they do not, and called the argument valid for that reason. With the tool it got all 40, but it did not reason any less. It worked the chain out first, wrote the formulas and called the tool once as a final check, and in 36 of 41 calls it asked for the whole proof.
 
-So a model that reasons step by step is almost as accurate as the checker on problems of this size. What the checker adds is certainty. Its answer comes with a proof or a counterexample that anyone can check, and with `certify=true` Lean checks the proof as well. The remaining risk moves to the formulas the model writes, since a checker can only check what it is given.
+So a model that reasons step by step is almost as accurate as the checker on problems of this size. What the checker adds is certainty. Its answer comes with a proof or a counterexample that anyone can check, and with `certify=true` Lean checks the proof as well. The remaining risk moves to the formulas the model writes, because the checker cannot tell whether they say what the English says.
 
 ## What I take from this
 
 1. **Measure each method on its own.** Superposition and clause splitting each added more than doubling the speed would have.
 2. **Study the problems the strong provers solve and yours does not.** One family of 21 such problems pointed to a technique that added 22 theorems.
 3. **Test on problems you did not tune on.** The check sample and the sweep over 3,781 more problems exposed four of the six faults that could give a wrong answer.
-4. **Let an independent checker check the prover.** Lean accepted every step, and now it does so for every proof HyLogic finds, not only for the ones I looked at.
+4. **Let an independent checker check the prover.** Lean accepted all 13,180 steps of the benchmark proofs, and with `certify=true` it checks any proof HyLogic finds.
 5. **Readable output pays off twice.** The same numbered proofs that people can follow became the hints that let Lean check them.
 6. **For agents, a checker adds certainty more than accuracy.** A model reasoning step by step was right 95 times in 100 on long chains. The checker made it 100 and showed why.
 
