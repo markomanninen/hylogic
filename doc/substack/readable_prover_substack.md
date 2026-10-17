@@ -64,7 +64,7 @@ The second largest step came from an unexpected place. Twenty-one theorems that 
 
 With twenty seconds instead of ten, HyLogic proved 5 more theorems. [PyPy](https://pypy.org), a faster Python, ran the search 1.8 times faster, but it spent two of every ten seconds loading HyLogic, so it proved only 2 more theorems. The gains came from doing less work, not from doing the same work faster.
 
-## Result 2. Two thirds of the way to E, and ahead on counterexamples
+## Result 2. Three quarters of the way to E, and ahead on counterexamples
 
 ![](article_images/prover_results.png)
 
@@ -162,7 +162,7 @@ So a model that reasons step by step is almost as accurate as the checker on pro
 
 ## Limits, and trying it yourself
 
-The benchmark is 274 problems of at most 50 formulas each, with ten seconds each on one machine, a small corner of what E and Vampire are built for. TPTP has only 34 hard theorems without equality of this size, too few to fill their band of 40, and the benchmark uses all of them, so the 240 check problems include none of that kind. Lean checks every step from the clauses on, but not the translation from formulas into clauses. The second field test used Haiku alone, and two errors in forty are too few to measure the tool's gain precisely. HyLogic is a prover to read and learn from. For hard problems E and Vampire are the tools, and for mathematics Lean.
+The benchmark is 274 problems of at most 50 formulas each, with ten seconds each on one machine, a small corner of what E and Vampire are built for. TPTP has only 34 hard theorems without equality of this size, too few to fill their band of 40, and the benchmark uses all of them, so the 240 check problems include none of that kind. Lean checks every step from the clauses on, but not the translation from formulas into clauses. The second field test used Haiku alone, and two errors in forty are too few to measure the tool's gain precisely. Within these limits HyLogic proves three quarters of what E proves, shows more counterexamples than E, and gives proofs that a person can follow and Lean can check step by step. For problems beyond its reach it can hand the search to E or Vampire and show their proofs the same way.
 
 HyLogic installs with `pip install hylogic`. `hy examples/tour.hy` walks through truth tables, arguments, rewriting and proofs, and `python -m hylogic.tptp FILE` runs the prover on a TPTP problem and prints its proof. The benchmarks, with their plans, every measured step and the scripts to rerun them, are in the [repository](https://github.com/markomanninen/hylogic/tree/master/benchmarks), and `hylogic-mcp` gives an agent the `check_argument` tool.
 
