@@ -45,7 +45,8 @@
 <h2 id="result-4-lean-checks-every-step">Result 4. Lean checks every step</h2>
 <p>Tests and benchmarks give confidence, but a proof checked by an independent system gives more. <a href="https://lean-lang.org">Lean</a> is a proof assistant with a small trusted core that checks every proof it is given. HyLogic now writes each step of a proof as a small Lean theorem saying that the step's premises imply its conclusion. This is step 8 of the Tuna proof.</p>
 <pre class="lean"><code>theorem «$s8»
-    («$h1» : ∀ «?x2» «?y3» : «$U», («AnimalLover» «?x2») ∨ ¬(«Dog» «?y3») ∨ ¬(«Owns» «?x2» «?y3»))
+    («$h1» : ∀ «?x2» «?y3» : «$U»,
+      («AnimalLover» «?x2») ∨ ¬(«Dog» «?y3») ∨ ¬(«Owns» «?x2» «?y3»))
     («$h2» : («Owns» «jack» «sk1»))
     («$h3» : («Dog» «sk1»)) :
     («AnimalLover» «jack») := by

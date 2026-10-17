@@ -101,7 +101,8 @@ Tests and benchmarks give confidence, but a proof checked by an independent syst
 
 ```lean
 theorem «$s8»
-    («$h1» : ∀ «?x2» «?y3» : «$U», («AnimalLover» «?x2») ∨ ¬(«Dog» «?y3») ∨ ¬(«Owns» «?x2» «?y3»))
+    («$h1» : ∀ «?x2» «?y3» : «$U»,
+      («AnimalLover» «?x2») ∨ ¬(«Dog» «?y3») ∨ ¬(«Owns» «?x2» «?y3»))
     («$h2» : («Owns» «jack» «sk1»))
     («$h3» : («Dog» «sk1»)) :
     («AnimalLover» «jack») := by
