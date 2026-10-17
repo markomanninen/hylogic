@@ -87,7 +87,7 @@ Speed did little. With twenty seconds instead of ten, HyLogic proved 5 more theo
 
 *Problems solved within ten seconds each. Vampire shows 36 of the non-theorems with its schedule for finding models.*
 
-Lean's `grind` in the table is a different kind of tool. Lean is a proof assistant, where people write proofs and Lean checks them, and `grind` is its newest automation, a tactic in the style of [SMT solvers](https://en.wikipedia.org/wiki/Satisfiability_modulo_theories) that closes goals by reasoning with equality and by case analysis. Given each problem as a Lean theorem, it proves 53 in ten seconds and 103 in twenty.
+Lean's `grind` in the table is a different kind of tool. Lean is a proof assistant, where people write proofs and Lean checks them, and `grind` is its newest automation, a tactic in the style of [SMT solvers](https://en.wikipedia.org/wiki/Satisfiability_modulo_theories) that closes goals by reasoning with equality and by case analysis. HyLogic can write each TPTP problem as a Lean theorem, and when `grind` is asked to prove those theorems, it proves 53 of the 234 with ten seconds each and 103 with twenty.
 
 Every change was tuned on the same 274 problems, so I drew 240 new ones with another seed as a check, none of them seen before. HyLogic proved 141 of their 200 theorems, about the same share as on the first sample, and gave no wrong answer, so the tuning had not simply fitted the sample.
 
