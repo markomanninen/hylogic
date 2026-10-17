@@ -89,16 +89,16 @@ Most of the remaining distance in theorems lies in reasoning with equality. Here
 
 Line 6 is the step a person would look for. Putting unit for both variables of axiom 2 and simplifying with axioms 3 to 5 shows that op_e is the element op_c, and lines 7 to 9 say that op_c associates, which settles all three goals at once. E finds this in a hundredth of a second. HyLogic timed out on it until I made it rewrite the clauses it has already used with every new equation it finds, and now it finds the proof in a tenth of a second. The rest of the distance is decades of tuned search strategy in E and Vampire, which a prover meant to be read has no reason to copy. When E or Vampire is installed, HyLogic can instead hand a problem to it with `prove-external`, read the proof it prints in TPTP's proof format and show it as HyLogic's own numbered steps. That worked for all 440 proofs the two produced in the benchmark.
 
-## Result 3. The benchmark found the bugs, not the tests
+## Result 3. No wrong answers on 4,295 problems, after six fixes
 
-A prover that says "proved" when the conclusion does not follow is worse than no prover. HyLogic has over 200 tests, and none of them found the six bugs that could make it give a wrong answer. The benchmarks found four, and reading the code they pointed to found the other two.
+HyLogic now gives no wrong answer on any of the 4,295 TPTP problems it has been run on, the 274 of the benchmark, the 240 drawn as a check and 3,781 more. A wrong answer means "proved" for a conclusion that does not follow, or a counterexample to one that does, and either is worse than no answer at all. Six faults could produce one, and each came to light on real problems.
 
-- **A choice that depended on names.** Ordered resolution must pick the same literal of a clause every time. HyLogic's choice depended on the names of the variables, which change as clauses are copied, so the search could miss a proof and call a theorem unprovable.
-- **One constant with two values.** The SAT encoding for finite algebra problems said that a constant had a value, but not that it had no other, so five theorems got false counterexamples.
-- **Objects that are different by definition.** TPTP writes names in double quotes for objects that are distinct, so "Apple" and "Microsoft" can never be equal. Only one of HyLogic's methods knew it, and another found a world where they were. The sample drawn as a check exposed this one.
-- **Searches that claimed too much.** Running each of HyLogic's methods on its own over 3,781 further TPTP problems caught a bounded search for models reporting "no model, so proved" when it had searched nothing. Reading that code showed two more ways the same kind of search could claim a proof too soon. HyLogic itself never gave those answers, because another method answered first, but the order of the methods was hiding the bugs.
+- **A choice that depended on names.** Ordered resolution must pick the same literal of a clause every time. HyLogic's choice depended on the names of the variables, which change as clauses are copied, so the search could miss a proof and call a theorem unprovable. One benchmark theorem was reported that way.
+- **One constant with two values.** The SAT encoding for finite algebra problems said that a constant had a value, but not that it had no other, so five benchmark theorems got false counterexamples.
+- **Objects that are different by definition.** TPTP writes names in double quotes for objects that are distinct, so "Apple" and "Microsoft" can never be equal. Only one of HyLogic's methods knew it, and another found a world where they were equal. A problem in the check sample showed it.
+- **Searches that claimed too much.** Running each of HyLogic's methods on its own over the 3,781 further problems caught a bounded search for models answering "no model, so proved" when it had searched nothing, and the same code had two more ways to claim a proof too soon. HyLogic itself never gave those answers, because another method answered first, so the order of the methods had been hiding them.
 
-Each now has a test that fails on the old code. The lesson is an old one. A wide sample of real problems tests the combinations that nobody thinks to write a test for.
+All six are fixed, and each fix comes with a test built from the problem that exposed it.
 
 ## Result 4. Lean checks every step
 
@@ -155,7 +155,7 @@ So a model that reasons step by step is almost as accurate as the checker on pro
 
 1. **Measure each method on its own.** Superposition and clause splitting each added more than doubling the speed would have.
 2. **Study the problems the strong provers solve and yours does not.** One family of 21 such problems pointed to a technique that added 22 theorems.
-3. **Test on problems you did not tune on.** A second sample, and a sweep over thousands of problems, found bugs that 200 tests had not.
+3. **Test on problems you did not tune on.** The check sample and the sweep over 3,781 more problems exposed four of the six faults that could give a wrong answer.
 4. **Let an independent checker check the prover.** Lean accepted every step, and now it does so for every proof HyLogic finds, not only for the ones I looked at.
 5. **Readable output pays off twice.** The same numbered proofs that people can follow became the hints that let Lean check them.
 6. **For agents, a checker adds certainty more than accuracy.** A model reasoning step by step was right 95 times in 100 on long chains. The checker made it 100 and showed why.
