@@ -6,7 +6,7 @@
 
 ---
 
-In ten seconds per problem, HyLogic proves 161 of 234 theorems from TPTP, the standard problem library for automated theorem provers. E, one of the strongest provers there are, proves 207, and Vampire 231. On 40 problems whose conclusion does not follow, HyLogic shows 31 with a counterexample, where E shows 16. And when Lean, the proof assistant mathematicians use to check proofs, went through HyLogic's proofs one step at a time, it accepted all 13,180 steps.
+In ten seconds per problem, HyLogic proves 161 of 234 theorems from [TPTP](https://www.tptp.org), the standard problem library for automated theorem provers. E and Vampire, two of the strongest automated provers, prove 207 and 231. On 40 problems whose conclusion does not follow, HyLogic shows 31 with a counterexample, where E shows 16. And when [Lean](https://lean-lang.org), the [proof assistant](https://en.wikipedia.org/wiki/Proof_assistant) mathematicians use to check proofs, went through HyLogic's proofs one step at a time, it accepted all 13,180 steps.
 
 HyLogic is meant to be read. Its proofs are numbered lines from the premises to a contradiction, and the core of the prover is about 700 lines of Lisp. This article is about how far a prover like that gets against the real ones, which methods carried it there, and how its answers came to be trusted.
 
@@ -14,7 +14,7 @@ HyLogic is meant to be read. Its proofs are numbered lines from the premises to 
 
 A theorem prover decides whether a conclusion follows from premises. Most automated provers work by refutation. They assume that the conclusion is false, rewrite the premises and that assumption as clauses, which are disjunctions of simple statements, and search for a contradiction. If one turns up, the conclusion must follow from the premises.
 
-The basic step is resolution, from J. A. Robinson's paper of 1965. From "A or B" and "not A or C" it concludes "B or C". When the statements contain variables, it first finds the substitution that makes them match, which is called unification, so that "every man is mortal" can meet "Socrates is a man".
+The basic step is [resolution](https://en.wikipedia.org/wiki/Resolution_(logic)), from [J. A. Robinson's paper of 1965](https://doi.org/10.1145/321250.321253). From "A or B" and "not A or C" it concludes "B or C". When the statements contain variables, it first finds the substitution that makes them match, which is called [unification](https://en.wikipedia.org/wiki/Unification_(computer_science)), so that "every man is mortal" can meet "Socrates is a man".
 
 HyLogic prints every step with the lines it came from. This is its proof of a textbook puzzle. Jack owns a dog, every dog owner loves animals, no animal lover kills an animal, Tuna is a cat, every cat is an animal, and either Jack or Curiosity killed Tuna. Did Curiosity kill Tuna?
 
@@ -32,23 +32,27 @@ A prover is also a place where a Lisp still earns its keep. Formulas are trees, 
 
 ## Result 1. Methods mattered, speed hardly did
 
-The benchmark is a fixed sample of 274 problems from [TPTP](https://www.tptp.org) with at most 50 formulas each, drawn with a fixed seed across easy and hard problems, with and without equality. 234 are theorems and 40 are not. Each prover gets ten seconds per problem on the same machine. The first version of HyLogic proved 39 of the theorems.
+The benchmark is a fixed sample of 274 problems from TPTP with at most 50 formulas each, drawn with a fixed seed across easy and hard problems, with and without equality. 234 are theorems and 40 are not. Each prover gets ten seconds per problem on the same machine. The first version of HyLogic proved 39 of the theorems.
+
+HyLogic is measured against two of the strongest automated provers. [E](https://www.eprover.org), written by Stephan Schulz and developed since the late 1990s, is built around superposition and is known for its fast rewriting and for choosing a search strategy to suit each problem. [Vampire](https://vprover.github.io), from Andrei Voronkov's group at the University of Manchester, has won the first-order division of [CASC](https://tptp.org/CASC/), the annual competition of automated provers, more often than any other prover. Both are written in C or C++ and tuned on TPTP itself, so they set a high bar for a prover written to be read.
 
 ![](article_images/prover_methods.png)
 
 *What each method added, in theorems proved of 234 within ten seconds.*
 
-Each change was measured on its own and kept only if it helped. The largest single step was superposition with ordered resolution. Superposition is how E and Vampire handle equality, by replacing equals with equals inside terms. Ordering allows only inferences on the largest literals of each clause, so the search grows far more slowly without missing proofs, a result due to Leo Bachmair and Harald Ganzinger.
+Each change was measured on its own and kept only if it helped. The largest single step was superposition with ordered resolution. [Superposition](https://en.wikipedia.org/wiki/Superposition_calculus) is how E and Vampire handle equality, by replacing equals with equals inside terms. Ordering allows only inferences on the largest literals of each clause, so the search grows far more slowly without missing proofs, a result due to [Leo Bachmair and Harald Ganzinger](https://doi.org/10.1093/logcom/4.3.217).
 
-The second largest step came from an unexpected place. Twenty-one theorems that E proved and HyLogic did not belonged to one family, description logic translated into first-order logic. They have no functions, so replacing every variable by every constant turns them into a propositional problem that a SAT solver decides. With 53 constants, though, a clause with three variables has 148,877 instances, too many to write down. The variables of those clauses never occur together in one statement, so each clause splits into parts with one variable each and 53 instances apiece, a technique from the Paradox model finder by Koen Claessen and Niklas Sörensson. HyLogic now decides each of these problems in a few hundredths of a second, where E needs a third of one.
+The second largest step came from an unexpected place. Twenty-one theorems that E proved and HyLogic did not belonged to one family, [description logic](https://en.wikipedia.org/wiki/Description_logic) translated into first-order logic. They have no functions, so replacing every variable by every constant turns them into a propositional problem that a [SAT solver](https://en.wikipedia.org/wiki/SAT_solver) decides. With 53 constants, though, a clause with three variables has 148,877 instances, too many to write down. The variables of those clauses never occur together in one statement, so each clause splits into parts with one variable each and 53 instances apiece, a technique from the Paradox model finder by Koen Claessen and Niklas Sörensson. HyLogic now decides each of these problems in a few hundredths of a second, where E needs a third of one.
 
-Speed did little. With twenty seconds instead of ten, HyLogic proved 5 more theorems. PyPy, a faster Python, ran the search 1.8 times faster, but loading took two seconds, and it added 2. The gains came from doing less work, not from doing the same work faster.
+Speed did little. With twenty seconds instead of ten, HyLogic proved 5 more theorems. [PyPy](https://pypy.org), a faster Python, ran the search 1.8 times faster, but loading took two seconds, and it added 2. The gains came from doing less work, not from doing the same work faster.
 
 ## Result 2. Two thirds of the way to E, and ahead on counterexamples
 
 ![](article_images/prover_results.png)
 
 *Problems solved within ten seconds each. Vampire shows 36 of the non-theorems with its schedule for finding models.*
+
+Lean's `grind` in the table is a different kind of tool. Lean is a proof assistant, where people write proofs and Lean checks them, and `grind` is its newest automation, a tactic in the style of [SMT solvers](https://en.wikipedia.org/wiki/Satisfiability_modulo_theories) that closes goals by reasoning with equality and by case analysis. Given each problem as a Lean theorem, it proves 53 in ten seconds and 103 in twenty.
 
 Every change was tuned on the same 274 problems, so I drew 240 new ones with another seed as a check, none of them seen before. HyLogic proved 141 of their 200 theorems, about the same share as on the first sample, and gave no wrong answer, so the tuning had not simply fitted the sample.
 
@@ -80,7 +84,7 @@ Each now has a test that fails on the old code. The lesson is an old one. A wide
 
 ## Result 4. Lean checks every step
 
-Tests and benchmarks give confidence, but a proof checked by an independent system gives more. [Lean](https://lean-lang.org) is a proof assistant with a small trusted core that checks every proof it is given. HyLogic now writes each step of a proof as a small Lean theorem saying that the step's premises imply its conclusion. This is step 8 of the Tuna proof.
+Tests and benchmarks give confidence, but a proof checked by an independent system gives more. [Lean](https://lean-lang.org), created by Leonardo de Moura, is a proof assistant with a small trusted core that checks every proof it is given, and mathematicians use it to formalize research mathematics in its library [Mathlib](https://github.com/leanprover-community/mathlib4). HyLogic now writes each step of a proof as a small Lean theorem saying that the step's premises imply its conclusion. This is step 8 of the Tuna proof.
 
 ```lean
 theorem «$s8»
@@ -95,11 +99,11 @@ theorem «$s8»
 
 The work is shared. HyLogic says which values the rule was applied to, Jack and Jack's dog, and Lean's automation `grind` checks the rest. Without that hint `grind` cannot always choose the values itself, and it verified 131 of 160 proofs. With it, Lean verified all 161 proofs the benchmark produced and all 13,180 of their steps, including the steps of proofs found by the SAT solver, and a final theorem for each proof that chains the steps into a contradiction. Not one step was wrong.
 
-One stage stays outside the check. Turning a formula into clauses introduces Skolem constants, such as `sk1` for "Jack's dog", and a clause with one does not follow from its formula, it is only satisfiable whenever the formula is. Lean takes the clauses as given and checks everything from there to the contradiction.
+One stage stays outside the check. Turning a formula into clauses introduces [Skolem constants](https://en.wikipedia.org/wiki/Skolem_normal_form), such as `sk1` for "Jack's dog", and a clause with one does not follow from its formula, it is only satisfiable whenever the formula is. Lean takes the clauses as given and checks everything from there to the contradiction.
 
 ## Result 5. For agents, a final check rather than a shortcut
 
-AI agents reason in plain language and get it wrong now and then. HyLogic has an MCP tool, `check_argument`, so that an agent can write premises and a conclusion as formulas and have them checked. A valid argument comes back with the premises it needs, and an invalid one with a counterexample.
+AI agents reason in plain language and get it wrong now and then. HyLogic has an [MCP](https://modelcontextprotocol.io) tool, `check_argument`, so that an agent can write premises and a conclusion as formulas and have them checked. A valid argument comes back with the premises it needs, and an invalid one with a counterexample.
 
 ```
 check_argument(premises=["(=> P Q)", "Q"], conclusion="P",
@@ -111,7 +115,7 @@ Counterexample: “it rains” is false and “the street is wet” is true.
 Then every premise is true and the conclusion is false.
 ```
 
-To see whether agents judge better with it, I generated arguments in everyday English, each decided by both HyLogic and the [Z3](https://github.com/Z3Prover/z3) solver, and gave each one to a model once without the tool and once with it. The first round had 70 short arguments with the wording people often misread, such as "only if" and "unless". This one looks valid and is not, because the door may be locked.
+To see whether agents judge better with it, I generated arguments in everyday English, each decided by both HyLogic and [Z3](https://github.com/Z3Prover/z3), an SMT solver from Microsoft Research that decides formulas mixing logic with arithmetic and other theories, and gave each one to a model once without the tool and once with it. The first round had 70 short arguments with the wording people often misread, such as "only if" and "unless". This one looks valid and is not, because the door may be locked.
 
 > Unless the door is locked, the dog is outside. It is not the case that the alarm is set. The window is open if the alarm is set. Therefore, the dog is outside.
 
@@ -148,14 +152,14 @@ GitHub: [hylogic](https://github.com/markomanninen/hylogic)
 
 ## Sources
 
-- J. A. Robinson, A Machine-Oriented Logic Based on the Resolution Principle, Journal of the ACM, 1965.
-- L. Bachmair and H. Ganzinger, Rewrite-based Equational Theorem Proving with Selection and Simplification, Journal of Logic and Computation, 1994.
-- G. Sutcliffe, The TPTP Problem Library and Associated Infrastructure, Journal of Automated Reasoning, 2017, and [tptp.org](https://www.tptp.org).
+- J. A. Robinson, [A Machine-Oriented Logic Based on the Resolution Principle](https://doi.org/10.1145/321250.321253), Journal of the ACM, 1965.
+- L. Bachmair and H. Ganzinger, [Rewrite-based Equational Theorem Proving with Selection and Simplification](https://doi.org/10.1093/logcom/4.3.217), Journal of Logic and Computation, 1994.
+- G. Sutcliffe, [The TPTP Problem Library and Associated Infrastructure](https://doi.org/10.1007/s10817-017-9407-7), Journal of Automated Reasoning, 2017, and [tptp.org](https://www.tptp.org).
 - S. Schulz, E, a Brainiac Theorem Prover, AI Communications, 2002, and [the E prover](https://www.eprover.org).
-- L. Kovács and A. Voronkov, First-Order Theorem Proving and Vampire, CAV 2013, and [Vampire](https://vprover.github.io).
+- L. Kovács and A. Voronkov, [First-Order Theorem Proving and Vampire](https://doi.org/10.1007/978-3-642-39799-8_1), CAV 2013, and [Vampire](https://vprover.github.io).
 - K. Claessen and N. Sörensson, New Techniques that Improve MACE-style Finite Model Finding, 2003, the Paradox model finder.
-- N. Eén and N. Sörensson, An Extensible SAT-solver, SAT 2003, the MiniSat design HyLogic's SAT solver follows.
-- R. Nieuwenhuis and A. Oliveras, Proof-Producing Congruence Closure, RTA 2005.
-- L. de Moura and S. Ullrich, The Lean 4 Theorem Prover and Programming Language, CADE 2021.
+- N. Eén and N. Sörensson, [An Extensible SAT-solver](https://doi.org/10.1007/978-3-540-24605-3_37), SAT 2003, the MiniSat design HyLogic's SAT solver follows.
+- R. Nieuwenhuis and A. Oliveras, [Proof-Producing Congruence Closure](https://doi.org/10.1007/978-3-540-32033-3_33), RTA 2005.
+- L. de Moura and S. Ullrich, [The Lean 4 Theorem Prover and Programming Language](https://doi.org/10.1007/978-3-030-79876-5_37), CADE 2021, and [lean-lang.org](https://lean-lang.org).
 - F. J. Pelletier, [Seventy-five problems for testing automatic theorem provers](https://doi.org/10.1007/BF02432151), Journal of Automated Reasoning, 1986.
 - [Z3](https://github.com/Z3Prover/z3), the solver used to check the field test's arguments.
