@@ -289,6 +289,19 @@ numbered steps:
   11. ⊥                                            resolution 10, 8
 ```
 
+`prove-external` writes the premises and the goal as a TPTP file in a
+temporary directory and runs the prover on it with the time limit,
+`vampire --mode casc --proof tptp` or `eprover --auto --tstp-format
+--proof-object`. It reads the SZS status and the proof the prover prints in
+TSTP, TPTP's format for proofs. Each step is parsed with the same reader as
+TPTP problems, E's nested inferences are unwrapped to the steps they really
+use, and the steps are numbered with their rule and parents. The provers are
+found on the PATH as `vampire` and `eprover`, or through `HYLOGIC_VAMPIRE`
+and `HYLOGIC_EPROVER`, and without them `prove-external` stops with an error
+saying how to provide one. `run-prover` does the same for a TPTP file that
+already exists. These proofs are shown but not checked, since `certify`
+checks only HyLogic's own proofs.
+
 `to-lean` writes a problem as a Lean 4 theorem, and `check-lean` runs Lean on
 it, with `sorry` to check the statement or `grind` to let Lean's automation
 prove it. `hylogic.certify` writes HyLogic's own proof as Lean theorems, one
