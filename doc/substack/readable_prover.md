@@ -4,7 +4,7 @@
 
 ---
 
-In ten seconds per problem, HyLogic proves 161 of 234 theorems from [TPTP](https://www.tptp.org), the standard problem library for automated theorem provers. E and Vampire, two of the strongest automated provers, prove 207 and 231. On 40 problems whose conclusion does not follow, HyLogic shows 31 with a counterexample, where E shows 16. And when [Lean](https://lean-lang.org), the [proof assistant](https://en.wikipedia.org/wiki/Proof_assistant) mathematicians use to check proofs, went through HyLogic's proofs one step at a time, it accepted all 13,180 steps.
+In ten seconds per problem, HyLogic proves 161 of 234 theorems from [TPTP](https://www.tptp.org), the standard problem library for automated theorem provers. E and Vampire, two of the strongest automated provers, prove 207 and 231. On 40 problems whose conclusion does not follow, HyLogic shows 31 with a counterexample, where E shows 16. And when [Lean](https://lean-lang.org), the [proof assistant](https://en.wikipedia.org/wiki/Proof_assistant) mathematicians use to check proofs, went one step at a time through the 161 proofs HyLogic found in the benchmark, it accepted every one of their 13,180 steps.
 
 HyLogic is meant to be read. Its proofs are numbered lines from the premises to a contradiction, and the core of the prover is about 700 lines of Lisp. This article is about how far a prover like that gets against the real ones, which methods carried it there, and how its answers came to be trusted.
 
@@ -32,7 +32,7 @@ A prover is also a place where a Lisp still earns its keep. Formulas are trees, 
 
 The benchmark is a fixed sample of 274 problems from TPTP with at most 50 formulas each, drawn with a fixed seed across easy and hard problems, with and without equality. 234 are theorems and 40 are not. Each prover gets ten seconds per problem on the same machine. The first version of HyLogic proved 39 of the theorems.
 
-HyLogic is measured against two of the strongest automated provers. [E](https://www.eprover.org), written by Stephan Schulz and developed since the late 1990s, is built around superposition and is known for its fast rewriting and for choosing a search strategy to suit each problem. [Vampire](https://vprover.github.io), from Andrei Voronkov's group at the University of Manchester, has won the first-order division of [CASC](https://tptp.org/CASC/), the annual competition of automated provers, more often than any other prover. Both are written in C or C++ and tuned on TPTP itself, so they set a high bar for a prover written to be read.
+HyLogic is measured against two of the strongest automated provers. [E](https://www.eprover.org), written by Stephan Schulz and developed since the late 1990s, is built around superposition and is known for its fast rewriting and for choosing a search strategy to suit each problem. [Vampire](https://vprover.github.io), developed by Andrei Voronkov at the University of Manchester together with Laura Kovács's group at TU Wien, had won the main first-order division of [CASC](https://tptp.org/CASC/), the annual competition of automated provers, [fourteen years in a row by 2013](https://staffnet.cs.manchester.ac.uk/newsletters/CS_Newsletter_2013-07-01.htm), and in 2025 it became [the first prover to win all of the competition's divisions](https://www.tuwien.at/en/tu-wien/news/news-articles/news/riesenerfolg-fuer-vampire). Both are written in C or C++ and tuned on TPTP itself, so they set a high bar for a prover written to be read.
 
 | Method | Theorems added |
 |---|---:|
